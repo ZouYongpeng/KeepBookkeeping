@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.example.keepbookkeeping.KBKApplication;
-
 /**
  * @author 邹永鹏
  * @date 2019/1/13

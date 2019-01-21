@@ -10,22 +10,22 @@ import android.util.Log;
  */
 public class LogUtil {
 
-    public static final int VERBOSE = 1;
+    private static final int VERBOSE = 1;
 
-    public static final int DEBUG = 2;
+    private static final int DEBUG = 2;
 
-    public static final int INFO = 3;
+    private static final int INFO = 3;
 
-    public static final int WARN = 4;
+    private static final int WARN = 4;
 
-    public static final int ERROR = 5;
+    private static final int ERROR = 5;
 
-    public static final int NOTHING = 6;
+    private static final int NOTHING = 6;
 
     /**
         通过改变level的值控制打印log
      **/
-    public static int level = VERBOSE;
+    private static int level = VERBOSE;
 
     public static void v(String tag,String msg){
         if (level<=VERBOSE){
