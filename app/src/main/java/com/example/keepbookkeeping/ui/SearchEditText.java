@@ -9,7 +9,6 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.utils.LogUtil;
@@ -46,7 +45,7 @@ public class SearchEditText extends AppCompatEditText{
 
     private void initView(Context context){
         mContext=context;
-        mClearIcon=getResources().getDrawable(R.drawable.edittext_clear_icon);
+        mClearIcon=getResources().getDrawable(R.drawable.ic_edittext_clear_icon);
         mClearIcon.setBounds(0,0,mClearIcon.getMinimumWidth()-20,mClearIcon.getMinimumHeight()-20);
 
         addTextChangedListener(new TextWatcher() {

@@ -8,15 +8,85 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
-    <com.example.keepbookkeeping.ui.SearchEditText
-        android:id="@+id/main_search_edit_text"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@null"
-        android:imeOptions="actionDone"
-        android:singleLine="true"
-        android:maxLength="10"
-        android:hint="输入关键字搜索" />
+        android:layout_gravity="center">
+
+        <com.example.keepbookkeeping.ui.SearchEditText
+            android:id="@+id/main_search_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:maxLength="10"
+            android:hint="输入关键字搜索"/>
+
+        <!--https://blog.csdn.net/liuwan1992/article/details/52688408-->
+        <RadioGroup
+            android:id="@+id/main_bill_btn_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/main_toolbar_btn_assets"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/toolbar_radio_btn_state"
+                android:text="资产"
+                android:textSize="16sp"
+                android:textColor="@drawable/toolbar_radio_btn_text_color"
+                android:button="@null"
+                android:padding="10dp"/>
+
+            <RadioButton
+                android:id="@+id/main_toolbar_btn_debt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/toolbar_radio_btn_state"
+                android:text="负债"
+                android:textSize="16sp"
+                android:textColor="@drawable/toolbar_radio_btn_text_color"
+                android:button="@null"
+                android:padding="10dp"/>
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/main_form_btn_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/main_toolbar_btn_apart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/toolbar_radio_btn_state"
+                android:text="分类"
+                android:textSize="16sp"
+                android:textColor="@drawable/toolbar_radio_btn_text_color"
+                android:button="@null"
+                android:padding="10dp"/>
+
+            <RadioButton
+                android:id="@+id/main_toolbar_btn_trend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/toolbar_radio_btn_state"
+                android:text="趋势"
+                android:textSize="16sp"
+                android:textColor="@drawable/toolbar_radio_btn_text_color"
+                android:button="@null"
+                android:padding="10dp"/>
+        </RadioGroup>
+
+    </FrameLayout>
 
 </android.support.v7.widget.Toolbar>
