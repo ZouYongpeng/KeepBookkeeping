@@ -1,13 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/bill_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"/>
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/bill_bar"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/white">
 
-</RelativeLayout>
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/bill_collapsing_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:contentScrim="#fff"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            <!--contentScrim:指定背景色
+                layout_scrollFlags:设置滚动效果
+                    scroll:随内容滚动而滚动
+                    exitUntilCollapsed：滚动完后折叠继续保留-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax"
+                android:orientation="horizontal">
+
+                <!--此处可以加入自定义的饼状图-->
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
+                    android:layout_margin="25dp"
+                    android:src="@mipmap/ic_piepic"/>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@color/white"/>
+
+            </LinearLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:layout_width="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_gravity="center|end"
+                app:layout_collapseMode="pin">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="20dp">
+
+                    <TextView
+                        android:id="@+id/bill_assets_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="资产：12000.00元"
+                        android:textSize="20sp"
+                        android:textColor="@color/gray"/>
+
+                    <TextView
+                        android:id="@+id/bill_net_assets_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/bill_assets_num"
+                        android:layout_marginTop="10dp"
+                        android:text="净资产：7000.00元"
+                        android:textSize="14sp"
+                        android:textColor="@color/gray"/>
+                </RelativeLayout>
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/bill_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    
+</android.support.design.widget.CoordinatorLayout>
