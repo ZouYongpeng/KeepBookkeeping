@@ -99,7 +99,11 @@ import butterknife.OnClick;
      private int currentPagerPosition;
      private boolean isScrolled;
 
-     private Menu mMenu;
+     private Menu mToolBarMenu;
+
+     private BillFragment mBillFragment;
+     private com.example.keepbookkeeping.list.ListFragment mListFragment;
+     private FormFragment mFormFragment;
 
      @Override
      protected void onCreate(Bundle savedInstanceState) {
@@ -183,20 +187,20 @@ import butterknife.OnClick;
      }
 
      private void initFragment() {
-         BillFragment billFragment = new BillFragment();
-         com.example.keepbookkeeping.list.ListFragment listFragment = new com.example.keepbookkeeping.list.ListFragment();
-         FormFragment formFragment = new FormFragment();
+         mBillFragment = new BillFragment();
+         mListFragment = new com.example.keepbookkeeping.list.ListFragment();
+         mFormFragment = new FormFragment();
 
-         mFragmentArray.add(billFragment);
-         mFragmentArray.add(listFragment);
-         mFragmentArray.add(formFragment);
+         mFragmentArray.add(mBillFragment);
+         mFragmentArray.add(mListFragment);
+         mFragmentArray.add(mFormFragment);
 
          /**
           * 必须的一步
           */
-         new ListPresenterImpl(listFragment);
-         new BillPresenterImpl(billFragment);
-         new FormPresenterImpl(formFragment);
+         new ListPresenterImpl(mListFragment);
+         new BillPresenterImpl(mBillFragment);
+         new FormPresenterImpl(mFormFragment);
 
          mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager(), mFragmentArray));
          mTabHost.getTabWidget().setDividerDrawable(null);
@@ -208,7 +212,7 @@ import butterknife.OnClick;
      @Override
      public boolean onCreateOptionsMenu(Menu menu) {
          getMenuInflater().inflate(R.menu.main_toolbar_menu, menu);
-         mMenu=menu;
+         mToolBarMenu=menu;
          return true;
      }
 
@@ -257,24 +261,24 @@ import butterknife.OnClick;
                  mBillBtnGroup.setVisibility(View.VISIBLE);
                  mSearchEditText.setVisibility(View.INVISIBLE);
                  mFormBtnGroup.setVisibility(View.INVISIBLE);
-                 if (mMenu!=null){
-                     mMenu.findItem(R.id.select_date).setVisible(false);
+                 if (mToolBarMenu!=null){
+                     mToolBarMenu.findItem(R.id.select_date).setVisible(false);
                  }
                  break;
              case 1:
                  mBillBtnGroup.setVisibility(View.INVISIBLE);
                  mSearchEditText.setVisibility(View.VISIBLE);
                  mFormBtnGroup.setVisibility(View.INVISIBLE);
-                 if (mMenu!=null){
-                     mMenu.findItem(R.id.select_date).setVisible(true);
+                 if (mToolBarMenu!=null){
+                     mToolBarMenu.findItem(R.id.select_date).setVisible(true);
                  }
                  break;
              case 2:
                  mBillBtnGroup.setVisibility(View.INVISIBLE);
                  mSearchEditText.setVisibility(View.INVISIBLE);
                  mFormBtnGroup.setVisibility(View.VISIBLE);
-                 if (mMenu!=null){
-                     mMenu.findItem(R.id.select_date).setVisible(false);
+                 if (mToolBarMenu!=null){
+                     mToolBarMenu.findItem(R.id.select_date).setVisible(false);
                  }
                  break;
              default:

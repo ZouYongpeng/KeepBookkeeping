@@ -2,6 +2,9 @@ package com.example.keepbookkeeping.bill;
 
 import com.example.keepbookkeeping.base.BasePresenter;
 import com.example.keepbookkeeping.base.BaseView;
+import com.example.keepbookkeeping.bean.BillApartBean;
+
+import java.util.List;
 
 /**
  * @author 邹永鹏
@@ -12,12 +15,15 @@ public interface BillContract {
 
     interface Presenter extends BasePresenter{
 
+        List<BillApartBean> getBillApartBeanList();
+
     }
 
     /**
      * 进行listFragment界面UI的操作*/
     interface View extends BaseView<Presenter>{
-
+        //初始化recyclerView
+        void initBillRecyclerView();
     }
 
 }
