@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.BillApartAdapter;
 import com.example.keepbookkeeping.bean.BillApartBean;
+import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class BillFragment extends Fragment implements BillContract.View{
 
     @BindView(R.id.bill_recycler_view)
     RecyclerView mBillRecyclerView;
+
+    private final String TAG="BillFragment_log";
 
     private BillContract.Presenter mPresenter;
 
@@ -60,16 +63,10 @@ public class BillFragment extends Fragment implements BillContract.View{
     public void initBillRecyclerView() {
         LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
         mBillRecyclerView.setLayoutManager(layoutManager);
-        //mBillApartBeanList=mPresenter.getBillApartBeanList();
-        for (int i=0;i<20;i++){
-            mBillApartBeanList.add(new BillApartBean(0,"现金"+i,"描述"+i,((float) i+1)*1000,0xfff));
-        }
-        if (mBillApartBeanList!=null){
+        if (mPresenter!=null){
+            mBillApartBeanList=mPresenter.getBillApartBeanList();
             BillApartAdapter adapter=new BillApartAdapter(mBillApartBeanList);
             mBillRecyclerView.setAdapter(adapter);
-        }else {
-            ToastUtil.error("getBillApartBeanList()==null");
         }
-
     }
 }
