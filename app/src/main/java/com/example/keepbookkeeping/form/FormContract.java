@@ -18,6 +18,11 @@ public interface FormContract {
      * 进行listFragment界面UI的操作*/
     interface View extends BaseView<Presenter>{
 
+        void initFormViewPager();
+
+        void initFormRecyclerView(int type);
+
+        void initRxBusEvent();
     }
 
 }

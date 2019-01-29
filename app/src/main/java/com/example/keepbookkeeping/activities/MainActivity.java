@@ -3,7 +3,6 @@ package com.example.keepbookkeeping.activities;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.ListFragment;
@@ -31,13 +30,14 @@ import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.FragmentAdapter;
 import com.example.keepbookkeeping.bill.BillFragment;
 import com.example.keepbookkeeping.bill.BillPresenterImpl;
+import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
 import com.example.keepbookkeeping.form.FormFragment;
 import com.example.keepbookkeeping.form.FormPresenterImpl;
 import com.example.keepbookkeeping.list.ListPresenterImpl;
 import com.example.keepbookkeeping.ui.SearchEditText;
 import com.example.keepbookkeeping.utils.DensityUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
-import com.example.keepbookkeeping.utils.LogUtil;
+import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
 import java.util.ArrayList;
@@ -45,7 +45,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * @author 邹永鹏
@@ -191,16 +190,16 @@ import butterknife.OnClick;
          mListFragment = new com.example.keepbookkeeping.list.ListFragment();
          mFormFragment = new FormFragment();
 
-         mFragmentArray.add(mBillFragment);
-         mFragmentArray.add(mListFragment);
-         mFragmentArray.add(mFormFragment);
-
          /**
           * 必须的一步
           */
-         new ListPresenterImpl(mListFragment);
          new BillPresenterImpl(mBillFragment);
+         new ListPresenterImpl(mListFragment);
          new FormPresenterImpl(mFormFragment);
+
+         mFragmentArray.add(mBillFragment);
+         mFragmentArray.add(mListFragment);
+         mFragmentArray.add(mFormFragment);
 
          mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager(), mFragmentArray));
          mTabHost.getTabWidget().setDividerDrawable(null);
@@ -364,19 +363,19 @@ import butterknife.OnClick;
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
             RadioButton radioButton=findViewById(group.getCheckedRadioButtonId());
-            String selectedText=radioButton.getText().toString();
+            final String selectedText=radioButton.getText().toString();
             switch (selectedText){
                 case "资产":
-
+                    RxBus.getInstance().post(new ChangeFragmentTypeEvent(BillFragment.TYPE_ASSETS));
                     break;
                 case "负债":
-
+                    RxBus.getInstance().post(new ChangeFragmentTypeEvent(BillFragment.TYPE_DEBT));
                     break;
                 case "分类":
-
+                    RxBus.getInstance().post(new ChangeFragmentTypeEvent(FormFragment.TYPE_APART_INCOME));
                     break;
                 case "趋势":
-
+                    RxBus.getInstance().post(new ChangeFragmentTypeEvent(FormFragment.TYPE_TREND));
                     break;
                 default:
                     break;

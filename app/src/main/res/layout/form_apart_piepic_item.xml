@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/form_apart_piepic"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_weight="1"
+        android:src="@mipmap/ic_piepic"/>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_weight="1"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/form_apart_money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="12000.00元"
+            android:textSize="16sp"
+            />
+        <TextView
+            android:id="@+id/form_apart_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="月收入"
+            android:textSize="24sp"
+            android:layout_marginTop="10dp"
+            android:layout_above="@+id/form_apart_money"/>
+
+    </RelativeLayout>
+    
+</LinearLayout>

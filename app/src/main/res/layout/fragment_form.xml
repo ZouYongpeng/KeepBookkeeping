@@ -5,8 +5,118 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/form_date"
         android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:text="2019年1月"
+        android:textSize="20sp"/>
+
+    <ImageView
+        android:id="@+id/form_date_left_arrow"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/ic_left_arrow"
+        android:layout_toLeftOf="@+id/form_date"/>
+
+    <ImageView
+        android:id="@+id/form_date_right_arrow"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/ic_right_arrow"
+        android:layout_toRightOf="@+id/form_date"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/form_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+        android:layout_below="@+id/form_date"
+        android:background="@color/white">
+
+        <android.support.v4.view.PagerTitleStrip
+            android:id="@+id/form_viewpager_title"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_gravity="top"
+            android:textSize="18sp"
+            android:textColor="@color/main_color">
+        </android.support.v4.view.PagerTitleStrip>
+    </android.support.v4.view.ViewPager>
+
+    <View
+        android:id="@+id/form_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        android:layout_below="@id/form_viewpager"/>
+
+    <LinearLayout
+        android:id="@+id/form_income_list_head"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="报表"/>
+        android:orientation="horizontal"
+        android:layout_below="@id/form_line">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:text="分类"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:text="金额（元）"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:text="比例（%）"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/form_trend_list_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/form_line"
+        android:visibility="invisible">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:text="月份"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:text="收入（元）"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:text="支出（元）"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:text="结余（元）"/>
+    </LinearLayout>
 
 </RelativeLayout>

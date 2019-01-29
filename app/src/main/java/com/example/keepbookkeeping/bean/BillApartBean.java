@@ -5,7 +5,7 @@ import android.widget.ImageView;
 /**
  * @author 邹永鹏
  * @date 2019/1/23
- * @description :资产分类bean
+ * @description :账号的资产/负债分类bean
  */
 public class BillApartBean {
 

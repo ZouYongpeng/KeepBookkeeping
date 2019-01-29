@@ -22,8 +22,18 @@ public interface BillContract {
     /**
      * 进行listFragment界面UI的操作*/
     interface View extends BaseView<Presenter>{
-        //初始化recyclerView
+
+        /**
+         * 初始化recyclerView
+         * */
         void initBillRecyclerView();
+
+        /**
+         * 改变内容状态：资产（）或负债（）
+         * */
+        void changeContentType(int type);
+
+        void initRxBusEvent();
     }
 
 }

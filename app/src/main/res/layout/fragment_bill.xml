@@ -58,7 +58,7 @@
                     android:layout_marginRight="20dp">
 
                     <TextView
-                        android:id="@+id/bill_assets_num"
+                        android:id="@+id/bill_num"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="资产：12000.00元"
@@ -66,10 +66,10 @@
                         android:textColor="@color/gray"/>
 
                     <TextView
-                        android:id="@+id/bill_net_assets_num"
+                        android:id="@+id/bill_net_num"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/bill_assets_num"
+                        android:layout_below="@+id/bill_num"
                         android:layout_marginTop="10dp"
                         android:text="净资产：7000.00元"
                         android:textSize="14sp"
