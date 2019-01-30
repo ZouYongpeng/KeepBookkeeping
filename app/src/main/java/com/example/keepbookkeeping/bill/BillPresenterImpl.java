@@ -33,4 +33,6 @@ public class BillPresenterImpl implements BillContract.Presenter {
         }
         return billApartBeanList;
     }
+
+
 }

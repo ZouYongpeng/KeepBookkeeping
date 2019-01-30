@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AddDataActivity">
+
+    <ImageView
+        android:id="@+id/add_data_cancel"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_cancel"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="10dp"/>
+
+    <RadioGroup
+        android:id="@+id/add_data_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:layout_margin="5dp">
+        <RadioButton
+            android:id="@+id/add_data_radio_btn_income"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/toolbar_radio_btn_state"
+            android:text="收入"
+            android:textSize="16sp"
+            android:textColor="@drawable/toolbar_radio_btn_text_color"
+            android:button="@null"
+            android:padding="10dp"/>
+
+        <RadioButton
+            android:id="@+id/add_data_radio_btn_outcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/toolbar_radio_btn_state"
+            android:text="负债"
+            android:textSize="16sp"
+            android:textColor="@drawable/toolbar_radio_btn_text_color"
+            android:button="@null"
+            android:padding="10dp"/>
+
+    </RadioGroup>
+
+    <ImageView
+        android:id="@+id/add_data_confirm"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_yes"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"/>
+
+    <ImageView
+        android:id="@+id/add_data_choose_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/ic_income_default"
+        android:layout_below="@id/add_data_cancel"/>
+
+    <TextView
+        android:id="@+id/add_data_choose_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="一般"
+        android:textSize="26sp"
+        android:layout_below="@id/add_data_cancel"
+        android:layout_toRightOf="@id/add_data_choose_image"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:id="@+id/add_data_input_money"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="10000.00"
+        android:textSize="26sp"
+        android:layout_below="@id/add_data_confirm"
+        android:layout_margin="8dp"/>
+
+    <FrameLayout
+        android:id="@+id/add_data_typeWriting"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/black">
+    </FrameLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/add_data_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_data_choose_image"
+        android:layout_above="@+id/add_data_typeWriting">
+
+    </android.support.v4.view.ViewPager>
+
+
+</RelativeLayout>

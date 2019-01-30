@@ -19,26 +19,33 @@ public class InComeBean {
     private Date date;
 
     /**
-     * 单笔花销类型，如一般、生活费
+     * 单笔花销所属账户，如微信、支付宝、现金
      */
     private String billType;
+
+    /**
+     * 单笔花销类型，如一般、餐饮、交通等
+     */
+    private String costType;
 
     /**
      * 单笔花销备注
      */
     private String description;
 
-    public InComeBean(float money, String billType, String description) {
+    public InComeBean(float money, String billType, String costType, String description) {
         this.money = money;
         this.date = new Date(System.currentTimeMillis());
         this.billType = billType;
+        this.costType = costType;
         this.description = description;
     }
 
-    public InComeBean(float money, Date date, String billType, String description) {
+    public InComeBean(float money, Date date, String billType, String costType, String description) {
         this.money = money;
         this.date = date;
         this.billType = billType;
+        this.costType = costType;
         this.description = description;
     }
 
@@ -74,4 +81,11 @@ public class InComeBean {
         this.description = description;
     }
 
+    public String getCostType() {
+        return costType;
+    }
+
+    public void setCostType(String costType) {
+        this.costType = costType;
+    }
 }

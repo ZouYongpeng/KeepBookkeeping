@@ -2,6 +2,10 @@ package com.example.keepbookkeeping.form;
 
 import com.example.keepbookkeeping.base.BasePresenter;
 import com.example.keepbookkeeping.base.BaseView;
+import com.example.keepbookkeeping.bean.FormApartBean;
+import com.example.keepbookkeeping.bean.FormTrendBean;
+
+import java.util.List;
 
 /**
  * @author 邹永鹏
@@ -12,6 +16,12 @@ public interface FormContract {
 
     interface Presenter extends BasePresenter{
 
+        List<FormApartBean> getFormApartIncomeList();
+
+        List<FormApartBean> getFormApartOutcomeList();
+
+        List<FormTrendBean> getFormTrendList();
+
     }
 
     /**
@@ -20,9 +30,11 @@ public interface FormContract {
 
         void initFormViewPager();
 
-        void initFormRecyclerView(int type);
+        void initFormRecyclerView();
 
         void initRxBusEvent();
+
+        void notifyFormRecyclerView(int type);
     }
 
 }

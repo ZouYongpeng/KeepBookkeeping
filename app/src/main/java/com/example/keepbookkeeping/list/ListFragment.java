@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
+import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.ui.DoubleLineTextView;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
@@ -56,7 +57,7 @@ public class ListFragment extends Fragment implements ListContract.View{
 
     @OnClick(R.id.floating_btn)
     public void start(){
-        ToastUtil.success("start!");
+        AddDataActivity.startAddDataActivity(getActivity());
     }
 
 }

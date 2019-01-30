@@ -1,6 +1,11 @@
 package com.example.keepbookkeeping.form;
 
+import com.example.keepbookkeeping.bean.FormApartBean;
+import com.example.keepbookkeeping.bean.FormTrendBean;
 import com.example.keepbookkeeping.list.ListContract;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author 邹永鹏
@@ -21,4 +26,30 @@ public class FormPresenterImpl implements FormContract.Presenter {
 
     }
 
+    @Override
+    public List<FormApartBean> getFormApartIncomeList() {
+        List<FormApartBean> formApartList=new ArrayList<>();
+        for (int i=0;i<20;i++){
+            formApartList.add(new FormApartBean("收入分类"+i,i+1,i+1));
+        }
+        return formApartList;
+    }
+
+    @Override
+    public List<FormApartBean> getFormApartOutcomeList() {
+        List<FormApartBean> formApartList=new ArrayList<>();
+        for (int i=0;i<10;i++){
+            formApartList.add(new FormApartBean("支出分类"+i,i+1,i+1));
+        }
+        return formApartList;
+    }
+
+    @Override
+    public List<FormTrendBean> getFormTrendList() {
+        List<FormTrendBean> formTrendList=new ArrayList<>();
+        for (int i=1;i<=12;i++){
+            formTrendList.add(new FormTrendBean(i+"月",12000,i*1000));
+        }
+        return formTrendList;
+    }
 }

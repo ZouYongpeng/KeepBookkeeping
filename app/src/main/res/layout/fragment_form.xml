@@ -35,7 +35,6 @@
         android:layout_height="230dp"
         android:layout_below="@+id/form_date"
         android:background="@color/white">
-
         <android.support.v4.view.PagerTitleStrip
             android:id="@+id/form_viewpager_title"
             android:layout_width="match_parent"
@@ -45,6 +44,14 @@
             android:textColor="@color/main_color">
         </android.support.v4.view.PagerTitleStrip>
     </android.support.v4.view.ViewPager>
+
+    <ImageView
+        android:id="@+id/form_trend_line_chart"
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+        android:src="@drawable/line_chart"
+        android:layout_below="@+id/form_date"
+        android:visibility="invisible"/>
 
     <View
         android:id="@+id/form_line"
@@ -118,5 +125,13 @@
             android:gravity="center"
             android:text="结余（元）"/>
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/form_apart_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/form_income_list_head">
+
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

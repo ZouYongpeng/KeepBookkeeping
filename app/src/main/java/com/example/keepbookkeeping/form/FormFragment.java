@@ -5,13 +5,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.FormApartPagerAdapter;
+import com.example.keepbookkeeping.adapter.FormApartRecyclerViewAdapter;
+import com.example.keepbookkeeping.adapter.FormTrendRecyclerViewAdapter;
 import com.example.keepbookkeeping.bean.InComeBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
 import com.example.keepbookkeeping.utils.RxBus;
@@ -40,6 +45,12 @@ public class FormFragment extends Fragment implements FormContract.View{
     @BindView(R.id.form_trend_list_head)
     LinearLayout mOutcomeListHead;
 
+    @BindView(R.id.form_apart_recycler_view)
+    RecyclerView mFormApartRecyclerView;
+
+    @BindView(R.id.form_trend_line_chart)
+    ImageView mLineChartImageView;
+
     private FormContract.Presenter mPresenter;
 
     public final static int TYPE_APART_INCOME=2;
@@ -47,6 +58,8 @@ public class FormFragment extends Fragment implements FormContract.View{
     public final static int TYPE_TREND=4;
 
     private int mFormType;
+    private FormApartRecyclerViewAdapter mApartRecyclerViewAdapter;
+    private FormTrendRecyclerViewAdapter mTrendRecyclerViewAdapter;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,6 +68,7 @@ public class FormFragment extends Fragment implements FormContract.View{
         mFormType=TYPE_APART_INCOME;
         initFormViewPager();
         initRxBusEvent();
+        initFormRecyclerView();
         return view;
     }
 
@@ -76,20 +90,54 @@ public class FormFragment extends Fragment implements FormContract.View{
     }
 
     @Override
-    public void initFormRecyclerView(int type) {
+    public void initFormRecyclerView() {
+        LinearLayoutManager manager=new LinearLayoutManager(getActivity());
+        mFormApartRecyclerView.setLayoutManager(manager);
+        if (mPresenter!=null){
+            mApartRecyclerViewAdapter=new FormApartRecyclerViewAdapter(mPresenter.getFormApartIncomeList());
+            mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
+            mTrendRecyclerViewAdapter=new FormTrendRecyclerViewAdapter(mPresenter.getFormTrendList());
+        }
+        mIncomeListHead.setVisibility(View.VISIBLE);
+        mOutcomeListHead.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void notifyFormRecyclerView(int type) {
         mFormType=type;
         switch (mFormType){
             case TYPE_APART_INCOME:
                 mIncomeListHead.setVisibility(View.VISIBLE);
                 mOutcomeListHead.setVisibility(View.INVISIBLE);
+                mFormViewPager.setVisibility(View.VISIBLE);
+                mLineChartImageView.setVisibility(View.INVISIBLE);
+                if (mPresenter!=null){
+                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartIncomeList());
+                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
+                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
+                    }
+                }
                 break;
             case TYPE_APART_OUTCOME:
                 mIncomeListHead.setVisibility(View.VISIBLE);
                 mOutcomeListHead.setVisibility(View.INVISIBLE);
+                mFormViewPager.setVisibility(View.VISIBLE);
+                mLineChartImageView.setVisibility(View.INVISIBLE);
+                if (mPresenter!=null){
+                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartOutcomeList());
+                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
+                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
+                    }
+                }
                 break;
             case TYPE_TREND:
                 mIncomeListHead.setVisibility(View.INVISIBLE);
                 mOutcomeListHead.setVisibility(View.VISIBLE);
+                mFormViewPager.setVisibility(View.INVISIBLE);
+                mLineChartImageView.setVisibility(View.VISIBLE);
+                if (mFormApartRecyclerView.getAdapter() instanceof FormApartRecyclerViewAdapter){
+                    mFormApartRecyclerView.setAdapter(mTrendRecyclerViewAdapter);
+                }
                 break;
             default:
                 break;
@@ -106,7 +154,7 @@ public class FormFragment extends Fragment implements FormContract.View{
         }).subscribe(new Consumer<ChangeFragmentTypeEvent>() {
             @Override
             public void accept(ChangeFragmentTypeEvent s) throws Exception {
-                initFormRecyclerView(s.getMsg());
+                notifyFormRecyclerView(s.getMsg());
             }
         });
     }
@@ -124,7 +172,7 @@ public class FormFragment extends Fragment implements FormContract.View{
             }else {
                 mFormType=TYPE_APART_OUTCOME;
             }
-            initFormRecyclerView(mFormType);
+            notifyFormRecyclerView(mFormType);
         }
 
         @Override

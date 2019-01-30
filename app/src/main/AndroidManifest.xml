@@ -3,14 +3,17 @@
     package="com.example.keepbookkeeping">
 
     <application
+        android:name=".KBKApplication"
         android:allowBackup="true"
         android:icon="@mipmap/kbk_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".KBKApplication">
+        android:theme="@style/AppTheme">
         <activity android:name=".activities.MainActivity">
+
+        </activity>
+        <activity android:name=".activities.AddDataActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
