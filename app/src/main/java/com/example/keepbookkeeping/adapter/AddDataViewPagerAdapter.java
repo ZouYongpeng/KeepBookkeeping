@@ -3,6 +3,7 @@ package com.example.keepbookkeeping.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.bean.DataTypeBean;
 import com.example.keepbookkeeping.bean.InComeBean;
+import com.example.keepbookkeeping.utils.GetDataTypeUtil;
 
 import java.util.List;
 
@@ -23,8 +25,14 @@ public class AddDataViewPagerAdapter extends PagerAdapter {
 
     private Context mContext;
 
-    public AddDataViewPagerAdapter(Context context) {
+    /**
+     * 一行显示几列
+     */
+    private int mCount;
+
+    public AddDataViewPagerAdapter(Context context,int count) {
         mContext = context;
+        mCount = count;
     }
 
     @NonNull
@@ -32,16 +40,19 @@ public class AddDataViewPagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View view=View.inflate(mContext, R.layout.add_data_view_pager_item,null);
 
-//        RecyclerView recyclerView=view.findViewById(R.id.add_data_viewPager_recyclerView);
-        TextView textView=view.findViewById(R.id.add_data_viewPager_textView);
-
+        RecyclerView recyclerView=view.findViewById(R.id.add_data_viewPager_recyclerView);
+        GridLayoutManager gridLayoutManager=new GridLayoutManager(mContext,mCount);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        AddDataRecyclerViewAdapter recyclerViewAdapter;
         if (position==0){
             //收入
-            textView.setText("收入");
-        }else if (position==1){
+            recyclerViewAdapter=new AddDataRecyclerViewAdapter(GetDataTypeUtil.getIncomeDataTypeBeanList());
+        }else {
             //支出
-            textView.setText("支出");
+            recyclerViewAdapter=new AddDataRecyclerViewAdapter(GetDataTypeUtil.getOutcomeDataTypeBeanList());
         }
+        recyclerView.setAdapter(recyclerViewAdapter);
+
         container.addView(view);
         return view;
     }
