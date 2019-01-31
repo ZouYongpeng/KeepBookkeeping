@@ -13,6 +13,14 @@ import java.util.List;
  */
 public class GetDataTypeUtil {
 
+    public static DataTypeBean getFirstIncomeDataTypeBean(){
+        return new DataTypeBean(R.drawable.ic_income_gongzi,"工资");
+    }
+
+    public static DataTypeBean getFirstOutcomeDataTypeBean(){
+        return new DataTypeBean(R.drawable.ic_outcome_default,"一般");
+    }
+
     public static List<DataTypeBean> getIncomeDataTypeBeanList(){
         List<DataTypeBean> list=new ArrayList<>();
         list.add(new DataTypeBean(R.drawable.ic_income_gongzi,"工资"));

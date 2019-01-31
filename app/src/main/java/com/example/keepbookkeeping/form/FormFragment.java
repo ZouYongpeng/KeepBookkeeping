@@ -146,12 +146,8 @@ public class FormFragment extends Fragment implements FormContract.View{
 
     @Override
     public void initRxBusEvent() {
-        RxBus.getInstance().toObservable().map(new Function<Object, ChangeFragmentTypeEvent>() {
-            @Override
-            public ChangeFragmentTypeEvent apply(Object o) throws Exception {
-                return (ChangeFragmentTypeEvent)o;
-            }
-        }).subscribe(new Consumer<ChangeFragmentTypeEvent>() {
+        RxBus.getInstance().toObservable(ChangeFragmentTypeEvent.class)
+                .subscribe(new Consumer<ChangeFragmentTypeEvent>() {
             @Override
             public void accept(ChangeFragmentTypeEvent s) throws Exception {
                 notifyFormRecyclerView(s.getMsg());
