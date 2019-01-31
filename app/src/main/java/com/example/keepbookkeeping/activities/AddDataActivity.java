@@ -32,7 +32,7 @@ public class AddDataActivity extends AppCompatActivity {
     }
 
     private void initViewPager(){
-        mAddDataViewPager.setAdapter(new AddDataViewPagerAdapter(this));
+        mAddDataViewPager.setAdapter(new AddDataViewPagerAdapter(this,5));
     }
 
     public static void startAddDataActivity(Context context){
