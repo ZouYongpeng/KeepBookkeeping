@@ -45,11 +45,9 @@ public class AddDataViewPagerAdapter extends PagerAdapter {
         recyclerView.setLayoutManager(gridLayoutManager);
         AddDataRecyclerViewAdapter recyclerViewAdapter;
         if (position==0){
-            //收入
-            recyclerViewAdapter=new AddDataRecyclerViewAdapter(GetDataTypeUtil.getIncomeDataTypeBeanList());
-        }else {
-            //支出
             recyclerViewAdapter=new AddDataRecyclerViewAdapter(GetDataTypeUtil.getOutcomeDataTypeBeanList());
+        }else {
+            recyclerViewAdapter=new AddDataRecyclerViewAdapter(GetDataTypeUtil.getIncomeDataTypeBeanList());
         }
         recyclerView.setAdapter(recyclerViewAdapter);
 

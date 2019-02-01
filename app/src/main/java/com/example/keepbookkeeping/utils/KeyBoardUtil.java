@@ -51,4 +51,16 @@ public class KeyBoardUtil {
             im.hideSoftInputFromWindow(token,InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
+
+    /**
+     * 强制软键盘显示
+     * @param view
+     * @param context
+     */
+    public static void showSoftKeyBoard(View view, Context context){
+        if (view!=null){
+            InputMethodManager im=(InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            im.showSoftInput(view,InputMethodManager.SHOW_FORCED);
+        }
+    }
 }

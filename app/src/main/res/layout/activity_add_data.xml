@@ -88,18 +88,6 @@
         android:layout_marginRight="20dp"
         android:inputType="numberDecimal"/>
 
-    <!--<com.example.keepbookkeeping.ui.SearchEditText-->
-        <!--android:id="@+id/add_data_input_description"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:hint="在此可以输入备注......"-->
-        <!--android:textSize="20sp"-->
-        <!--android:maxLength="20"-->
-        <!--android:singleLine="true"-->
-        <!--android:layout_marginLeft="20dp"-->
-        <!--android:layout_marginRight="20dp"-->
-        <!--android:layout_below="@+id/add_data_choose_image"/>-->
-
     <LinearLayout
         android:id="@+id/add_data_selector"
         android:layout_width="match_parent"
@@ -107,7 +95,6 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:background="@drawable/boder">
-
         <TextView
             android:id="@+id/add_data_select_date"
             android:layout_width="0dp"
@@ -117,7 +104,6 @@
             android:text="2019-1-31"
             android:textSize="16sp"
             android:gravity="center"/>
-
         <TextView
             android:id="@+id/add_data_select_bill"
             android:layout_width="0dp"
@@ -127,7 +113,6 @@
             android:text="账户类型"
             android:textSize="16sp"
             android:gravity="center"/>
-
         <TextView
             android:id="@+id/add_data_input_description"
             android:layout_width="0dp"
@@ -137,7 +122,6 @@
             android:text="写备注"
             android:textSize="16sp"
             android:gravity="center"/>
-
     </LinearLayout>
 
     <android.support.v4.view.ViewPager
