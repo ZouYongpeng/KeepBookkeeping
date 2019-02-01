@@ -63,7 +63,7 @@ public class FormTrendRecyclerViewAdapter extends RecyclerView.Adapter<FormTrend
         return mFormTrendBeans.size();
     }
 
-    public void notifyFormApartBeans(List<FormTrendBean> formTrendBeans){
+    public void notifyFormTrendBeans(List<FormTrendBean> formTrendBeans){
         if (mFormTrendBeans!=null){
             mFormTrendBeans.clear();
         }

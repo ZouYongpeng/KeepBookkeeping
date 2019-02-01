@@ -12,13 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.FormApartPagerAdapter;
 import com.example.keepbookkeeping.adapter.FormApartRecyclerViewAdapter;
 import com.example.keepbookkeeping.adapter.FormTrendRecyclerViewAdapter;
-import com.example.keepbookkeeping.bean.InComeBean;
+import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
+import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 
 import java.util.ArrayList;
@@ -27,7 +29,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 /**
  * @author 邹永鹏
@@ -50,6 +51,15 @@ public class FormFragment extends Fragment implements FormContract.View{
 
     @BindView(R.id.form_trend_line_chart)
     ImageView mLineChartImageView;
+
+    @BindView(R.id.form_date)
+    TextView mSelectDateText;
+
+    @BindView(R.id.form_date_left_arrow)
+    ImageView mPreviousDate;
+
+    @BindView(R.id.form_date_right_arrow)
+    ImageView mNextDate;
 
     private FormContract.Presenter mPresenter;
 
@@ -84,7 +94,7 @@ public class FormFragment extends Fragment implements FormContract.View{
 
     @Override
     public void initFormViewPager() {
-        List<InComeBean> list=new ArrayList<>();
+        List<SingleDataBean> list=new ArrayList<>();
         mFormViewPager.setAdapter(new FormApartPagerAdapter(getActivity(),list));
         mFormViewPager.setOnPageChangeListener(mFormPageChangeListener);
     }
@@ -94,9 +104,11 @@ public class FormFragment extends Fragment implements FormContract.View{
         LinearLayoutManager manager=new LinearLayoutManager(getActivity());
         mFormApartRecyclerView.setLayoutManager(manager);
         if (mPresenter!=null){
-            mApartRecyclerViewAdapter=new FormApartRecyclerViewAdapter(mPresenter.getFormApartIncomeList());
+            mApartRecyclerViewAdapter=new FormApartRecyclerViewAdapter(
+                    mPresenter.getFormApartIncomeList(DateUtil.getCurrentYear(),DateUtil.getCurrentMonth()));
             mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
-            mTrendRecyclerViewAdapter=new FormTrendRecyclerViewAdapter(mPresenter.getFormTrendList());
+            mTrendRecyclerViewAdapter=new FormTrendRecyclerViewAdapter(
+                    mPresenter.getFormTrendList(DateUtil.getCurrentYear()));
         }
         mIncomeListHead.setVisibility(View.VISIBLE);
         mOutcomeListHead.setVisibility(View.INVISIBLE);
@@ -111,33 +123,76 @@ public class FormFragment extends Fragment implements FormContract.View{
                 mOutcomeListHead.setVisibility(View.INVISIBLE);
                 mFormViewPager.setVisibility(View.VISIBLE);
                 mLineChartImageView.setVisibility(View.INVISIBLE);
-                if (mPresenter!=null){
-                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartIncomeList());
-                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
-                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
-                    }
-                }
+//                if (mPresenter!=null){
+//                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartIncomeList());
+//                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
+//                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
+//                    }
+//                }
+//                mSelectDateText.setText(DateUtil.getCurrentYear()+"年"+DateUtil.getCurrentMonth()+"月");
                 break;
             case TYPE_APART_OUTCOME:
                 mIncomeListHead.setVisibility(View.VISIBLE);
                 mOutcomeListHead.setVisibility(View.INVISIBLE);
                 mFormViewPager.setVisibility(View.VISIBLE);
                 mLineChartImageView.setVisibility(View.INVISIBLE);
-                if (mPresenter!=null){
-                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartOutcomeList());
-                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
-                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
-                    }
-                }
+//                if (mPresenter!=null){
+//                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartOutcomeList());
+//                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
+//                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
+//                    }
+//                }
+//                mSelectDateText.setText(DateUtil.getCurrentYear()+"年"+DateUtil.getCurrentMonth()+"月");
                 break;
             case TYPE_TREND:
                 mIncomeListHead.setVisibility(View.INVISIBLE);
                 mOutcomeListHead.setVisibility(View.VISIBLE);
                 mFormViewPager.setVisibility(View.INVISIBLE);
                 mLineChartImageView.setVisibility(View.VISIBLE);
-                if (mFormApartRecyclerView.getAdapter() instanceof FormApartRecyclerViewAdapter){
-                    mFormApartRecyclerView.setAdapter(mTrendRecyclerViewAdapter);
+//                if (mFormApartRecyclerView.getAdapter() instanceof FormApartRecyclerViewAdapter){
+//                    mFormApartRecyclerView.setAdapter(mTrendRecyclerViewAdapter);
+//                }
+//                mSelectDateText.setText(DateUtil.getCurrentYear()+"年");
+                break;
+            default:
+                break;
+        }
+        notifyData(DateUtil.getCurrentYear(),DateUtil.getCurrentMonth());
+    }
+
+    /**
+     * 根据年、月去获取数据并更新界面
+     * @param year
+     * @param month
+     */
+    private void notifyData(int year,int month){
+        switch (mFormType){
+            case TYPE_APART_INCOME:
+                if (mPresenter!=null){
+                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartIncomeList(year,month));
+                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
+                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
+                    }
                 }
+                mSelectDateText.setText(year+"年"+month+"月");
+                break;
+            case TYPE_APART_OUTCOME:
+                if (mPresenter!=null){
+                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartOutcomeList(year,month));
+                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
+                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
+                    }
+                }
+                mSelectDateText.setText(year+"年"+month+"月");
+                break;
+            case TYPE_TREND:
+                if (mPresenter!=null){
+                    mTrendRecyclerViewAdapter.notifyFormTrendBeans(mPresenter.getFormTrendList(year));
+                    if (mFormApartRecyclerView.getAdapter() instanceof FormApartRecyclerViewAdapter){
+                        mFormApartRecyclerView.setAdapter(mTrendRecyclerViewAdapter);
+                    }
+                }
+                mSelectDateText.setText(year+"年");
                 break;
             default:
                 break;
@@ -148,11 +203,11 @@ public class FormFragment extends Fragment implements FormContract.View{
     public void initRxBusEvent() {
         RxBus.getInstance().toObservable(ChangeFragmentTypeEvent.class)
                 .subscribe(new Consumer<ChangeFragmentTypeEvent>() {
-            @Override
-            public void accept(ChangeFragmentTypeEvent s) throws Exception {
-                notifyFormRecyclerView(s.getMsg());
-            }
-        });
+                    @Override
+                    public void accept(ChangeFragmentTypeEvent changeFragmentTypeEvent) throws Exception {
+                        notifyFormRecyclerView(changeFragmentTypeEvent.getMsg());
+                    }
+                });
     }
 
     private ViewPager.OnPageChangeListener mFormPageChangeListener=new ViewPager.OnPageChangeListener() {
@@ -174,6 +229,25 @@ public class FormFragment extends Fragment implements FormContract.View{
         @Override
         public void onPageScrollStateChanged(int state) {
 
+        }
+    };
+
+    private View.OnClickListener mClickListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.form_date:
+
+                    break;
+                case R.id.form_date_left_arrow:
+
+                    break;
+                case R.id.form_date_right_arrow:
+
+                    break;
+                default:
+                    break;
+            }
         }
     };
 }

@@ -27,7 +27,7 @@ public class FormPresenterImpl implements FormContract.Presenter {
     }
 
     @Override
-    public List<FormApartBean> getFormApartIncomeList() {
+    public List<FormApartBean> getFormApartIncomeList(int year,int month) {
         List<FormApartBean> formApartList=new ArrayList<>();
         for (int i=0;i<20;i++){
             formApartList.add(new FormApartBean("收入分类"+i,i+1,i+1));
@@ -36,7 +36,7 @@ public class FormPresenterImpl implements FormContract.Presenter {
     }
 
     @Override
-    public List<FormApartBean> getFormApartOutcomeList() {
+    public List<FormApartBean> getFormApartOutcomeList(int year,int month) {
         List<FormApartBean> formApartList=new ArrayList<>();
         for (int i=0;i<10;i++){
             formApartList.add(new FormApartBean("支出分类"+i,i+1,i+1));
@@ -45,7 +45,7 @@ public class FormPresenterImpl implements FormContract.Presenter {
     }
 
     @Override
-    public List<FormTrendBean> getFormTrendList() {
+    public List<FormTrendBean> getFormTrendList(int year) {
         List<FormTrendBean> formTrendList=new ArrayList<>();
         for (int i=1;i<=12;i++){
             formTrendList.add(new FormTrendBean(i+"月",12000,i*1000));

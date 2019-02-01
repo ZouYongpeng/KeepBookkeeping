@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
-import com.example.keepbookkeeping.bean.InComeBean;
+import com.example.keepbookkeeping.bean.SingleDataBean;
 
 import java.util.List;
 
@@ -22,11 +22,11 @@ import java.util.List;
 public class FormApartPagerAdapter extends PagerAdapter {
 
     private Context mContext;
-    private List<InComeBean> mInComeBeanList;
+    private List<SingleDataBean> mMonthDataBeanList;
 
-    public FormApartPagerAdapter(Context context, List<InComeBean> inComeBeanList) {
+    public FormApartPagerAdapter(Context context, List<SingleDataBean> singleDataBeanList) {
         mContext = context;
-        mInComeBeanList = inComeBeanList;
+        mMonthDataBeanList = singleDataBeanList;
     }
 
     @NonNull

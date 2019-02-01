@@ -16,11 +16,28 @@ public interface FormContract {
 
     interface Presenter extends BasePresenter{
 
-        List<FormApartBean> getFormApartIncomeList();
+        /**
+         * 根据年、月去获取 收入 分类报表（含分类、金额、比例）
+         * @param year
+         * @param month
+         * @return
+         */
+        List<FormApartBean> getFormApartIncomeList(int year,int month);
 
-        List<FormApartBean> getFormApartOutcomeList();
+        /**
+         * 根据年、月去获取 支出 分类报表（含分类、金额、比例）
+         * @param year
+         * @param month
+         * @return
+         */
+        List<FormApartBean> getFormApartOutcomeList(int year,int month);
 
-        List<FormTrendBean> getFormTrendList();
+        /**
+         * 根据年份year获取年度趋势报表，含月份、收入、支出、结余
+         * @param year
+         * @return
+         */
+        List<FormTrendBean> getFormTrendList(int year);
 
     }
 

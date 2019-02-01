@@ -7,14 +7,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
-import com.example.keepbookkeeping.bean.DataTypeBean;
-import com.example.keepbookkeeping.bean.InComeBean;
 import com.example.keepbookkeeping.utils.GetDataTypeUtil;
-
-import java.util.List;
 
 /**
  * @author 邹永鹏
