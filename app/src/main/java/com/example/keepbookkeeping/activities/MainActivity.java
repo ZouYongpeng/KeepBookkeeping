@@ -29,6 +29,7 @@ import android.widget.TabWidget;
 import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
+import com.example.keepbookkeeping.adapter.AllDataListAdapter;
 import com.example.keepbookkeeping.adapter.FragmentAdapter;
 import com.example.keepbookkeeping.bill.BillFragment;
 import com.example.keepbookkeeping.bill.BillPresenterImpl;
@@ -110,7 +111,7 @@ import butterknife.ButterKnife;
      private com.example.keepbookkeeping.list.ListFragment mListFragment;
      private FormFragment mFormFragment;
 
-     private KBKDataBaseHelper mDataBaseHelper;
+     public KBKDataBaseHelper mDataBaseHelper;
 
      @Override
      protected void onCreate(Bundle savedInstanceState) {
@@ -129,10 +130,12 @@ import butterknife.ButterKnife;
      public void initDataBase(){
          mDataBaseHelper=KBKDataBaseHelper.getKBKDataBase(this);
          SQLiteDatabase db=mDataBaseHelper.getWritableDatabase();
-         DataBaseUtil.queryAllDataOrderByDate(db);
-//         DataBaseUtil.getDifferentDateCount(db);
+//         DataBaseUtil.queryAllDataOrderByDate(db);
 //         DataBaseUtil.getAllDataCount(db);
-         DataBaseUtil.getDifferentMonthCount(db);
+//         DataBaseUtil.getDifferentDateList(db);
+//         DataBaseUtil.getDifferentMonthList(db);
+
+//         new AllDataListAdapter(db);
      }
 
      private void initToolBar() {
