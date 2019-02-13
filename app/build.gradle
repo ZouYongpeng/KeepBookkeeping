@@ -36,6 +36,9 @@ dependencies {
     //recyclerView
     implementation 'com.android.support:recyclerview-v7:27.1.1'
 
+    //开源项目CircleImageView,将图片圆形化
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+
     //Rxjava
     implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
     //RxAndroid

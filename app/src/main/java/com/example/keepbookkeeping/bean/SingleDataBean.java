@@ -1,5 +1,7 @@
 package com.example.keepbookkeeping.bean;
 
+import com.example.keepbookkeeping.utils.DateUtil;
+
 import java.util.Date;
 import java.util.List;
 
@@ -10,8 +12,8 @@ import java.util.List;
  */
 public class SingleDataBean {
 
-    public static final int TYPE_INCOME_DATA=0;
-    public static final int TYPE_OUTCOME_DATA=1;
+    public static final int TYPE_OUTCOME_DATA=0;
+    public static final int TYPE_INCOME_DATA=1;
 
     /**
      * 单笔数据类型，收入（income）/支出（outcome）
@@ -135,5 +137,17 @@ public class SingleDataBean {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "SingleDataBean{" +
+                "type=" + type +
+                ", money=" + money +
+                ", date=" + DateUtil.dateToString(date) +
+                ", typeName='" + typeName + '\'' +
+                ", billName='" + billName + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

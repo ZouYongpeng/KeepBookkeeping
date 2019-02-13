@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,17 +24,22 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.AddDataViewPagerAdapter;
 import com.example.keepbookkeeping.bean.DataTypeBean;
+import com.example.keepbookkeeping.bean.SingleDataBean;
+import com.example.keepbookkeeping.db.KBKDataBaseHelper;
 import com.example.keepbookkeeping.events.ChangeDataTypeEvent;
 import com.example.keepbookkeeping.ui.SearchEditText;
 import com.example.keepbookkeeping.ui.SimpleDatePickerDialog;
+import com.example.keepbookkeeping.utils.DataBaseUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.GetDataTypeUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
+import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.SharedPreferencesUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,7 +88,10 @@ public class AddDataActivity extends AppCompatActivity {
     private String mAddDataDescriptionStr;
     private String mAddDataBillTypeStr=SharedPreferencesUtil.getString(TheLastSaveBillTypeKey);
 
+    private KBKDataBaseHelper mDataBaseHelper;
+
     android.support.v7.app.AlertDialog mDescriptionDialog;
+    android.support.v7.app.AlertDialog mCancelDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +102,8 @@ public class AddDataActivity extends AppCompatActivity {
         initViewPager();
         initKeyboard();
         initRxBusEvent();
+
+        mDataBaseHelper=KBKDataBaseHelper.getKBKDataBase(this);
     }
 
     private void initButton(){
@@ -196,9 +207,7 @@ public class AddDataActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.add_data_cancel:
-                    ToastUtil.error("cancel");
-                    Intent intent=new Intent(AddDataActivity.this,MainActivity.class);
-                    startActivity(intent);
+                    cancel();
                     break;
                 case R.id.add_data_confirm:
                     ToastUtil.success("confirm");
@@ -224,6 +233,24 @@ public class AddDataActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(mAddDataBillTypeStr)){
             SharedPreferencesUtil.putString(TheLastSaveBillTypeKey,mAddDataBillTypeStr);
         }
+        SQLiteDatabase db=mDataBaseHelper.getWritableDatabase();
+        if (checkDataIsNotNull()){
+            SingleDataBean bean=new SingleDataBean(
+                    mAddDataType,
+                    Float.valueOf(mInputMoneyEditText.getText().toString()),
+                    DateUtil.stringToDate(mAddDataSelectDate.getText().toString()),
+                    mAddDataChooseText.getText().toString(),
+                    mAddDataBillTypeStr,
+                    mAddDataDescriptionStr);
+            DataBaseUtil.insertSingleDataToAllData(bean,db);
+        }else {
+            ToastUtil.error("金额或账户不允许为空");
+        }
+    }
+
+    public Boolean checkDataIsNotNull(){
+        return !TextUtils.isEmpty(mInputMoneyEditText.getText().toString()) &&
+                !TextUtils.isEmpty(mAddDataBillTypeStr);
     }
 
     private void showDatePickerDialog(){
@@ -237,7 +264,6 @@ public class AddDataActivity extends AppCompatActivity {
         }, DateUtil.getCurrentYear(),DateUtil.getCurrentMonth(),DateUtil.getCurrentDay(),mInputMoneyEditText);
         mDatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         mDatePickerDialog.show();
-
     }
 
     private void showBillTypeAlertDialog(final String[] strings){
@@ -302,5 +328,37 @@ public class AddDataActivity extends AppCompatActivity {
             }
         });
         mDescriptionDialog.show();
+    }
+
+    private void showCancelDialog(){
+        mCancelDialog = new android.support.v7.app.AlertDialog.Builder(this).create();
+        View dialogView = View.inflate(this, R.layout.add_data_cancel_dialog, null);
+        mCancelDialog.setView(dialogView);
+        mCancelDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        mCancelDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        mCancelDialog.show();
+    }
+
+    private void cancel(){
+        if (checkDataIsNotNull() || !TextUtils.isEmpty(mAddDataDescriptionStr)){
+            showCancelDialog();
+        }else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        cancel();
     }
 }
