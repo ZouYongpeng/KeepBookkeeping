@@ -16,6 +16,10 @@ public class DateUtil {
 
     private static final SimpleDateFormat YEAR_MONTH_DAY=new SimpleDateFormat("yyyy-MM-dd");
 
+    public static String getCurrentYearMonthDay(){
+        return YEAR_MONTH_DAY.format(new Date());
+    }
+
     public static int getCurrentYear(){
         return Calendar.getInstance().get(Calendar.YEAR);
     }
@@ -65,6 +69,15 @@ public class DateUtil {
      */
     public static String dateToString(Date date){
         return YEAR_MONTH_DAY.format(date);
+    }
+
+    /**
+     * 获取日期
+     * @param date "2019-2-21"
+     * @return String 21
+     */
+    public static String getDayOfDate(String date){
+        return date.split("-")[2];
     }
 
 }

@@ -102,6 +102,7 @@ public class AddDataActivity extends AppCompatActivity {
         initViewPager();
         initKeyboard();
         initRxBusEvent();
+        initDialog();
 
         mDataBaseHelper=KBKDataBaseHelper.getKBKDataBase(this);
     }
@@ -141,6 +142,74 @@ public class AddDataActivity extends AppCompatActivity {
             @Override
             public void accept(ChangeDataTypeEvent changeDataTypeEvent) throws Exception {
                 refreshChooseImageAndText(changeDataTypeEvent.getDataTypeBean());
+            }
+        });
+    }
+
+    private void initDialog(){
+        mAddDataSelectDate.setText(DateUtil.getCurrentYearMonthDay());
+
+        mDatePickerDialog=new SimpleDatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT,new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                mAddDataSelectDate.setText(String.format(" %d-%d-%d",year,monthOfYear+1,dayOfMonth));
+                KeyBoardUtil.showSoftKeyBoard(mInputMoneyEditText,AddDataActivity.this);
+                mInputMoneyEditText.requestFocus();
+            }
+        }, DateUtil.getCurrentYear(),DateUtil.getCurrentMonth(),DateUtil.getCurrentDay(),mInputMoneyEditText);
+        mDatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+
+        mDescriptionDialog = new android.support.v7.app.AlertDialog.Builder(this).create();
+        View descriptionDialogView = View.inflate(this, R.layout.add_data_description_dialog, null);
+        final TextView numText = descriptionDialogView.findViewById(R.id.description_dialog_num);
+        final SearchEditText inputEdit = descriptionDialogView.findViewById(R.id.description_dialog_edit);
+        if (!TextUtils.isEmpty(mAddDataDescriptionStr)) {
+            inputEdit.setText(mAddDataDescriptionStr);
+            inputEdit.setSelection(mAddDataDescriptionStr.length());
+            numText.setText(mAddDataDescriptionStr.length()+"/20");
+        }
+        inputEdit.requestFocus();
+        inputEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                int num = inputEdit.getText().length();
+                numText.setText(num + "/20");
+            }
+        });
+        mDescriptionDialog.setView(descriptionDialogView);
+        mDescriptionDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ToastUtil.success("确定");
+                mAddDataDescriptionStr=inputEdit.getText().toString();
+            }
+        });
+        mDescriptionDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        mCancelDialog = new android.support.v7.app.AlertDialog.Builder(this).create();
+        View cancelDialogView = View.inflate(this, R.layout.add_data_cancel_dialog, null);
+        mCancelDialog.setView(cancelDialogView);
+        mCancelDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        mCancelDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
             }
         });
     }
@@ -243,6 +312,7 @@ public class AddDataActivity extends AppCompatActivity {
                     mAddDataBillTypeStr,
                     mAddDataDescriptionStr);
             DataBaseUtil.insertSingleDataToAllData(bean,db);
+            finish();
         }else {
             ToastUtil.error("金额或账户不允许为空");
         }
@@ -254,15 +324,6 @@ public class AddDataActivity extends AppCompatActivity {
     }
 
     private void showDatePickerDialog(){
-        mDatePickerDialog=new SimpleDatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT,new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                mAddDataSelectDate.setText(String.format(" %d-%d-%d",year,monthOfYear+1,dayOfMonth));
-                KeyBoardUtil.showSoftKeyBoard(mInputMoneyEditText,AddDataActivity.this);
-                mInputMoneyEditText.requestFocus();
-            }
-        }, DateUtil.getCurrentYear(),DateUtil.getCurrentMonth(),DateUtil.getCurrentDay(),mInputMoneyEditText);
-        mDatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         mDatePickerDialog.show();
     }
 
@@ -287,65 +348,10 @@ public class AddDataActivity extends AppCompatActivity {
     }
 
     private void showInputDescriptionAlertDialog(){
-        mDescriptionDialog = new android.support.v7.app.AlertDialog.Builder(this).create();
-        View dialogView = View.inflate(this, R.layout.add_data_description_dialog, null);
-        final TextView numText = dialogView.findViewById(R.id.description_dialog_num);
-        final SearchEditText inputEdit = dialogView.findViewById(R.id.description_dialog_edit);
-        if (!TextUtils.isEmpty(mAddDataDescriptionStr)) {
-            inputEdit.setText(mAddDataDescriptionStr);
-            inputEdit.setSelection(mAddDataDescriptionStr.length());
-            numText.setText(mAddDataDescriptionStr.length()+"/20");
-        }
-        inputEdit.requestFocus();
-        inputEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                int num = inputEdit.getText().length();
-                numText.setText(num + "/20");
-            }
-        });
-        mDescriptionDialog.setView(dialogView);
-        mDescriptionDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ToastUtil.success("确定");
-                mAddDataDescriptionStr=inputEdit.getText().toString();
-            }
-        });
-        mDescriptionDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
         mDescriptionDialog.show();
     }
 
     private void showCancelDialog(){
-        mCancelDialog = new android.support.v7.app.AlertDialog.Builder(this).create();
-        View dialogView = View.inflate(this, R.layout.add_data_cancel_dialog, null);
-        mCancelDialog.setView(dialogView);
-        mCancelDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
-        });
-        mCancelDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
         mCancelDialog.show();
     }
 

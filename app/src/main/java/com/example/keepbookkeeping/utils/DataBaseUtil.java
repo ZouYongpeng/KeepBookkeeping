@@ -108,16 +108,11 @@ public class DataBaseUtil {
         if (cursor.moveToFirst()) {
             do {
                 monthSplit=cursor.getString(cursor.getColumnIndex("date")).split("-");
-                //如果该数据不为本月数据
-//                if (TextUtils.equals(monthSplit[0],currentYear) &&
-//                        currentMonth==Integer.parseInt(monthSplit[1])){
-//                }else {
-                    month=monthSplit[0]+"-"+monthSplit[1];
-                    if (!TextUtils.equals(previousMonth,month)) {
-                        months.add(month);
-                        previousMonth=month;
-                    }
-//                }
+                month=monthSplit[0]+"-"+monthSplit[1];
+                if (!TextUtils.equals(previousMonth,month)) {
+                    months.add(month);
+                    previousMonth=month;
+                }
             }while (cursor.moveToNext());
         }
         cursor.close();
@@ -126,5 +121,15 @@ public class DataBaseUtil {
             LogUtil.d(TAG,months.get(i));
         }
         return months;
+    }
+
+    /**
+     * 获取数据库中包含某date（如“2019-2-14”或“2019-2”)的总收入金额
+     * @param db
+     * @param date
+     * @return
+     */
+    public static int getTotalIncomeMoney(SQLiteDatabase db,String date){
+        return 0;
     }
 }

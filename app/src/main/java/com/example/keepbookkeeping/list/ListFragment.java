@@ -23,6 +23,7 @@ import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.adapter.AllDataListAdapter;
 import com.example.keepbookkeeping.db.KBKDataBaseHelper;
 import com.example.keepbookkeeping.ui.DoubleLineTextView;
+import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
 import butterknife.BindView;
@@ -43,6 +44,7 @@ public class ListFragment extends Fragment implements ListContract.View{
     RecyclerView mListContentRecyclerView;
 
     private ListContract.Presenter mListPresenter;
+    private static final String TAG="ListFragment_tag";
 
     @Nullable
     @Override
@@ -50,11 +52,13 @@ public class ListFragment extends Fragment implements ListContract.View{
         View view=inflater.inflate(R.layout.fragment_list,container,false);
         ButterKnife.bind(this,view);
 
-        LinearLayoutManager manager=new LinearLayoutManager(getActivity());
-        mListContentRecyclerView.setLayoutManager(manager);
-        SQLiteDatabase db=KBKDataBaseHelper.getKBKDataBase(getContext()).getWritableDatabase();
-        mListContentRecyclerView.setAdapter(new AllDataListAdapter(db));
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        initRecyclerView();
+        super.onResume();
     }
 
     @Override
@@ -72,4 +76,11 @@ public class ListFragment extends Fragment implements ListContract.View{
         AddDataActivity.startAddDataActivity(getActivity());
     }
 
+    @Override
+    public void initRecyclerView() {
+        LinearLayoutManager manager=new LinearLayoutManager(getActivity());
+        mListContentRecyclerView.setLayoutManager(manager);
+        SQLiteDatabase db=KBKDataBaseHelper.getKBKDataBase(getContext()).getWritableDatabase();
+        mListContentRecyclerView.setAdapter(new AllDataListAdapter(db));
+    }
 }

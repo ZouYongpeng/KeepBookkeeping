@@ -17,6 +17,7 @@ import com.example.keepbookkeeping.utils.DataBaseUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,25 +40,28 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final int TYPE_DATE_ITEM=0;
     private final int TYPE_MONTH_ITEM=1;
     private final int TYPE_CONTENT_ITEM=2;
+    private final int TYPE_END_ITEM=3;
     private boolean isShowDate=false;
     private boolean isShowMonth=true;
-    private String date;
+    private boolean isStop=false;
+    private int[] positionToIndex;
+    private int[] positionToType;
 
     static class DateViewHolder extends RecyclerView.ViewHolder{
 
-        private ImageView mContentImage;
-        private TextView mContentIncomeText;
-        private TextView mContentIncomeMoney;
-        private TextView mContentOutcomeText;
-        private TextView mContentOutcomeMoney;
+        private TextView mDateText;
+        private TextView mDateIncomeText;
+        private TextView mDateIncomeMoney;
+        private TextView mDateOutcomeText;
+        private TextView mDateOutcomeMoney;
 
         public DateViewHolder(View itemView) {
             super(itemView);
-            mContentImage=itemView.findViewById(R.id.list_item_image);
-            mContentIncomeText=itemView.findViewById(R.id.list_item_income_text);
-            mContentIncomeMoney=itemView.findViewById(R.id.list_item_income_money);
-            mContentOutcomeText=itemView.findViewById(R.id.list_item_outcome_text);
-            mContentOutcomeMoney=itemView.findViewById(R.id.list_item_outcome_money);
+            mDateText=itemView.findViewById(R.id.list_date_item_text);
+            mDateIncomeText=itemView.findViewById(R.id.list_date_item_income_text);
+            mDateIncomeMoney=itemView.findViewById(R.id.list_date_item_income_money);
+            mDateOutcomeText=itemView.findViewById(R.id.list_date_item_outcome_text);
+            mDateOutcomeMoney=itemView.findViewById(R.id.list_date_item_outcome_money);
         }
     }
 
@@ -68,6 +72,14 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public MonthViewHolder(View itemView) {
             super(itemView);
             mMonthText=itemView.findViewById(R.id.list_time_text);
+        }
+
+    }
+
+    static class EndViewHolder extends RecyclerView.ViewHolder{
+
+        public EndViewHolder(View itemView) {
+            super(itemView);
         }
 
     }
@@ -90,8 +102,8 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public AllDataListAdapter(SQLiteDatabase db) {
-        this.db=db;
+    public AllDataListAdapter(SQLiteDatabase database) {
+        this.db=database;
         index=0;
         dateIndex=0;
         monthIndex=0;
@@ -99,59 +111,57 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         mSingleDataList= DataBaseUtil.queryAllDataOrderByDate(db);
         mYearMonthList=DataBaseUtil.getDifferentMonthList(db);
         mDateList=DataBaseUtil.getDifferentDateList(db);
-        count=mSingleDataList.size()+mYearMonthList.size()+mDateList.size();
-    }
-
-    private void checkData(String date){
-        String[] strings=date.split("-");
-        //当月
-//        if (TextUtils.equals(strings[0],String.valueOf(DateUtil.getCurrentYear())) &&
-//                DateUtil.getCurrentMonth()==Integer.parseInt(strings[1])){
-//            isShowDate=true;
-//            isShowMonth=false;
-//        }else {
-//            isShowDate=false;
-//            isShowMonth=true;
-//        }
-
+        count=mSingleDataList.size()+mYearMonthList.size()+mDateList.size()+1;
+        positionToIndex=new int[count];
+        positionToType=new int[count];
+        Arrays.fill(positionToIndex,-1);
+        Arrays.fill(positionToType,-1);
     }
 
     @Override
     public int getItemViewType(int position) {
-        int type;
-        if (isShowDate){
-            type=TYPE_DATE_ITEM;
-            isShowDate=false;
-            isShowMonth=false;
-        }else if (isShowMonth){
-            type=TYPE_MONTH_ITEM;
-            isShowMonth=false;
-            isShowDate=true;
-        }else {
-            type=TYPE_CONTENT_ITEM;
-            if (mSingleDataList!=null && index<mSingleDataList.size()-1){
-                String currentDate=DateUtil.dateToString(mSingleDataList.get(index).getDate());
-                String nextDate=DateUtil.dateToString(mSingleDataList.get(index+1).getDate());
-                String[] currentDates = currentDate.split("-");
-                String[] nextDates = nextDate.split("-");
-                if (TextUtils.equals(currentDate,nextDate)){
-                    //同一天
-                    isShowDate=false;
-                    isShowMonth=false;
-                }else if (TextUtils.equals(currentDates[0],nextDates[0]) &&
-                        TextUtils.equals(currentDates[1],nextDates[1])){
-                    //同一个月
-                    isShowDate=true;
-                    isShowMonth=false;
+        if (positionToType[position]==-1){
+            int type;
+            if (isShowDate){
+                type=TYPE_DATE_ITEM;
+                isShowDate=false;
+                isShowMonth=false;
+            }else if (isShowMonth){
+                type=TYPE_MONTH_ITEM;
+                isShowMonth=false;
+                isShowDate=true;
+            }else {
+                type=TYPE_CONTENT_ITEM;
+                if (mSingleDataList!=null && index<mSingleDataList.size()-1){
+                    String currentDate=DateUtil.dateToString(mSingleDataList.get(index).getDate());
+                    String nextDate=DateUtil.dateToString(mSingleDataList.get(index+1).getDate());
+                    String[] currentDates = currentDate.split("-");
+                    String[] nextDates = nextDate.split("-");
+                    if (TextUtils.equals(currentDate,nextDate)){
+                        //同一天
+                        isShowDate=false;
+                        isShowMonth=false;
+                    }else if (TextUtils.equals(currentDates[0],nextDates[0]) &&
+                            TextUtils.equals(currentDates[1],nextDates[1]) &&
+                            !TextUtils.equals(currentDates[2],nextDates[2])){
+                        //同一个月
+                        isShowDate=true;
+                        isShowMonth=false;
+                    }else {
+                        //不同月
+                        isShowDate=false;
+                        isShowMonth=true;
+                    }
+                    index++;
+                }else if (index==mSingleDataList.size()-1){
+                    index++;
                 }else {
-                    //不同月
-                    isShowDate=false;
-                    isShowMonth=true;
+                    type=TYPE_END_ITEM;
                 }
             }
-            index++;
+            positionToType[position]=type;
         }
-        return type;
+        return positionToType[position];
     }
 
     @NonNull
@@ -159,44 +169,67 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context=parent.getContext();
         if (viewType==TYPE_DATE_ITEM){
-            View view= LayoutInflater.from(context).inflate(R.layout.list_content_item,parent,false);
+            View view= LayoutInflater.from(context).inflate(R.layout.list_date_item,parent,false);
             return new DateViewHolder(view);
         }else if (viewType==TYPE_MONTH_ITEM){
-            View view= LayoutInflater.from(context).inflate(R.layout.list_time_item,parent,false);
+            View view= LayoutInflater.from(context).inflate(R.layout.list_month_item,parent,false);
             return new MonthViewHolder(view);
-        }else {
+        }else if (viewType==TYPE_CONTENT_ITEM){
             View view= LayoutInflater.from(context).inflate(R.layout.list_content_item,parent,false);
             return new ContentViewHolder(view);
+        }else {
+            View view= LayoutInflater.from(context).inflate(R.layout.list_end_item,parent,false);
+            return new EndViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof DateViewHolder && dateIndex<mDateList.size()){
-            String date=mDateList.get(dateIndex);
+        if (holder instanceof DateViewHolder){
+            if (positionToIndex[position]==-1){
+                positionToIndex[position]=dateIndex++;
+            }
+            LogUtil.d("AllDataList","positionToIndex[ "+position+" ] = "+positionToIndex[position]);
+            String date=mDateList.get(positionToIndex[position]);
             LogUtil.d("AllDataList","显示日期"+date);
-            ((DateViewHolder) holder).mContentIncomeText.setText("收入");
-            ((DateViewHolder) holder).mContentOutcomeText.setText("支出");
-            dateIndex++;
-        }else if (holder instanceof MonthViewHolder && monthIndex<mYearMonthList.size()){
-            String monthDate=mYearMonthList.get(monthIndex);
+            ((DateViewHolder) holder).mDateText.setText(DateUtil.getDayOfDate(date));
+            ((DateViewHolder) holder).mDateIncomeText.setText("收入");
+            ((DateViewHolder) holder).mDateIncomeMoney.setText("");
+            ((DateViewHolder) holder).mDateOutcomeText.setText("支出");
+            ((DateViewHolder) holder).mDateOutcomeMoney.setText("");
+        }else if (holder instanceof MonthViewHolder){
+            if (positionToIndex[position]==-1){
+                positionToIndex[position]=monthIndex++;
+            }
+            LogUtil.d("AllDataList","positionToIndex[ "+position+" ] = "+positionToIndex[position]);
+            String monthDate=mYearMonthList.get(positionToIndex[position]);
             LogUtil.d("AllDataList","显示月份"+monthDate);
             ((MonthViewHolder) holder).mMonthText.setText(monthDate);
-            monthIndex++;
-        }else if (holder instanceof ContentViewHolder && bindIndex<mSingleDataList.size()){
-            SingleDataBean bean=mSingleDataList.get(bindIndex);
+        }else if (holder instanceof ContentViewHolder){
+            if (positionToIndex[position]==-1 && bindIndex<mSingleDataList.size()){
+                positionToIndex[position]=bindIndex++;
+            }
+            LogUtil.d("AllDataList","positionToIndex[ "+position+" ] = "+positionToIndex[position]);
+            SingleDataBean bean=mSingleDataList.get(positionToIndex[position]);
             LogUtil.d("AllDataList","显示数据"+bean.toString());
-            ((ContentViewHolder) holder).mContentIncomeText.setText("收入");
-            ((ContentViewHolder) holder).mContentIncomeMoney.setText(bindIndex*1000+".00");
-            ((ContentViewHolder) holder).mContentOutcomeText.setText("支出");
-            ((ContentViewHolder) holder).mContentOutcomeMoney.setText(bindIndex*100+".00");
-            bindIndex++;
+            if (bean.getType()==SingleDataBean.TYPE_INCOME_DATA){
+                ((ContentViewHolder) holder).mContentIncomeText.setText("收入");
+                ((ContentViewHolder) holder).mContentIncomeMoney.setText(bean.getMoney()+"");
+                ((ContentViewHolder) holder).mContentOutcomeText.setText("");
+                ((ContentViewHolder) holder).mContentOutcomeMoney.setText("");
+            }else {
+                ((ContentViewHolder) holder).mContentIncomeText.setText("");
+                ((ContentViewHolder) holder).mContentIncomeMoney.setText("");
+                ((ContentViewHolder) holder).mContentOutcomeText.setText("支出");
+                ((ContentViewHolder) holder).mContentOutcomeMoney.setText(bean.getMoney()+"");
+            }
+        }else {
+            LogUtil.d("AllDataList","EndViewHolder");
         }
     }
 
     @Override
     public int getItemCount() {
-//        LogUtil.d("AllDataList","getItemCount = "+count);
         return count;
     }
 }
