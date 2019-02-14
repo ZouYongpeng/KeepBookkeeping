@@ -73,11 +73,20 @@ public class DateUtil {
 
     /**
      * 获取日期
-     * @param date "2019-2-21"
+     * @param date "2019-02-21"
      * @return String 21
      */
     public static String getDayOfDate(String date){
         return date.split("-")[2];
+    }
+
+    /**
+     * 获取年月
+     * @param date "2019-02-21"
+     * @return String 2019-02
+     */
+    public static String getYearMonthOfDate(String date) {
+        return date.substring(0,7);
     }
 
 }

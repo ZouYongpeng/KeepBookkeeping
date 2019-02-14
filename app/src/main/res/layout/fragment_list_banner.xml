@@ -12,25 +12,17 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <!--<com.example.keepbookkeeping.ui.DoubleLineTextView-->
-            <!--android:id="@+id/banner_income"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:gravity="center"/>-->
-
         <TextView
             android:id="@+id/income_month"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="12月收入"/>
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/income_money"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="10000.00元"/>
+            android:gravity="center"/>
     </LinearLayout>
 
     <FrameLayout
@@ -64,15 +56,13 @@
             android:id="@+id/outcome_month"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="12月支出"/>
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/outcome_money"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="8639.00元"/>
+            android:gravity="center"/>
     </LinearLayout>
 
 </LinearLayout>

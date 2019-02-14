@@ -47,7 +47,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int[] positionToIndex;
     private int[] positionToType;
 
-    static class DateViewHolder extends RecyclerView.ViewHolder{
+    public static class DateViewHolder extends RecyclerView.ViewHolder{
 
         private TextView mDateText;
         private TextView mDateIncomeText;
@@ -63,9 +63,17 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mDateOutcomeText=itemView.findViewById(R.id.list_date_item_outcome_text);
             mDateOutcomeMoney=itemView.findViewById(R.id.list_date_item_outcome_money);
         }
+
+        private String date;
+        public String getDate() {
+            return date;
+        }
+        public void setDate(String date) {
+            this.date = date;
+        }
     }
 
-    static class MonthViewHolder extends RecyclerView.ViewHolder{
+    public static class MonthViewHolder extends RecyclerView.ViewHolder{
 
         private TextView mMonthText;
 
@@ -74,9 +82,16 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mMonthText=itemView.findViewById(R.id.list_time_text);
         }
 
+        private String date;
+        public String getDate() {
+            return date;
+        }
+        public void setDate(String date) {
+            this.date = date;
+        }
     }
 
-    static class EndViewHolder extends RecyclerView.ViewHolder{
+    public static class EndViewHolder extends RecyclerView.ViewHolder{
 
         public EndViewHolder(View itemView) {
             super(itemView);
@@ -84,7 +99,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     }
 
-    static class ContentViewHolder extends RecyclerView.ViewHolder{
+    public static class ContentViewHolder extends RecyclerView.ViewHolder{
 
         private ImageView mContentImage;
         private TextView mContentIncomeText;
@@ -99,6 +114,14 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mContentIncomeMoney=itemView.findViewById(R.id.list_item_income_money);
             mContentOutcomeText=itemView.findViewById(R.id.list_item_outcome_text);
             mContentOutcomeMoney=itemView.findViewById(R.id.list_item_outcome_money);
+        }
+
+        private String date;
+        public String getDate() {
+            return date;
+        }
+        public void setDate(String date) {
+            this.date = date;
         }
     }
 
@@ -192,11 +215,12 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             LogUtil.d("AllDataList","positionToIndex[ "+position+" ] = "+positionToIndex[position]);
             String date=mDateList.get(positionToIndex[position]);
             LogUtil.d("AllDataList","显示日期"+date);
+            ((DateViewHolder) holder).setDate(date);
             ((DateViewHolder) holder).mDateText.setText(DateUtil.getDayOfDate(date));
             ((DateViewHolder) holder).mDateIncomeText.setText("收入");
-            ((DateViewHolder) holder).mDateIncomeMoney.setText("");
+            ((DateViewHolder) holder).mDateIncomeMoney.setText(String.valueOf(DataBaseUtil.getTotalIncomeMoney(db,date)));
             ((DateViewHolder) holder).mDateOutcomeText.setText("支出");
-            ((DateViewHolder) holder).mDateOutcomeMoney.setText("");
+            ((DateViewHolder) holder).mDateOutcomeMoney.setText(String.valueOf(DataBaseUtil.getTotalOutcomeMoney(db,date)));
         }else if (holder instanceof MonthViewHolder){
             if (positionToIndex[position]==-1){
                 positionToIndex[position]=monthIndex++;
@@ -204,6 +228,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             LogUtil.d("AllDataList","positionToIndex[ "+position+" ] = "+positionToIndex[position]);
             String monthDate=mYearMonthList.get(positionToIndex[position]);
             LogUtil.d("AllDataList","显示月份"+monthDate);
+            ((MonthViewHolder) holder).setDate(monthDate);
             ((MonthViewHolder) holder).mMonthText.setText(monthDate);
         }else if (holder instanceof ContentViewHolder){
             if (positionToIndex[position]==-1 && bindIndex<mSingleDataList.size()){
@@ -212,6 +237,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             LogUtil.d("AllDataList","positionToIndex[ "+position+" ] = "+positionToIndex[position]);
             SingleDataBean bean=mSingleDataList.get(positionToIndex[position]);
             LogUtil.d("AllDataList","显示数据"+bean.toString());
+            ((ContentViewHolder) holder).setDate(DateUtil.dateToString(bean.getDate()));
             if (bean.getType()==SingleDataBean.TYPE_INCOME_DATA){
                 ((ContentViewHolder) holder).mContentIncomeText.setText("收入");
                 ((ContentViewHolder) holder).mContentIncomeMoney.setText(bean.getMoney()+"");

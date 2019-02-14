@@ -20,6 +20,8 @@ public interface ListContract {
 
         void initRecyclerView();
 
+        void changeBanner(String date);
+
     }
 
 }

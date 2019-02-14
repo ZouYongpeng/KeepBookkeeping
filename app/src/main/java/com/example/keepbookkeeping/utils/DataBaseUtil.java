@@ -27,6 +27,12 @@ public class DataBaseUtil {
 
     public static final String QUERY_DATE_COUNT="SELECT COUNT(DISTINCT DATE) AS count FROM AllData";
 
+    public static final String SUM_OUTCOME_MONEY="SELECT SUM(money) AS money_count FROM AllData WHERE date like ? and type = 0";
+
+    public static final String SUM_INCOME_MONEY="SELECT SUM(money) AS money_count FROM AllData WHERE date like ? and type = 1";
+
+    public static final String FIRST_YEAR_DATE="SELECT * FROM AllData ORDER BY DATE DESC LIMIT 0,1";
+
     public static List<SingleDataBean> queryAllDataOrderByDate(SQLiteDatabase db){
         return queryData(db,QUERY_ALL_DATA_ORDER_BY_DATE);
     }
@@ -130,6 +136,49 @@ public class DataBaseUtil {
      * @return
      */
     public static int getTotalIncomeMoney(SQLiteDatabase db,String date){
-        return 0;
+        int count=0;
+        Cursor cursor=db.rawQuery(SUM_INCOME_MONEY,new String[]{date});
+        if (cursor.moveToFirst()){
+            do {
+                count=cursor.getInt(cursor.getColumnIndex("money_count"));
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        LogUtil.d(TAG,"TotalIncomeMoney in "+date+" = "+count);
+        return count;
+    }
+
+    /**
+     * 获取数据库中包含某date（如“2019-2-14”或“2019-2”)的总支出金额
+     * @param db
+     * @param date
+     * @return
+     */
+    public static int getTotalOutcomeMoney(SQLiteDatabase db,String date){
+        int count=0;
+        Cursor cursor=db.rawQuery(SUM_OUTCOME_MONEY,new String[]{date});
+        if (cursor.moveToFirst()){
+            do {
+                count=cursor.getInt(cursor.getColumnIndex("money_count"));
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        LogUtil.d(TAG,"TotalOutcomeMoney in "+date+" = "+count);
+        return count;
+    }
+
+    /**
+     * 获取db第一条数据的年月，如“2019-02”
+     * @param db
+     * @return
+     */
+    public static String getFirstYearMonth(SQLiteDatabase db){
+        Cursor cursor=db.rawQuery(FIRST_YEAR_DATE,null);
+        String date=null;
+        if (cursor.moveToFirst()){
+            date=DateUtil.getYearMonthOfDate(cursor.getString(cursor.getColumnIndex("date")));
+        }
+        cursor.close();
+        return date;
     }
 }
