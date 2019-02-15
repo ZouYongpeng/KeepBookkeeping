@@ -1,6 +1,5 @@
 package com.example.keepbookkeeping.utils;
 
-import android.os.Build;
 import android.util.Log;
 
 /**

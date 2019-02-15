@@ -1,8 +1,7 @@
 package com.example.keepbookkeeping.adapter;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -13,9 +12,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -346,25 +342,25 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 public void onClick(View v) {
                     isClickList[position]=false;
                     ToastUtil.success("编辑"+bean.getId());
+                    Bundle bundle=new Bundle();
+                    bundle.putInt("id",bean.getId());
+                    bundle.putInt("type",bean.getType());
+                    bundle.putString("typeName",bean.getTypeName());
+                    bundle.putString("money",String.valueOf(bean.getMoney()));
+                    bundle.putString("date",DateUtil.dateToString(bean.getDate()));
+                    bundle.putString("billName",bean.getBillName());
+                    bundle.putString("description",bean.getDescription());
+                    AddDataActivity.startAddDataActivity(mContext,bundle);
                 }
             });
         }else if (holder instanceof EmptyViewHolder){
-//            ((EmptyViewHolder) holder).mAddDataText.setOnClickListener(mEmptyListener);
-//            ((EmptyViewHolder) holder).mLoginText.setOnClickListener(mEmptyListener);
-            ((EmptyViewHolder) holder).mAddDataText.setClickable(true);
-            ((EmptyViewHolder) holder).mAddDataText.setOnClickListener(new View.OnClickListener() {
+            ((EmptyViewHolder) holder).mAddDataText.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     AddDataActivity.startAddDataActivity(mContext);
                 }
             });
-            ((EmptyViewHolder) holder).mLoginText.setClickable(true);
-            ((EmptyViewHolder) holder).mLoginText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ToastUtil.success("登陆");
-                }
-            });
+            ((EmptyViewHolder) holder).mLoginText.setOnClickListener(mEmptyListener);
         }else {
             LogUtil.d("AllDataList","EndViewHolder");
         }
@@ -384,6 +380,8 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     break;
                 case R.id.list_empty_login:
                     ToastUtil.success("登陆");
+                    break;
+                default:
                     break;
             }
         }

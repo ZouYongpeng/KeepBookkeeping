@@ -28,6 +28,8 @@ public class GetDataTypeUtil {
 
     public static final String GET_TYPE_NAME_IMAGE="select * from AllDataType where name = ?";
 
+    public static final String INSERT_DATA_INTO_ALL_DATA_TYPE="insert into AllDataType(type,imageId,name) values( ? , ? , ? )";
+
     public static DataTypeBean getFirstIncomeDataTypeBean(){
         DataTypeBean bean=new DataTypeBean(1,R.drawable.ic_income_gongzi,"工资");
         Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(FIRST_INCOME_DATA_TYPE,null);
@@ -92,5 +94,38 @@ public class GetDataTypeUtil {
         }
         cursor.close();
         return imageId;
+    }
+
+    public static void initAllDateType(SQLiteDatabase db){
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_default),"一般"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_eat),"餐饮"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_car),"交通"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_drink),"饮料"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_fruit),"水果"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_snacks),"零食"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_vegetables),"买菜"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_clothes),"衣服"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_daily_necessities),"日用品"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_tellphone_cost),"话费"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_cosmetics),"护肤"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_rent),"房租"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_movie),"电影"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_taobao),"淘宝"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_red_packet),"红包"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"0",String.valueOf(R.drawable.ic_outcome_drugs),"药品"});
+
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_gongzi),"工资"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_shenghuofei),"生活费"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_hongbao),"红包"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_linghuaqian),"零花钱"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_jianzhi),"兼职"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_touzi),"投资"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_jiangjin),"奖金"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_baoxiao),"报销"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_xianjin),"现金"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_tuikuan),"退款"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_zhifubao),"支付宝"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_wechat),"微信"});
+        db.execSQL(INSERT_DATA_INTO_ALL_DATA_TYPE,new String[]{"1",String.valueOf(R.drawable.ic_income_default),"一般"});
     }
 }

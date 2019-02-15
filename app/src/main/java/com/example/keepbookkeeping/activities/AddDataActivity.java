@@ -75,8 +75,8 @@ public class AddDataActivity extends AppCompatActivity {
     TextView mAddDataInputDescription;
 
     private int mAddDataType;
-    private static final int TYPE_OUTCOME=0;
-    private static final int TYPE_INCOME=1;
+    public static final int TYPE_OUTCOME=0;
+    public static final int TYPE_INCOME=1;
 
     public static final String TheLastSaveBillTypeKey="save_bill_key";
 
@@ -87,24 +87,58 @@ public class AddDataActivity extends AppCompatActivity {
 
     android.support.v7.app.AlertDialog mDescriptionDialog;
     android.support.v7.app.AlertDialog mCancelDialog;
+
+    private Bundle mBundle;
+    private int type;
+    private static final int TYPE_ADD_DATA=0;
+    private static final int TYPE_UPDATE_DATA=1;
+
+    private int mUpdateId=-1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_data);
         ButterKnife.bind(this);
 
+        initData();
         initButton();
         initViewPager();
         initKeyboard();
         initRxBusEvent();
         initDialog();
 
+        if (mBundle!=null){
+            refreshRadioAndPager();
+            mAddDataChooseText.setText(mBundle.getString("typeName"));
+            mAddDataChooseImage.setImageResource(GetDataTypeUtil.getImageId(mBundle.getString("typeName")));
+        }
+    }
+
+    private void initData(){
+        mBundle=getIntent().getExtras();
+        if (mBundle!=null){
+            type=TYPE_UPDATE_DATA;
+            mUpdateId=mBundle.getInt("id",-1);
+            mAddDataType=mBundle.getInt("type");
+            mInputMoneyEditText.setText(mBundle.getString("money"));
+            mAddDataSelectDate.setText(mBundle.getString("date"));
+            mAddDataBillTypeStr=mBundle.getString("billName");
+            mAddDataDescriptionStr=mBundle.getString("description");
+        }else {
+            type=TYPE_ADD_DATA;
+            mAddDataType= TYPE_OUTCOME;
+            mAddDataSelectDate.setText(DateUtil.getCurrentYearMonthDay());
+        }
     }
 
     private void initButton(){
-        mAddDataType= TYPE_OUTCOME;
         mAddDataRadioGroup.setOnCheckedChangeListener(mRadioGroupListener);
-        mAddDataRadioGroup.check(R.id.add_data_radio_btn_outcome);
+        if (mAddDataType==TYPE_OUTCOME){
+            mAddDataRadioGroup.check(R.id.add_data_radio_btn_outcome);
+        }else {
+            mAddDataRadioGroup.check(R.id.add_data_radio_btn_income);
+        }
 
         mAddDataCancel.setOnClickListener(mImageClickListener);
         mAddDataConfirm.setOnClickListener(mImageClickListener);
@@ -141,7 +175,6 @@ public class AddDataActivity extends AppCompatActivity {
     }
 
     private void initDialog(){
-        mAddDataSelectDate.setText(DateUtil.getCurrentYearMonthDay());
 
         mDatePickerDialog=new SimpleDatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT,new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -210,6 +243,12 @@ public class AddDataActivity extends AppCompatActivity {
 
     public static void startAddDataActivity(Context context){
         Intent intent=new Intent(context,AddDataActivity.class);
+        context.startActivity(intent);
+    }
+
+    public static void startAddDataActivity(Context context,Bundle bundle){
+        Intent intent=new Intent(context,AddDataActivity.class);
+        intent.putExtras(bundle);
         context.startActivity(intent);
     }
 
@@ -304,7 +343,11 @@ public class AddDataActivity extends AppCompatActivity {
                     mAddDataChooseText.getText().toString(),
                     mAddDataBillTypeStr,
                     mAddDataDescriptionStr);
-            DataBaseUtil.insertSingleDataToAllData(bean);
+            if (type==TYPE_ADD_DATA){
+                DataBaseUtil.insertSingleDataToAllData(bean);
+            }else if (mUpdateId!=-1){
+                DataBaseUtil.updateDataById(bean,mUpdateId);
+            }
             finish();
         }else {
             ToastUtil.error("金额或账户不允许为空");

@@ -36,6 +36,15 @@ public class DataBaseUtil {
 
     public static final String DELETE_DATA_BY_ID="DELETE FROM AllData WHERE id = ?";
 
+    public static final String UPDATE_DATA_BY_ID="UPDATE AllData " +
+            "SET type = ? " +
+            "and money = ? " +
+            "and date = ? " +
+            "and type_name = ? " +
+            "and bill_name = ? " +
+            "and description = ? " +
+            "where id = ?";
+
     public static List<SingleDataBean> queryAllDataOrderByDate(){
         return queryData(QUERY_ALL_DATA_ORDER_BY_DATE);
     }
@@ -190,5 +199,20 @@ public class DataBaseUtil {
 
     public static void deleteDataById(int id){
         KBKAllDataBaseHelper.getInstance().getWritableDatabase().execSQL(DELETE_DATA_BY_ID,new String[]{String.valueOf(id)});
+    }
+
+    public static void updateDataById(SingleDataBean bean,int id){
+        LogUtil.d(TAG,bean.toString());
+        ContentValues values=new ContentValues();
+        values.put("type",bean.getType());
+        values.put("money",bean.getMoney());
+        values.put("date",DateUtil.dateToString(bean.getDate()));
+        values.put("type_name",bean.getTypeName());
+        values.put("bill_name",bean.getBillName());
+        if (!TextUtils.isEmpty(bean.getDescription())){
+            values.put("description",bean.getDescription());
+        }
+        KBKAllDataBaseHelper.getInstance().getWritableDatabase().update("AllData",values,"id = ?",new String[]{String.valueOf(id)});
+        values.clear();
     }
 }
