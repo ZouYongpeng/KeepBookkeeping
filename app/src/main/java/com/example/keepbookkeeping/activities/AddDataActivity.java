@@ -13,7 +13,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,7 +24,7 @@ import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.AddDataViewPagerAdapter;
 import com.example.keepbookkeeping.bean.DataTypeBean;
 import com.example.keepbookkeeping.bean.SingleDataBean;
-import com.example.keepbookkeeping.db.KBKDataBaseHelper;
+import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
 import com.example.keepbookkeeping.events.ChangeDataTypeEvent;
 import com.example.keepbookkeeping.ui.SearchEditText;
 import com.example.keepbookkeeping.ui.SimpleDatePickerDialog;
@@ -33,13 +32,11 @@ import com.example.keepbookkeeping.utils.DataBaseUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.GetDataTypeUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
-import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.SharedPreferencesUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
 import java.util.Arrays;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -88,8 +85,6 @@ public class AddDataActivity extends AppCompatActivity {
     private String mAddDataDescriptionStr;
     private String mAddDataBillTypeStr=SharedPreferencesUtil.getString(TheLastSaveBillTypeKey);
 
-    private KBKDataBaseHelper mDataBaseHelper;
-
     android.support.v7.app.AlertDialog mDescriptionDialog;
     android.support.v7.app.AlertDialog mCancelDialog;
     @Override
@@ -104,7 +99,6 @@ public class AddDataActivity extends AppCompatActivity {
         initRxBusEvent();
         initDialog();
 
-        mDataBaseHelper=KBKDataBaseHelper.getKBKDataBase(this);
     }
 
     private void initButton(){
@@ -302,7 +296,6 @@ public class AddDataActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(mAddDataBillTypeStr)){
             SharedPreferencesUtil.putString(TheLastSaveBillTypeKey,mAddDataBillTypeStr);
         }
-        SQLiteDatabase db=mDataBaseHelper.getWritableDatabase();
         if (checkDataIsNotNull()){
             SingleDataBean bean=new SingleDataBean(
                     mAddDataType,
@@ -311,7 +304,7 @@ public class AddDataActivity extends AppCompatActivity {
                     mAddDataChooseText.getText().toString(),
                     mAddDataBillTypeStr,
                     mAddDataDescriptionStr);
-            DataBaseUtil.insertSingleDataToAllData(bean,db);
+            DataBaseUtil.insertSingleDataToAllData(bean);
             finish();
         }else {
             ToastUtil.error("金额或账户不允许为空");

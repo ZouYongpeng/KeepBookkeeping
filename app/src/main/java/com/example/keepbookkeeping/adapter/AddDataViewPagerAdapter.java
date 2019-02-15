@@ -1,6 +1,7 @@
 package com.example.keepbookkeeping.adapter;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,12 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.keepbookkeeping.R;
+import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
 import com.example.keepbookkeeping.utils.GetDataTypeUtil;
 
 /**
  * @author 邹永鹏
  * @date 2019/1/30
- * @description :
+ * @description :AddDataActivity的支出/收入分类PagerAdapter
  */
 public class AddDataViewPagerAdapter extends PagerAdapter {
 

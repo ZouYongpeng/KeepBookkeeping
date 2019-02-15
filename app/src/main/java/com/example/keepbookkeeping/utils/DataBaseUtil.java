@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.widget.TextView;
 
 import com.example.keepbookkeeping.bean.SingleDataBean;
+import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,14 +34,16 @@ public class DataBaseUtil {
 
     public static final String FIRST_YEAR_DATE="SELECT * FROM AllData ORDER BY DATE DESC LIMIT 0,1";
 
-    public static List<SingleDataBean> queryAllDataOrderByDate(SQLiteDatabase db){
-        return queryData(db,QUERY_ALL_DATA_ORDER_BY_DATE);
+    public static final String DELETE_DATA_BY_ID="DELETE FROM AllData WHERE id = ?";
+
+    public static List<SingleDataBean> queryAllDataOrderByDate(){
+        return queryData(QUERY_ALL_DATA_ORDER_BY_DATE);
     }
 
-    public static List<SingleDataBean> queryData(SQLiteDatabase db,String sql){
+    public static List<SingleDataBean> queryData(String sql){
         LogUtil.d(TAG,"---------queryData---------");
         List<SingleDataBean> singleDataList=new ArrayList<>();
-        Cursor cursor=db.rawQuery(sql,null);
+        Cursor cursor= KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(sql,null);
         if (cursor.moveToFirst()){
             do {
                 int type=cursor.getInt(cursor.getColumnIndex("type"));
@@ -50,6 +53,7 @@ public class DataBaseUtil {
                 String billName=cursor.getString(cursor.getColumnIndex("bill_name"));
                 String description=cursor.getString(cursor.getColumnIndex("description"));
                 SingleDataBean bean=new SingleDataBean(type,money,date,typeName,billName,description);
+                bean.setId(cursor.getInt(cursor.getColumnIndex("id")));
                 LogUtil.d(TAG,bean.toString());
                 singleDataList.add(bean);
             }while (cursor.moveToNext());
@@ -58,7 +62,7 @@ public class DataBaseUtil {
         return singleDataList;
     }
 
-    public static void insertSingleDataToAllData(SingleDataBean bean, SQLiteDatabase db){
+    public static void insertSingleDataToAllData(SingleDataBean bean){
         LogUtil.d(TAG,bean.toString());
         ContentValues values=new ContentValues();
         values.put("type",bean.getType());
@@ -69,17 +73,17 @@ public class DataBaseUtil {
         if (!TextUtils.isEmpty(bean.getDescription())){
             values.put("description",bean.getDescription());
         }
-        db.insert("AllData",null,values);
+        KBKAllDataBaseHelper.getInstance().getWritableDatabase().insert("AllData",null,values);
         values.clear();
     }
 
-    public static int getAllDataCount(SQLiteDatabase db){
-        return db.rawQuery(QUERY_ALL_DATA_ORDER_BY_DATE,null).getCount();
+    public static int getAllDataCount(){
+        return KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(QUERY_ALL_DATA_ORDER_BY_DATE,null).getCount();
     }
 
-    public static List<String> getDifferentDateList(SQLiteDatabase db){
+    public static List<String> getDifferentDateList(){
         List<String> list=new ArrayList<>();
-        Cursor cursor=db.rawQuery(QUERY_DATE_LIST,null);
+        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(QUERY_DATE_LIST,null);
         if (cursor.moveToFirst()){
             do {
                 list.add(cursor.getString(cursor.getColumnIndex("date")));
@@ -93,9 +97,9 @@ public class DataBaseUtil {
         return list;
     }
 
-    public static int getDifferentDateCount(SQLiteDatabase db){
+    public static int getDifferentDateCount(){
         int count=0;
-        Cursor cursor=db.rawQuery(QUERY_DATE_COUNT,null);
+        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(QUERY_DATE_COUNT,null);
         if (cursor.moveToFirst()){
             count=cursor.getInt(cursor.getColumnIndex("count"));
         }
@@ -103,14 +107,14 @@ public class DataBaseUtil {
         return count;
     }
 
-    public static List<String> getDifferentMonthList(SQLiteDatabase db){
+    public static List<String> getDifferentMonthList(){
         String previousMonth=null;
         String month;
         String[] monthSplit;
         String currentYear=String.valueOf(DateUtil.getCurrentYear());
         int currentMonth=DateUtil.getCurrentMonth();
         List<String> months=new ArrayList<>();
-        Cursor cursor=db.rawQuery(QUERY_ALL_DATA_ORDER_BY_DATE,null);
+        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(QUERY_ALL_DATA_ORDER_BY_DATE,null);
         if (cursor.moveToFirst()) {
             do {
                 monthSplit=cursor.getString(cursor.getColumnIndex("date")).split("-");
@@ -131,54 +135,60 @@ public class DataBaseUtil {
 
     /**
      * 获取数据库中包含某date（如“2019-2-14”或“2019-2”)的总收入金额
-     * @param db
      * @param date
      * @return
      */
-    public static int getTotalIncomeMoney(SQLiteDatabase db,String date){
+    public static int getTotalIncomeMoney(String date){
         int count=0;
-        Cursor cursor=db.rawQuery(SUM_INCOME_MONEY,new String[]{date});
-        if (cursor.moveToFirst()){
-            do {
-                count=cursor.getInt(cursor.getColumnIndex("money_count"));
-            }while(cursor.moveToNext());
+        if (!TextUtils.isEmpty(date) && !TextUtils.equals(date,"%%")){
+            Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(SUM_INCOME_MONEY,new String[]{date});
+            if (cursor.moveToFirst()){
+                do {
+                    count=cursor.getInt(cursor.getColumnIndex("money_count"));
+                }while(cursor.moveToNext());
+            }
+            cursor.close();
+            LogUtil.d(TAG,"TotalIncomeMoney in "+date+" = "+count);
         }
-        cursor.close();
-        LogUtil.d(TAG,"TotalIncomeMoney in "+date+" = "+count);
+
         return count;
     }
 
     /**
      * 获取数据库中包含某date（如“2019-2-14”或“2019-2”)的总支出金额
-     * @param db
      * @param date
      * @return
      */
-    public static int getTotalOutcomeMoney(SQLiteDatabase db,String date){
+    public static int getTotalOutcomeMoney(String date){
         int count=0;
-        Cursor cursor=db.rawQuery(SUM_OUTCOME_MONEY,new String[]{date});
-        if (cursor.moveToFirst()){
-            do {
-                count=cursor.getInt(cursor.getColumnIndex("money_count"));
-            }while(cursor.moveToNext());
+        if (!TextUtils.isEmpty(date) && !TextUtils.equals(date,"%%")){
+            Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(SUM_OUTCOME_MONEY,new String[]{date});
+            if (cursor.moveToFirst()){
+                do {
+                    count=cursor.getInt(cursor.getColumnIndex("money_count"));
+                }while(cursor.moveToNext());
+            }
+            cursor.close();
+            LogUtil.d(TAG,"TotalOutcomeMoney in "+date+" = "+count);
         }
-        cursor.close();
-        LogUtil.d(TAG,"TotalOutcomeMoney in "+date+" = "+count);
         return count;
     }
 
     /**
      * 获取db第一条数据的年月，如“2019-02”
-     * @param db
      * @return
      */
-    public static String getFirstYearMonth(SQLiteDatabase db){
-        Cursor cursor=db.rawQuery(FIRST_YEAR_DATE,null);
+    public static String getFirstYearMonth(){
+        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(FIRST_YEAR_DATE,null);
         String date=null;
         if (cursor.moveToFirst()){
             date=DateUtil.getYearMonthOfDate(cursor.getString(cursor.getColumnIndex("date")));
         }
         cursor.close();
         return date;
+    }
+
+    public static void deleteDataById(int id){
+        KBKAllDataBaseHelper.getInstance().getWritableDatabase().execSQL(DELETE_DATA_BY_ID,new String[]{String.valueOf(id)});
     }
 }

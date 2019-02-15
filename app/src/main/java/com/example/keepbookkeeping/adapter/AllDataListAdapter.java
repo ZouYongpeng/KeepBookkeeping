@@ -2,20 +2,32 @@ package com.example.keepbookkeeping.adapter;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
+import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.utils.DataBaseUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
+import com.example.keepbookkeeping.utils.GetDataTypeUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
+import com.example.keepbookkeeping.utils.ToastUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,10 +39,12 @@ import java.util.List;
  */
 public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private SQLiteDatabase db;
+    private Context mContext;
+
     private List<SingleDataBean> mSingleDataList;
     private List<String> mDateList;
     private List<String> mYearMonthList;
+    private boolean[] isClickList;
 
     private int count;
     private int index;
@@ -41,9 +55,9 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final int TYPE_MONTH_ITEM=1;
     private final int TYPE_CONTENT_ITEM=2;
     private final int TYPE_END_ITEM=3;
-    private boolean isShowDate=false;
-    private boolean isShowMonth=true;
-    private boolean isStop=false;
+    private final int TYPE_EMPTY_ITEM=4;
+    private boolean isShowDate;
+    private boolean isShowMonth;
     private int[] positionToIndex;
     private int[] positionToType;
 
@@ -91,14 +105,6 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public static class EndViewHolder extends RecyclerView.ViewHolder{
-
-        public EndViewHolder(View itemView) {
-            super(itemView);
-        }
-
-    }
-
     public static class ContentViewHolder extends RecyclerView.ViewHolder{
 
         private ImageView mContentImage;
@@ -107,6 +113,12 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private TextView mContentOutcomeText;
         private TextView mContentOutcomeMoney;
 
+        private RelativeLayout mLayout;
+        private ImageView mDeleteImage;
+        private ImageView mEditImage;
+
+        private AnimationSet mAnimationSet;
+
         public ContentViewHolder(View itemView) {
             super(itemView);
             mContentImage=itemView.findViewById(R.id.list_item_image);
@@ -114,6 +126,21 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mContentIncomeMoney=itemView.findViewById(R.id.list_item_income_money);
             mContentOutcomeText=itemView.findViewById(R.id.list_item_outcome_text);
             mContentOutcomeMoney=itemView.findViewById(R.id.list_item_outcome_money);
+            mLayout=itemView.findViewById(R.id.list_content_item);
+            mDeleteImage=itemView.findViewById(R.id.list_item_delete);
+            mEditImage=itemView.findViewById(R.id.list_item_edit);
+
+            mAnimationSet=new AnimationSet(true);
+
+            Animation alphaAnim=new AlphaAnimation(0.0f,1.0f);
+            Animation rotateAnim=new RotateAnimation(90,360,
+                    Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+
+            mAnimationSet.addAnimation(alphaAnim);
+            mAnimationSet.addAnimation(rotateAnim);
+            mAnimationSet.setDuration(500);
+            mAnimationSet.setFillAfter(true);
+
         }
 
         private String date;
@@ -125,24 +152,55 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public AllDataListAdapter(SQLiteDatabase database) {
-        this.db=database;
+    public static class EndViewHolder extends RecyclerView.ViewHolder{
+
+        public EndViewHolder(View itemView) {
+            super(itemView);
+        }
+
+    }
+
+    public static class EmptyViewHolder extends RecyclerView.ViewHolder{
+
+        private TextView mAddDataText;
+        private TextView mLoginText;
+
+        public EmptyViewHolder(View itemView) {
+            super(itemView);
+            mAddDataText=itemView.findViewById(R.id.list_empty_add_data);
+            mLoginText=itemView.findViewById(R.id.list_empty_login);
+        }
+    }
+
+    public AllDataListAdapter(Context context) {
+        mContext=context;
+        initAdapter();
+    }
+
+    private void initAdapter(){
+        isShowDate=false;
+        isShowMonth=true;
         index=0;
         dateIndex=0;
         monthIndex=0;
         bindIndex=0;
-        mSingleDataList= DataBaseUtil.queryAllDataOrderByDate(db);
-        mYearMonthList=DataBaseUtil.getDifferentMonthList(db);
-        mDateList=DataBaseUtil.getDifferentDateList(db);
+        mSingleDataList= DataBaseUtil.queryAllDataOrderByDate();
+        mYearMonthList=DataBaseUtil.getDifferentMonthList();
+        mDateList=DataBaseUtil.getDifferentDateList();
         count=mSingleDataList.size()+mYearMonthList.size()+mDateList.size()+1;
         positionToIndex=new int[count];
         positionToType=new int[count];
+        isClickList=new boolean[count];
         Arrays.fill(positionToIndex,-1);
         Arrays.fill(positionToType,-1);
+        Arrays.fill(isClickList,false);
     }
 
     @Override
     public int getItemViewType(int position) {
+        if (count==1){
+            return TYPE_EMPTY_ITEM;
+        }
         if (positionToType[position]==-1){
             int type;
             if (isShowDate){
@@ -200,14 +258,17 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }else if (viewType==TYPE_CONTENT_ITEM){
             View view= LayoutInflater.from(context).inflate(R.layout.list_content_item,parent,false);
             return new ContentViewHolder(view);
-        }else {
+        }else if (viewType==TYPE_END_ITEM){
             View view= LayoutInflater.from(context).inflate(R.layout.list_end_item,parent,false);
             return new EndViewHolder(view);
+        }else {
+            View view= LayoutInflater.from(context).inflate(R.layout.list_empty_item,parent,false);
+            return new EmptyViewHolder(view);
         }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof DateViewHolder){
             if (positionToIndex[position]==-1){
                 positionToIndex[position]=dateIndex++;
@@ -218,9 +279,9 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ((DateViewHolder) holder).setDate(date);
             ((DateViewHolder) holder).mDateText.setText(DateUtil.getDayOfDate(date));
             ((DateViewHolder) holder).mDateIncomeText.setText("收入");
-            ((DateViewHolder) holder).mDateIncomeMoney.setText(String.valueOf(DataBaseUtil.getTotalIncomeMoney(db,date)));
+            ((DateViewHolder) holder).mDateIncomeMoney.setText(String.valueOf(DataBaseUtil.getTotalIncomeMoney(date)));
             ((DateViewHolder) holder).mDateOutcomeText.setText("支出");
-            ((DateViewHolder) holder).mDateOutcomeMoney.setText(String.valueOf(DataBaseUtil.getTotalOutcomeMoney(db,date)));
+            ((DateViewHolder) holder).mDateOutcomeMoney.setText(String.valueOf(DataBaseUtil.getTotalOutcomeMoney(date)));
         }else if (holder instanceof MonthViewHolder){
             if (positionToIndex[position]==-1){
                 positionToIndex[position]=monthIndex++;
@@ -235,9 +296,10 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 positionToIndex[position]=bindIndex++;
             }
             LogUtil.d("AllDataList","positionToIndex[ "+position+" ] = "+positionToIndex[position]);
-            SingleDataBean bean=mSingleDataList.get(positionToIndex[position]);
+            final SingleDataBean bean=mSingleDataList.get(positionToIndex[position]);
             LogUtil.d("AllDataList","显示数据"+bean.toString());
             ((ContentViewHolder) holder).setDate(DateUtil.dateToString(bean.getDate()));
+            ((ContentViewHolder) holder).mContentImage.setImageResource(GetDataTypeUtil.getImageId(bean.getTypeName()));
             if (bean.getType()==SingleDataBean.TYPE_INCOME_DATA){
                 ((ContentViewHolder) holder).mContentIncomeText.setText("收入");
                 ((ContentViewHolder) holder).mContentIncomeMoney.setText(bean.getMoney()+"");
@@ -249,6 +311,60 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((ContentViewHolder) holder).mContentOutcomeText.setText("支出");
                 ((ContentViewHolder) holder).mContentOutcomeMoney.setText(bean.getMoney()+"");
             }
+            if (isClickList[position]){
+                ((ContentViewHolder) holder).mDeleteImage.startAnimation(((ContentViewHolder) holder).mAnimationSet);
+                ((ContentViewHolder) holder).mDeleteImage.setVisibility(View.VISIBLE);
+                ((ContentViewHolder) holder).mEditImage.startAnimation(((ContentViewHolder) holder).mAnimationSet);
+                ((ContentViewHolder) holder).mEditImage.setVisibility(View.VISIBLE);
+            }else {
+                ((ContentViewHolder) holder).mDeleteImage.setVisibility(View.GONE);
+                ((ContentViewHolder) holder).mEditImage.setVisibility(View.GONE);
+            }
+            ((ContentViewHolder) holder).mLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isClickList[position]){
+                        isClickList[position]=false;
+                    }else {
+                        Arrays.fill(isClickList,false);
+                        isClickList[position]=true;
+                    }
+                    notifyDataSetChanged();
+                }
+            });
+            ((ContentViewHolder) holder).mDeleteImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DataBaseUtil.deleteDataById(bean.getId());
+                    isClickList[position]=false;
+                    initAdapter();
+                    notifyDataSetChanged();
+                }
+            });
+            ((ContentViewHolder) holder).mEditImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    isClickList[position]=false;
+                    ToastUtil.success("编辑"+bean.getId());
+                }
+            });
+        }else if (holder instanceof EmptyViewHolder){
+//            ((EmptyViewHolder) holder).mAddDataText.setOnClickListener(mEmptyListener);
+//            ((EmptyViewHolder) holder).mLoginText.setOnClickListener(mEmptyListener);
+            ((EmptyViewHolder) holder).mAddDataText.setClickable(true);
+            ((EmptyViewHolder) holder).mAddDataText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AddDataActivity.startAddDataActivity(mContext);
+                }
+            });
+            ((EmptyViewHolder) holder).mLoginText.setClickable(true);
+            ((EmptyViewHolder) holder).mLoginText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ToastUtil.success("登陆");
+                }
+            });
         }else {
             LogUtil.d("AllDataList","EndViewHolder");
         }
@@ -256,6 +372,21 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        return count;
+        return mSingleDataList.size()+mYearMonthList.size()+mDateList.size()+1;
     }
+
+    private View.OnClickListener mEmptyListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.list_empty_add_data:
+                    AddDataActivity.startAddDataActivity(mContext);
+                    break;
+                case R.id.list_empty_login:
+                    ToastUtil.success("登陆");
+                    break;
+            }
+        }
+    };
+
 }

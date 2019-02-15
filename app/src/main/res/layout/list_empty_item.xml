@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/list_empty_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/empty_content"
+        android:layout_centerInParent="true"/>
+    
+    <TextView
+        android:id="@+id/list_empty_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="还没有账单哦！你可以试试"
+        android:layout_below="@+id/list_empty_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/list_empty_add_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/list_empty_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="添加一笔记账"
+        android:textColor="@color/main_color"
+        android:clickable="true"/>
+
+    <TextView
+        android:id="@+id/list_empty_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/list_empty_add_data"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="登录以同步数据"
+        android:textColor="@color/main_color"
+        android:clickable="true" />
+
+
+
+</RelativeLayout>

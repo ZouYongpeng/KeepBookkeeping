@@ -15,6 +15,8 @@ public class SingleDataBean {
     public static final int TYPE_OUTCOME_DATA=0;
     public static final int TYPE_INCOME_DATA=1;
 
+    private int id;
+
     /**
      * 单笔数据类型，收入（income）/支出（outcome）
      */
@@ -53,6 +55,7 @@ public class SingleDataBean {
         if (type!=TYPE_INCOME_DATA && type!=TYPE_OUTCOME_DATA){
             type=TYPE_OUTCOME_DATA;
         }
+        id=-1;
         this.type = type;
         this.money = money;
         this.date = date;
@@ -137,6 +140,14 @@ public class SingleDataBean {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

@@ -1,8 +1,6 @@
 package com.example.keepbookkeeping.list;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Canvas;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,10 +8,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -21,13 +17,10 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.adapter.AllDataListAdapter;
-import com.example.keepbookkeeping.bean.SingleDataBean;
-import com.example.keepbookkeeping.db.KBKDataBaseHelper;
-import com.example.keepbookkeeping.ui.DoubleLineTextView;
+import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
 import com.example.keepbookkeeping.utils.DataBaseUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
-import com.example.keepbookkeeping.utils.ToastUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,21 +54,18 @@ public class ListFragment extends Fragment implements ListContract.View{
     private ListContract.Presenter mListPresenter;
     private static final String TAG="ListFragment_tag";
 
-    public SQLiteDatabase db;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_list,container,false);
         ButterKnife.bind(this,view);
 
-        db=KBKDataBaseHelper.getKBKDataBase(getContext()).getWritableDatabase();
         return view;
     }
 
     @Override
     public void onResume() {
-        changeBanner(DataBaseUtil.getFirstYearMonth(db));
+        changeBanner(DataBaseUtil.getFirstYearMonth());
         initRecyclerView();
         super.onResume();
     }
@@ -99,12 +89,14 @@ public class ListFragment extends Fragment implements ListContract.View{
     public void initRecyclerView() {
         final LinearLayoutManager manager=new LinearLayoutManager(getActivity());
         mListContentRecyclerView.setLayoutManager(manager);
-        SQLiteDatabase db=KBKDataBaseHelper.getKBKDataBase(getContext()).getWritableDatabase();
-        mListContentRecyclerView.setAdapter(new AllDataListAdapter(db));
+        mListContentRecyclerView.setAdapter(new AllDataListAdapter(getContext()));
         mListContentRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
             @Override
             public void onViewRecycled(RecyclerView.ViewHolder holder) {
                 View view=manager.getChildAt(0);
+                if (view==null){
+                    return;
+                }
                 RecyclerView.ViewHolder newHolder=mListContentRecyclerView.getChildViewHolder(view);
                 if (newHolder instanceof AllDataListAdapter.DateViewHolder){
                     LogUtil.d(TAG,"this is DateViewHolder"+((AllDataListAdapter.DateViewHolder) newHolder).getDate());
@@ -128,10 +120,17 @@ public class ListFragment extends Fragment implements ListContract.View{
      */
     @Override
     public void changeBanner(String date) {
+        if (TextUtils.isEmpty(date)){
+            mIncomeMonthText.setText("月收入");
+            mOutcomeMonthText.setText("月支出");
+            return;
+        }
         mIncomeMonthText.setText(date+"月收入");
         mOutcomeMonthText.setText(date+"月支出");
         date="%"+date+"%";
-        mIncomeMoneyText.setText(String.valueOf(DataBaseUtil.getTotalIncomeMoney(db,date)));
-        mOutcomeMoneyText.setText(String.valueOf(DataBaseUtil.getTotalOutcomeMoney(db,date)));
+        mIncomeMoneyText.setText(String.valueOf(DataBaseUtil.getTotalIncomeMoney(date)));
+        mOutcomeMoneyText.setText(String.valueOf(DataBaseUtil.getTotalOutcomeMoney(date)));
     }
+
+
 }

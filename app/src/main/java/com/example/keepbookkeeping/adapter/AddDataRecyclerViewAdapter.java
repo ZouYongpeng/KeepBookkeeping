@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author 邹永鹏
  * @date 2019/1/31
- * @description :
+ * @description :AddDataActivity的支出/收入分类RecyclerViewAdapter
  */
 public class AddDataRecyclerViewAdapter extends RecyclerView.Adapter<AddDataRecyclerViewAdapter.ViewHolder> {
 
@@ -61,7 +61,7 @@ public class AddDataRecyclerViewAdapter extends RecyclerView.Adapter<AddDataRecy
                     RxBus.getInstance().post(new ChangeDataTypeEvent(bean));
                 }else {
                     //编辑
-                    ToastUtil.success("编辑");
+                    ToastUtil.success("添加");
                 }
             }
         });
@@ -76,7 +76,7 @@ public class AddDataRecyclerViewAdapter extends RecyclerView.Adapter<AddDataRecy
             holder.mTextView.setText(bean.getName());
         }else {
             holder.mImageView.setImageResource(R.drawable.ic_edit);
-            holder.mTextView.setText("编辑");
+            holder.mTextView.setText("添加");
         }
     }
 

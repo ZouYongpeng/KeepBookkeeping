@@ -2,15 +2,16 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:id="@+id/list_content_item">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/list_item_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:background="@drawable/ic_circle"
-        android:layout_centerInParent="true"
-        android:layout_margin="20dp"/>
+        android:src="@drawable/ic_income_default"
+        android:layout_margin="20dp"
+        android:layout_centerInParent="true"/>
 
     <TextView
         android:id="@+id/list_item_income_text"
@@ -29,6 +30,16 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"/>
 
+    <ImageView
+        android:id="@+id/list_item_delete"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_cancel"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/list_item_outcome_text"
         android:layout_width="wrap_content"
@@ -46,11 +57,21 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"/>
 
+    <ImageView
+        android:id="@+id/list_item_edit"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_edit_item"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:visibility="gone"/>
+
     <View
+        android:id="@+id/center_line"
         android:layout_width="2dp"
         android:layout_height="match_parent"
         android:background="@color/gray"
         android:layout_centerHorizontal="true"/>
-
 
 </RelativeLayout>

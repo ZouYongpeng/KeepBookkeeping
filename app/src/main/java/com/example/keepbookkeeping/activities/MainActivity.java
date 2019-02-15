@@ -12,7 +12,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,21 +28,17 @@ import android.widget.TabWidget;
 import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
-import com.example.keepbookkeeping.adapter.AllDataListAdapter;
 import com.example.keepbookkeeping.adapter.FragmentAdapter;
 import com.example.keepbookkeeping.bill.BillFragment;
 import com.example.keepbookkeeping.bill.BillPresenterImpl;
-import com.example.keepbookkeeping.db.KBKDataBaseHelper;
+import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
 import com.example.keepbookkeeping.form.FormFragment;
 import com.example.keepbookkeeping.form.FormPresenterImpl;
 import com.example.keepbookkeeping.list.ListPresenterImpl;
 import com.example.keepbookkeeping.ui.SearchEditText;
-import com.example.keepbookkeeping.utils.DataBaseUtil;
-import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.DensityUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
-import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
@@ -111,7 +106,7 @@ import butterknife.ButterKnife;
      private com.example.keepbookkeeping.list.ListFragment mListFragment;
      private FormFragment mFormFragment;
 
-     public KBKDataBaseHelper mDataBaseHelper;
+     public KBKAllDataBaseHelper mDataBaseHelper;
 
      @Override
      protected void onCreate(Bundle savedInstanceState) {
@@ -128,8 +123,8 @@ import butterknife.ButterKnife;
      }
 
      public void initDataBase(){
-         mDataBaseHelper=KBKDataBaseHelper.getKBKDataBase(this);
-         SQLiteDatabase db=mDataBaseHelper.getWritableDatabase();
+//         mDataBaseHelper= KBKAllDataBaseHelper.getInstance(this);
+//         SQLiteDatabase db=mDataBaseHelper.getWritableDatabase();
 //         DataBaseUtil.queryAllDataOrderByDate(db);
 //         DataBaseUtil.getAllDataCount(db);
 //         DataBaseUtil.getDifferentDateList(db);
