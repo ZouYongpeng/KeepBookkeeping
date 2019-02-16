@@ -30,6 +30,10 @@ public class BillTableUtil {
 
     public static final String QUERY_ALL_DEBT_BILL="select * from AllBill where type = 1";
 
+    public static final String QUERY_ALL_BILL_NAME="select name from AllBill";
+
+    public static final String QUERY_TYPE_BY_BILL_NAME_="select type from AllBill where name = ?";
+
 
     public static void initBill(SQLiteDatabase db){
         db.execSQL(INSERT_DATA_INTO_BILL,new String[]{"0",String.valueOf(R.drawable.ic_bill_xianjin),"现金","现金余额"});
@@ -79,4 +83,35 @@ public class BillTableUtil {
         return list;
     }
 
+    public static String[] getAllBillName() {
+        List<String> list=new ArrayList<>();
+        SQLiteDatabase db= KBKAllDataBaseHelper.getInstance().getWritableDatabase();
+        Cursor cursor=db.rawQuery(QUERY_ALL_BILL_NAME,null);
+        if (cursor.moveToFirst()){
+            do {
+                list.add(cursor.getString(cursor.getColumnIndex("name")));
+
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        String[] strings = new String[list.size()];
+        list.toArray(strings);
+        return strings;
+    }
+
+    /**
+     * 根据消费的账户名（billName）获取BillTable的type
+     * @param billName
+     * @return
+     */
+    public static int getTypeByBillName(String billName){
+        int type=-1;
+        SQLiteDatabase db= KBKAllDataBaseHelper.getInstance().getWritableDatabase();
+        Cursor cursor=db.rawQuery(QUERY_TYPE_BY_BILL_NAME_,new String[]{billName});
+        if (cursor.moveToFirst()){
+            type=cursor.getInt(cursor.getColumnIndex("type"));
+        }
+        cursor.close();
+        return type;
+    }
 }

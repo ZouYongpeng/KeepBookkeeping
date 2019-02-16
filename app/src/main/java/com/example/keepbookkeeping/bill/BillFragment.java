@@ -15,6 +15,7 @@ import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.BillApartAdapter;
 import com.example.keepbookkeeping.bean.BillApartBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
+import com.example.keepbookkeeping.events.NotifyBillListEvent;
 import com.example.keepbookkeeping.utils.BillTableUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
@@ -25,7 +26,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 /**
  * @author 邹永鹏
@@ -92,6 +92,14 @@ public class BillFragment extends Fragment implements BillContract.View{
             @Override
             public void accept(ChangeFragmentTypeEvent s) throws Exception {
                 changeContentType(s.getMsg());
+            }
+        });
+        RxBus.getInstance().toObservable(NotifyBillListEvent.class).subscribe(new Consumer<NotifyBillListEvent>() {
+            @Override
+            public void accept(NotifyBillListEvent s) throws Exception {
+                if (mType==s.getMsg()){
+                    changeContentType(mType);
+                }
             }
         });
     }

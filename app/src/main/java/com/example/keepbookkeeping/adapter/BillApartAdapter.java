@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.bean.BillApartBean;
+import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
 import java.util.List;
@@ -99,12 +100,13 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 }else {
                     bean=new BillApartBean(-1,billType,R.drawable.ic_bill_qian,"应还账","我欠别人的钱");
                 }
+                ((BillViewHolder) holder).mLayout.setOnClickListener(mLayoutListener);
+
             }
             ((BillViewHolder)holder).mImage.setImageResource(bean.getImageId());
             ((BillViewHolder)holder).mNameText.setText(bean.getName());
             ((BillViewHolder)holder).mDescriptionText.setText(bean.getDescription());
-            ((BillViewHolder)holder).mMoneyText.setText("获取db数据");
-            ((BillViewHolder) holder).mLayout.setOnClickListener(mLayoutListener);
+            ((BillViewHolder)holder).mMoneyText.setText(String.valueOf(AllDataTableUtil.getTotalMoneyByBillName(bean.getName())));
         }
         else if (holder instanceof AddBillViewHolder){
             ((AddBillViewHolder) holder).mLayout.setOnClickListener(mLayoutListener);

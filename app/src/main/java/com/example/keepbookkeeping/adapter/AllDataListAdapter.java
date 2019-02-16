@@ -19,10 +19,15 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.bean.SingleDataBean;
+import com.example.keepbookkeeping.bill.BillFragment;
+import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
+import com.example.keepbookkeeping.events.NotifyBillListEvent;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
+import com.example.keepbookkeeping.utils.BillTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.DataTypeTableUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
+import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
 import java.util.Arrays;
@@ -335,6 +340,10 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     isClickList[position]=false;
                     initAdapter();
                     notifyDataSetChanged();
+                    int type= BillTableUtil.getTypeByBillName(bean.getBillName());
+                    if (type!=-1){
+                        RxBus.getInstance().post(new NotifyBillListEvent(type));
+                    }
                 }
             });
             ((ContentViewHolder) holder).mEditImage.setOnClickListener(new View.OnClickListener() {

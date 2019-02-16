@@ -45,6 +45,8 @@ public class AllDataTableUtil {
             "and description = ? " +
             "where id = ?";
 
+    public static final String QUERY_MONEY_IN_BILL_NAME="SELECT * FROM AllData WHERE bill_name = ?";
+
     public static List<SingleDataBean> queryAllDataOrderByDate(){
         return queryData(QUERY_ALL_DATA_ORDER_BY_DATE);
     }
@@ -147,13 +149,13 @@ public class AllDataTableUtil {
      * @param date
      * @return
      */
-    public static int getTotalIncomeMoney(String date){
-        int count=0;
+    public static float getTotalIncomeMoney(String date){
+        float count=0;
         if (!TextUtils.isEmpty(date) && !TextUtils.equals(date,"%%")){
             Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(SUM_INCOME_MONEY,new String[]{date});
             if (cursor.moveToFirst()){
                 do {
-                    count=cursor.getInt(cursor.getColumnIndex("money_count"));
+                    count=cursor.getFloat(cursor.getColumnIndex("money_count"));
                 }while(cursor.moveToNext());
             }
             cursor.close();
@@ -168,18 +170,40 @@ public class AllDataTableUtil {
      * @param date
      * @return
      */
-    public static int getTotalOutcomeMoney(String date){
-        int count=0;
+    public static float getTotalOutcomeMoney(String date){
+        float count=0;
         if (!TextUtils.isEmpty(date) && !TextUtils.equals(date,"%%")){
             Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(SUM_OUTCOME_MONEY,new String[]{date});
             if (cursor.moveToFirst()){
                 do {
-                    count=cursor.getInt(cursor.getColumnIndex("money_count"));
+                    count=cursor.getFloat(cursor.getColumnIndex("money_count"));
                 }while(cursor.moveToNext());
             }
             cursor.close();
             LogUtil.d(TAG,"TotalOutcomeMoney in "+date+" = "+count);
         }
+        return count;
+    }
+
+    /**
+     * 获取数据库中某账户金额
+     * @param billNmae
+     * @return
+     */
+    public static float getTotalMoneyByBillName(String billNmae){
+        SQLiteDatabase db=KBKAllDataBaseHelper.getInstance().getWritableDatabase();
+        Cursor cursor=db.rawQuery(QUERY_MONEY_IN_BILL_NAME,new String[]{billNmae});
+        float count=0;
+        if (cursor.moveToFirst()){
+            do {
+                if (cursor.getInt(cursor.getColumnIndex("type"))==0){
+                    count-=cursor.getFloat(cursor.getColumnIndex("money"));
+                }else {
+                    count+=cursor.getFloat(cursor.getColumnIndex("money"));
+                }
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
         return count;
     }
 

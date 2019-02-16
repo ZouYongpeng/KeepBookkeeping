@@ -27,6 +27,7 @@ import com.example.keepbookkeeping.events.ChangeDataTypeEvent;
 import com.example.keepbookkeeping.ui.SearchEditText;
 import com.example.keepbookkeeping.ui.SimpleDatePickerDialog;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
+import com.example.keepbookkeeping.utils.BillTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.DataTypeTableUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
@@ -35,6 +36,7 @@ import com.example.keepbookkeeping.utils.SharedPreferencesUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -317,8 +319,7 @@ public class AddDataActivity extends AppCompatActivity {
                     showDatePickerDialog();
                     break;
                 case R.id.add_data_select_bill:
-                    String[] billTypeStrings={"现金","微信","支付宝","银行卡"};
-                    showBillTypeAlertDialog(billTypeStrings);
+                    showBillTypeAlertDialog(BillTableUtil.getAllBillName());
                     break;
                 case R.id.add_data_input_description:
                     showInputDescriptionAlertDialog();
