@@ -18,7 +18,7 @@ import java.util.List;
  * @date 2019/2/12
  * @description :
  */
-public class DataBaseUtil {
+public class AllDataTableUtil {
 
     public static final String TAG="db";
 

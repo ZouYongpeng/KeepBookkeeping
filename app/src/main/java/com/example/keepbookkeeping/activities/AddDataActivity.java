@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,13 +23,12 @@ import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.AddDataViewPagerAdapter;
 import com.example.keepbookkeeping.bean.DataTypeBean;
 import com.example.keepbookkeeping.bean.SingleDataBean;
-import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
 import com.example.keepbookkeeping.events.ChangeDataTypeEvent;
 import com.example.keepbookkeeping.ui.SearchEditText;
 import com.example.keepbookkeeping.ui.SimpleDatePickerDialog;
-import com.example.keepbookkeeping.utils.DataBaseUtil;
+import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
-import com.example.keepbookkeeping.utils.GetDataTypeUtil;
+import com.example.keepbookkeeping.utils.DataTypeTableUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.SharedPreferencesUtil;
@@ -111,7 +109,7 @@ public class AddDataActivity extends AppCompatActivity {
         if (mBundle!=null){
             refreshRadioAndPager();
             mAddDataChooseText.setText(mBundle.getString("typeName"));
-            mAddDataChooseImage.setImageResource(GetDataTypeUtil.getImageId(mBundle.getString("typeName")));
+            mAddDataChooseImage.setImageResource(DataTypeTableUtil.getImageId(mBundle.getString("typeName")));
         }
     }
 
@@ -275,11 +273,11 @@ public class AddDataActivity extends AppCompatActivity {
             switch (radioButton.getId()){
                 case R.id.add_data_radio_btn_outcome:
                     mAddDataType=TYPE_OUTCOME;
-                    refreshChooseImageAndText(GetDataTypeUtil.getFirstOutcomeDataTypeBean());
+                    refreshChooseImageAndText(DataTypeTableUtil.getFirstOutcomeDataTypeBean());
                     break;
                 case R.id.add_data_radio_btn_income:
                     mAddDataType=TYPE_INCOME;
-                    refreshChooseImageAndText(GetDataTypeUtil.getFirstIncomeDataTypeBean());
+                    refreshChooseImageAndText(DataTypeTableUtil.getFirstIncomeDataTypeBean());
                     break;
                 default:
                     break;
@@ -344,9 +342,9 @@ public class AddDataActivity extends AppCompatActivity {
                     mAddDataBillTypeStr,
                     mAddDataDescriptionStr);
             if (type==TYPE_ADD_DATA){
-                DataBaseUtil.insertSingleDataToAllData(bean);
+                AllDataTableUtil.insertSingleDataToAllData(bean);
             }else if (mUpdateId!=-1){
-                DataBaseUtil.updateDataById(bean,mUpdateId);
+                AllDataTableUtil.updateDataById(bean,mUpdateId);
             }
             finish();
         }else {

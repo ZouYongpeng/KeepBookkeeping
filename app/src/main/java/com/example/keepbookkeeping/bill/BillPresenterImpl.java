@@ -24,15 +24,5 @@ public class BillPresenterImpl implements BillContract.Presenter {
 
     }
 
-    @Override
-    public List<BillApartBean> getBillApartBeanList() {
-
-        List<BillApartBean> billApartBeanList=new ArrayList<>();
-        for (int i=0;i<20;i++){
-            billApartBeanList.add(new BillApartBean(0,"现金"+i,"描述"+i,((float) i+1)*1000,0xfff));
-        }
-        return billApartBeanList;
-    }
-
 
 }

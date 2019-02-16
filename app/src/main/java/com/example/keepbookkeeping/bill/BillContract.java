@@ -15,8 +15,6 @@ public interface BillContract {
 
     interface Presenter extends BasePresenter{
 
-        List<BillApartBean> getBillApartBeanList();
-
     }
 
     /**

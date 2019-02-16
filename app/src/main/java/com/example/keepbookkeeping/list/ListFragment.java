@@ -1,6 +1,5 @@
 package com.example.keepbookkeeping.list;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,8 +16,7 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.adapter.AllDataListAdapter;
-import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
-import com.example.keepbookkeeping.utils.DataBaseUtil;
+import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 
@@ -65,7 +63,7 @@ public class ListFragment extends Fragment implements ListContract.View{
 
     @Override
     public void onResume() {
-        changeBanner(DataBaseUtil.getFirstYearMonth());
+        changeBanner(AllDataTableUtil.getFirstYearMonth());
         initRecyclerView();
         super.onResume();
     }
@@ -128,8 +126,8 @@ public class ListFragment extends Fragment implements ListContract.View{
         mIncomeMonthText.setText(date+"月收入");
         mOutcomeMonthText.setText(date+"月支出");
         date="%"+date+"%";
-        mIncomeMoneyText.setText(String.valueOf(DataBaseUtil.getTotalIncomeMoney(date)));
-        mOutcomeMoneyText.setText(String.valueOf(DataBaseUtil.getTotalOutcomeMoney(date)));
+        mIncomeMoneyText.setText(String.valueOf(AllDataTableUtil.getTotalIncomeMoney(date)));
+        mOutcomeMoneyText.setText(String.valueOf(AllDataTableUtil.getTotalOutcomeMoney(date)));
     }
 
 

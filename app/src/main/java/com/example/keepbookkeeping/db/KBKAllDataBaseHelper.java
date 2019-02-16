@@ -5,10 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.keepbookkeeping.KBKApplication;
-import com.example.keepbookkeeping.R;
-import com.example.keepbookkeeping.utils.GetDataTypeUtil;
+import com.example.keepbookkeeping.utils.BillTableUtil;
+import com.example.keepbookkeeping.utils.DataTypeTableUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
-import com.example.keepbookkeeping.utils.ToastUtil;
 
 /**
  * @author 邹永鹏
@@ -50,6 +49,13 @@ public class KBKAllDataBaseHelper extends SQLiteOpenHelper {
             +" imageId integer not null,"
             +" name text not null)";
 
+    public static final String CREATE_ALL_BILL="create table AllBill ("
+            +" id integer primary key autoincrement not null,"
+            +" type integer not null,"//资产还是负债
+            +" imageId integer not null,"
+            +" name text not null,"
+            +" description text)";
+
     public KBKAllDataBaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
         mContext = context;
@@ -64,7 +70,10 @@ public class KBKAllDataBaseHelper extends SQLiteOpenHelper {
         try {
             db.execSQL(CREATE_ALL_DATA);
             db.execSQL(CREATE_ALL_DATA_TYPE);
-            GetDataTypeUtil.initAllDateType(db);
+            DataTypeTableUtil.initAllDateType(db);
+
+            db.execSQL(CREATE_ALL_BILL);
+            BillTableUtil.initBill(db);
             LogUtil.d("db","create table AllTable!");
         }catch (Exception e){
             LogUtil.d("db","create table AllTable error!");

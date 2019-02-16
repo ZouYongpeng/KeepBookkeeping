@@ -16,7 +16,7 @@ import java.util.List;
  * @date 2019/1/31
  * @description :
  */
-public class GetDataTypeUtil {
+public class DataTypeTableUtil {
 
     public static final String FIRST_OUTCOME_DATA_TYPE="select * from AllDataType where type = 0 limit 0,1";
 

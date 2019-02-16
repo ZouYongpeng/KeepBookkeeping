@@ -19,9 +19,9 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.bean.SingleDataBean;
-import com.example.keepbookkeeping.utils.DataBaseUtil;
+import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
-import com.example.keepbookkeeping.utils.GetDataTypeUtil;
+import com.example.keepbookkeeping.utils.DataTypeTableUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
@@ -180,9 +180,9 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         dateIndex=0;
         monthIndex=0;
         bindIndex=0;
-        mSingleDataList= DataBaseUtil.queryAllDataOrderByDate();
-        mYearMonthList=DataBaseUtil.getDifferentMonthList();
-        mDateList=DataBaseUtil.getDifferentDateList();
+        mSingleDataList= AllDataTableUtil.queryAllDataOrderByDate();
+        mYearMonthList= AllDataTableUtil.getDifferentMonthList();
+        mDateList= AllDataTableUtil.getDifferentDateList();
         count=mSingleDataList.size()+mYearMonthList.size()+mDateList.size()+1;
         positionToIndex=new int[count];
         positionToType=new int[count];
@@ -275,9 +275,9 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ((DateViewHolder) holder).setDate(date);
             ((DateViewHolder) holder).mDateText.setText(DateUtil.getDayOfDate(date));
             ((DateViewHolder) holder).mDateIncomeText.setText("收入");
-            ((DateViewHolder) holder).mDateIncomeMoney.setText(String.valueOf(DataBaseUtil.getTotalIncomeMoney(date)));
+            ((DateViewHolder) holder).mDateIncomeMoney.setText(String.valueOf(AllDataTableUtil.getTotalIncomeMoney(date)));
             ((DateViewHolder) holder).mDateOutcomeText.setText("支出");
-            ((DateViewHolder) holder).mDateOutcomeMoney.setText(String.valueOf(DataBaseUtil.getTotalOutcomeMoney(date)));
+            ((DateViewHolder) holder).mDateOutcomeMoney.setText(String.valueOf(AllDataTableUtil.getTotalOutcomeMoney(date)));
         }else if (holder instanceof MonthViewHolder){
             if (positionToIndex[position]==-1){
                 positionToIndex[position]=monthIndex++;
@@ -295,7 +295,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             final SingleDataBean bean=mSingleDataList.get(positionToIndex[position]);
             LogUtil.d("AllDataList","显示数据"+bean.toString());
             ((ContentViewHolder) holder).setDate(DateUtil.dateToString(bean.getDate()));
-            ((ContentViewHolder) holder).mContentImage.setImageResource(GetDataTypeUtil.getImageId(bean.getTypeName()));
+            ((ContentViewHolder) holder).mContentImage.setImageResource(DataTypeTableUtil.getImageId(bean.getTypeName()));
             if (bean.getType()==SingleDataBean.TYPE_INCOME_DATA){
                 ((ContentViewHolder) holder).mContentIncomeText.setText("收入");
                 ((ContentViewHolder) holder).mContentIncomeMoney.setText(bean.getMoney()+"");
@@ -331,7 +331,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ((ContentViewHolder) holder).mDeleteImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DataBaseUtil.deleteDataById(bean.getId());
+                    AllDataTableUtil.deleteDataById(bean.getId());
                     isClickList[position]=false;
                     initAdapter();
                     notifyDataSetChanged();

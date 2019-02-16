@@ -1,7 +1,6 @@
 package com.example.keepbookkeeping.adapter;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.GridLayoutManager;
@@ -10,8 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.keepbookkeeping.R;
-import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
-import com.example.keepbookkeeping.utils.GetDataTypeUtil;
+import com.example.keepbookkeeping.utils.DataTypeTableUtil;
 
 /**
  * @author 邹永鹏
@@ -42,9 +40,9 @@ public class AddDataViewPagerAdapter extends PagerAdapter {
         recyclerView.setLayoutManager(gridLayoutManager);
         AddDataRecyclerViewAdapter recyclerViewAdapter;
         if (position==0){
-            recyclerViewAdapter=new AddDataRecyclerViewAdapter(GetDataTypeUtil.getOutcomeDataTypeBeanList());
+            recyclerViewAdapter=new AddDataRecyclerViewAdapter(DataTypeTableUtil.getOutcomeDataTypeBeanList());
         }else {
-            recyclerViewAdapter=new AddDataRecyclerViewAdapter(GetDataTypeUtil.getIncomeDataTypeBeanList());
+            recyclerViewAdapter=new AddDataRecyclerViewAdapter(DataTypeTableUtil.getIncomeDataTypeBeanList());
         }
         recyclerView.setAdapter(recyclerViewAdapter);
 

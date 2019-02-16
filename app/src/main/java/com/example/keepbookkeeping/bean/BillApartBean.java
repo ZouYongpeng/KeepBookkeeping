@@ -1,6 +1,8 @@
 package com.example.keepbookkeeping.bean;
 
+import android.text.TextUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 /**
  * @author 邹永鹏
@@ -12,22 +14,33 @@ public class BillApartBean {
     public final static int TYPE_BILL_ASSETS=0;
     public final static int TYPE_BILL_DEBT=1;
 
+    private int id;
+
     private int type;
+
+    private int imageId;
 
     private String name;
 
     private String description;
 
-    private float money;
+    public BillApartBean(int id, int type, int imageId, String name) {
+        this(id,type,imageId,name,"");
+    }
 
-    private int color;
-
-    public BillApartBean(int type, String name, String description, float money, int color) {
+    public BillApartBean(int id, int type, int imageId, String name, String description) {
+        this.id = id;
         this.type = type;
+        this.imageId = imageId;
         this.name = name;
+        if (TextUtils.isEmpty(description)){
+            description="点击可添加描述";
+        }
         this.description = description;
-        this.money = money;
-        this.color = color;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public int getType() {
@@ -36,6 +49,14 @@ public class BillApartBean {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public int getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(int imageId) {
+        this.imageId = imageId;
     }
 
     public String getName() {
@@ -52,21 +73,5 @@ public class BillApartBean {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public float getMoney() {
-        return money;
-    }
-
-    public void setMoney(float money) {
-        this.money = money;
-    }
-
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
-        this.color = color;
     }
 }

@@ -125,10 +125,10 @@ import butterknife.ButterKnife;
      public void initDataBase(){
 //         mDataBaseHelper= KBKAllDataBaseHelper.getInstance(this);
 //         SQLiteDatabase db=mDataBaseHelper.getWritableDatabase();
-//         DataBaseUtil.queryAllDataOrderByDate(db);
-//         DataBaseUtil.getAllDataCount(db);
-//         DataBaseUtil.getDifferentDateList(db);
-//         DataBaseUtil.getDifferentMonthList(db);
+//         AllDataTableUtil.queryAllDataOrderByDate(db);
+//         AllDataTableUtil.getAllDataCount(db);
+//         AllDataTableUtil.getDifferentDateList(db);
+//         AllDataTableUtil.getDifferentMonthList(db);
 
 //         new AllDataListAdapter(db);
      }

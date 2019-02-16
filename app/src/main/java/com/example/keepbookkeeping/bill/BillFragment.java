@@ -15,6 +15,7 @@ import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.BillApartAdapter;
 import com.example.keepbookkeeping.bean.BillApartBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
+import com.example.keepbookkeeping.utils.BillTableUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
@@ -42,7 +43,6 @@ public class BillFragment extends Fragment implements BillContract.View{
     @BindView(R.id.bill_net_num)
     TextView mBillNetNumText;
 
-
     private final String TAG="BillFragment_log";
 
     private BillContract.Presenter mPresenter;
@@ -52,6 +52,7 @@ public class BillFragment extends Fragment implements BillContract.View{
     private int mType;
 
     private List<BillApartBean> mBillApartBeanList=new ArrayList<>();
+    BillApartAdapter mAdapter;
 
     @Nullable
     @Override
@@ -79,9 +80,9 @@ public class BillFragment extends Fragment implements BillContract.View{
         LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
         mBillRecyclerView.setLayoutManager(layoutManager);
         if (mPresenter!=null){
-            mBillApartBeanList=mPresenter.getBillApartBeanList();
-            BillApartAdapter adapter=new BillApartAdapter(mBillApartBeanList);
-            mBillRecyclerView.setAdapter(adapter);
+            mBillApartBeanList= BillTableUtil.getAllBillAssetsList(mType);
+            mAdapter=new BillApartAdapter(mBillApartBeanList);
+            mBillRecyclerView.setAdapter(mAdapter);
         }
     }
 
@@ -98,6 +99,10 @@ public class BillFragment extends Fragment implements BillContract.View{
     @Override
     public void changeContentType(int type) {
         mType=type;
+        if (mAdapter!=null){
+            mBillApartBeanList= BillTableUtil.getAllBillAssetsList(mType);
+            mAdapter.notifyData(mBillApartBeanList);
+        }
         switch (mType){
             case TYPE_ASSETS:
                 ToastUtil.success("资产");
