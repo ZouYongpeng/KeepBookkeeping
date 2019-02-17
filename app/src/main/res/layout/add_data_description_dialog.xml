@@ -26,7 +26,6 @@
         android:layout_below="@+id/description_dialog_title"
         android:maxLength="20"
         android:layout_marginTop="10dp"
-
         android:background="@drawable/boder"/>
 
 </RelativeLayout>

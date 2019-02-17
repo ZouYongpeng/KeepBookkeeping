@@ -54,7 +54,10 @@ public class KBKAllDataBaseHelper extends SQLiteOpenHelper {
             +" type integer not null,"//资产还是负债
             +" imageId integer not null,"
             +" name text not null,"
-            +" description text)";
+            +" description text ,"
+            +" initial_count not null ,"
+            +" canChange integer not null)";
+
 
     public KBKAllDataBaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);

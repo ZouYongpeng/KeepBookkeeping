@@ -24,6 +24,7 @@ import com.example.keepbookkeeping.adapter.AddDataViewPagerAdapter;
 import com.example.keepbookkeeping.bean.DataTypeBean;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.events.ChangeDataTypeEvent;
+import com.example.keepbookkeeping.events.NotifyBillListEvent;
 import com.example.keepbookkeeping.ui.SearchEditText;
 import com.example.keepbookkeeping.ui.SimpleDatePickerDialog;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
@@ -31,6 +32,7 @@ import com.example.keepbookkeeping.utils.BillTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.DataTypeTableUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
+import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.SharedPreferencesUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
@@ -347,6 +349,7 @@ public class AddDataActivity extends AppCompatActivity {
             }else if (mUpdateId!=-1){
                 AllDataTableUtil.updateDataById(bean,mUpdateId);
             }
+            RxBus.getInstance().post(new NotifyBillListEvent(BillTableUtil.getTypeByBillName(mAddDataBillTypeStr)));
             finish();
         }else {
             ToastUtil.error("金额或账户不允许为空");

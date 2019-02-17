@@ -1,6 +1,5 @@
 package com.example.keepbookkeeping.activities;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -39,6 +38,7 @@ import com.example.keepbookkeeping.list.ListPresenterImpl;
 import com.example.keepbookkeeping.ui.SearchEditText;
 import com.example.keepbookkeeping.utils.DensityUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
+import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
@@ -96,7 +96,7 @@ import butterknife.ButterKnife;
 
      private String[] tabNameArray = {"账单", "明细", "报表"};
 
-     private List<Fragment> mFragmentArray = new ArrayList<Fragment>();
+     private List<Fragment> mFragmentArray = new ArrayList<>();
      private int currentPagerPosition;
      private boolean isScrolled;
 
@@ -106,7 +106,6 @@ import butterknife.ButterKnife;
      private com.example.keepbookkeeping.list.ListFragment mListFragment;
      private FormFragment mFormFragment;
 
-     public KBKAllDataBaseHelper mDataBaseHelper;
 
      @Override
      protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +122,7 @@ import butterknife.ButterKnife;
      }
 
      public void initDataBase(){
-//         mDataBaseHelper= KBKAllDataBaseHelper.getInstance(this);
+//         mDataBaseHelper= KBKAllDataBaseHelper.getInstance();
 //         SQLiteDatabase db=mDataBaseHelper.getWritableDatabase();
 //         AllDataTableUtil.queryAllDataOrderByDate(db);
 //         AllDataTableUtil.getAllDataCount(db);
@@ -206,9 +205,6 @@ import butterknife.ButterKnife;
          mListFragment = new com.example.keepbookkeeping.list.ListFragment();
          mFormFragment = new FormFragment();
 
-         /**
-          * 必须的一步
-          */
          new BillPresenterImpl(mBillFragment);
          new ListPresenterImpl(mListFragment);
          new FormPresenterImpl(mFormFragment);
@@ -217,6 +213,7 @@ import butterknife.ButterKnife;
          mFragmentArray.add(mListFragment);
          mFragmentArray.add(mFormFragment);
 
+         mViewPager.setOffscreenPageLimit(3);
          mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager(), mFragmentArray));
          mTabHost.getTabWidget().setDividerDrawable(null);
          mTabHost.setCurrentTab(1);
@@ -381,6 +378,7 @@ import butterknife.ButterKnife;
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
             RadioButton radioButton=findViewById(group.getCheckedRadioButtonId());
+            LogUtil.d("rxbus","发送 ChangeFragmentTypeEvent:");
             final String selectedText=radioButton.getText().toString();
             switch (selectedText){
                 case "资产":

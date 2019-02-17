@@ -11,7 +11,11 @@ import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.bean.BillApartBean;
+import com.example.keepbookkeeping.events.ShowAddNewBillDialogEvent;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
+import com.example.keepbookkeeping.utils.BillTableUtil;
+import com.example.keepbookkeeping.utils.LogUtil;
+import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
 import java.util.List;
@@ -36,7 +40,8 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         ImageView mImage;
         TextView mNameText;
         TextView mDescriptionText;
-        TextView mMoneyText;
+        TextView mCurrentMoneyText;
+        TextView mSpendMoneyText;
 
         public BillViewHolder(View itemView) {
             super(itemView);
@@ -44,7 +49,8 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mImage=itemView.findViewById(R.id.bill_image);
             mNameText=itemView.findViewById(R.id.bill_name);
             mDescriptionText=itemView.findViewById(R.id.bill_description);
-            mMoneyText=itemView.findViewById(R.id.bill_money);
+            mCurrentMoneyText=itemView.findViewById(R.id.bill_current_money);
+            mSpendMoneyText=itemView.findViewById(R.id.bill_spend_money);
         }
     }
 
@@ -94,11 +100,16 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (position<mBillApartBeanList.size()){
                 bean=mBillApartBeanList.get(position);
                 billType=bean.getType();
+                float spendMoney=AllDataTableUtil.getTotalMoneyByBillName(bean.getName());
+                float currentMoney= BillTableUtil.getInitialCountByBillName(bean.getName())+spendMoney;
+                ((BillViewHolder)holder).mCurrentMoneyText.setText(String.valueOf(currentMoney));
+                ((BillViewHolder)holder).mSpendMoneyText.setText("收支："+String.valueOf(spendMoney));
+//                ((BillViewHolder) holder).mLayout.setOnClickListener();
             }else {
                 if (billType==BillApartBean.TYPE_BILL_ASSETS){
-                    bean=new BillApartBean(-1,billType,R.drawable.ic_bill_shouzhai,"应收账","别人欠我的钱");
+                    bean=new BillApartBean(-1,billType,R.drawable.ic_bill_shouzhai,"应收账","别人欠我的钱",0,0);
                 }else {
-                    bean=new BillApartBean(-1,billType,R.drawable.ic_bill_qian,"应还账","我欠别人的钱");
+                    bean=new BillApartBean(-1,billType,R.drawable.ic_bill_qian,"应还账","我欠别人的钱",0,0);
                 }
                 ((BillViewHolder) holder).mLayout.setOnClickListener(mLayoutListener);
 
@@ -106,7 +117,6 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ((BillViewHolder)holder).mImage.setImageResource(bean.getImageId());
             ((BillViewHolder)holder).mNameText.setText(bean.getName());
             ((BillViewHolder)holder).mDescriptionText.setText(bean.getDescription());
-            ((BillViewHolder)holder).mMoneyText.setText(String.valueOf(AllDataTableUtil.getTotalMoneyByBillName(bean.getName())));
         }
         else if (holder instanceof AddBillViewHolder){
             ((AddBillViewHolder) holder).mLayout.setOnClickListener(mLayoutListener);
@@ -133,6 +143,8 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 ToastUtil.success("设置欠账");
             }else if (v.getId()==R.id.bill_add_item_layout){
                 ToastUtil.success("添加新账户");
+                LogUtil.d("rxbus","发送 ShowAddNewBillDialogEvent");
+                RxBus.getInstance().post(new ShowAddNewBillDialogEvent());
             }
         }
     };

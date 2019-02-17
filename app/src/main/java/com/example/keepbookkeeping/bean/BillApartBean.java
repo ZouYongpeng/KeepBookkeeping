@@ -24,11 +24,15 @@ public class BillApartBean {
 
     private String description;
 
-    public BillApartBean(int id, int type, int imageId, String name) {
-        this(id,type,imageId,name,"");
+    private float initialCount;
+
+    private int canChange;
+
+    public BillApartBean(int id, int type, int imageId, String name, float initialCount, int canChange) {
+        this(id,type,imageId,name,"",initialCount,canChange);
     }
 
-    public BillApartBean(int id, int type, int imageId, String name, String description) {
+    public BillApartBean(int id, int type, int imageId, String name, String description, float initialCount, int canChange) {
         this.id = id;
         this.type = type;
         this.imageId = imageId;
@@ -37,6 +41,8 @@ public class BillApartBean {
             description="点击可添加描述";
         }
         this.description = description;
+        this.initialCount=initialCount;
+        this.canChange=canChange;
     }
 
     public int getId() {
@@ -73,5 +79,21 @@ public class BillApartBean {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public float getInitialCount() {
+        return initialCount;
+    }
+
+    public void setInitialCount(float initialCount) {
+        this.initialCount = initialCount;
+    }
+
+    public int getCanChange() {
+        return canChange;
+    }
+
+    public void setCanChange(int canChange) {
+        this.canChange = canChange;
     }
 }

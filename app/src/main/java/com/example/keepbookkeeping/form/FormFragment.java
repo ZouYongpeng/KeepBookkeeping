@@ -201,13 +201,11 @@ public class FormFragment extends Fragment implements FormContract.View{
 
     @Override
     public void initRxBusEvent() {
-        RxBus.getInstance().toObservable(ChangeFragmentTypeEvent.class)
-                .subscribe(new Consumer<ChangeFragmentTypeEvent>() {
-                    @Override
-                    public void accept(ChangeFragmentTypeEvent changeFragmentTypeEvent) throws Exception {
-                        notifyFormRecyclerView(changeFragmentTypeEvent.getMsg());
-                    }
-                });
+        RxBus.getInstance().toObservable(ChangeFragmentTypeEvent.class).subscribe(new Consumer<ChangeFragmentTypeEvent>() {
+            @Override
+            public void accept(ChangeFragmentTypeEvent changeFragmentTypeEvent) throws Exception {
+                notifyFormRecyclerView(changeFragmentTypeEvent.getMsg());
+            }});
     }
 
     private ViewPager.OnPageChangeListener mFormPageChangeListener=new ViewPager.OnPageChangeListener() {

@@ -12,6 +12,8 @@ import io.reactivex.Observable;
  */
 public class RxBus {
 
+    public static volatile int eventCount=0;
+
     private static volatile RxBus instance;
 
     private final Relay<Object> mBus;
@@ -40,6 +42,7 @@ public class RxBus {
      * @param object 事件数据
      */
     public void post(Object object){
+        eventCount=0;
         mBus.accept(object);
     }
 

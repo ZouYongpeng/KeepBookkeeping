@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/add_bill_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="添加新账户"
+        android:textSize="18sp"
+        android:layout_margin="10dp"
+        android:layout_centerHorizontal="true"/>
+
+    <ImageView
+        android:id="@+id/add_bill_dialog_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="20dp"
+        android:src="@drawable/ic_bill_add_pic"
+        android:layout_below="@+id/add_bill_dialog_title"/>
+
+    <TextView
+        android:id="@+id/add_bill_dialog_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="类型"
+        android:textSize="16sp"
+        android:layout_below="@+id/add_bill_dialog_title"
+        android:layout_toRightOf="@id/add_bill_dialog_image"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"/>
+
+    <Spinner
+        android:id="@+id/add_bill_dialog_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_bill_dialog_title"
+        android:layout_toRightOf="@id/add_bill_dialog_type"
+        android:layout_marginTop="10dp"/>
+
+    <!--<RadioGroup-->
+        <!--android:id="@+id/add_bill_dialog_radio_group"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_below="@id/add_bill_dialog_title"-->
+        <!--android:layout_toRightOf="@id/add_bill_dialog_type"-->
+        <!--android:layout_marginTop="10dp">-->
+
+        <!--<RadioButton-->
+            <!--android:id="@+id/add_bill_dialog_radio_assets"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="资产"-->
+            <!--android:background="@drawable/toolbar_radio_btn_state"-->
+            <!--android:textSize="16sp"-->
+            <!--android:textColor="@drawable/toolbar_radio_btn_text_color"-->
+            <!--android:button="@null"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_marginRight="20dp"/>-->
+
+        <!--<RadioButton-->
+            <!--android:id="@+id/add_bill_dialog_radio_debt"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="负债"-->
+            <!--android:background="@drawable/toolbar_radio_btn_state"-->
+            <!--android:textSize="16sp"-->
+            <!--android:textColor="@drawable/toolbar_radio_btn_text_color"-->
+            <!--android:button="@null"/>-->
+
+    <!--</RadioGroup>-->
+
+    <TextView
+        android:id="@+id/add_bill_dialog_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="名称"
+        android:textSize="16sp"
+        android:layout_below="@id/add_bill_dialog_type"
+        android:layout_toRightOf="@id/add_bill_dialog_image"
+        android:layout_marginTop="22dp"
+        android:layout_marginRight="10dp"/>
+
+    <EditText
+        android:id="@+id/add_bill_dialog_name_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="请输入账户名"
+        android:textSize="16sp"
+        android:layout_below="@id/add_bill_dialog_spinner"
+        android:layout_toRightOf="@id/add_bill_dialog_name"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignBaseline="@+id/add_bill_dialog_name"/>
+
+    <TextView
+        android:id="@+id/add_bill_dialog_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="已存在"
+        android:textColor="#FF3030"
+        android:visibility="invisible"
+        android:background="@drawable/boder"
+        android:layout_below="@id/add_bill_dialog_spinner"
+        android:layout_toRightOf="@id/add_bill_dialog_name_edit"
+        android:layout_alignBaseline="@+id/add_bill_dialog_name_edit"/>
+
+    <TextView
+        android:id="@+id/add_bill_dialog_money"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="金额"
+        android:textSize="16sp"
+        android:layout_below="@id/add_bill_dialog_name"
+        android:layout_toRightOf="@id/add_bill_dialog_image"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="10dp"/>
+
+    <EditText
+        android:id="@+id/add_bill_dialog_money_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="0.00"
+        android:textSize="16sp"
+        android:inputType="numberDecimal"
+        android:layout_below="@id/add_bill_dialog_name_edit"
+        android:layout_toRightOf="@id/add_bill_dialog_money"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"/>
+
+    <TextView
+        android:id="@+id/add_bill_dialog_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="添加描述（10个字内）"
+        android:layout_below="@id/add_bill_dialog_image"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp"/>
+
+    <EditText
+        android:id="@+id/add_bill_dialog_description_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="在此输入描述"
+        android:textSize="16sp"
+        android:layout_below="@id/add_bill_dialog_description"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/add_bill_dialog_description_edit"
+        android:padding="20dp">
+
+        <Button
+            android:id="@+id/add_bill_dialog_cancel_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="取消"
+            android:layout_marginRight="10dp"
+            style="@style/Base.Widget.AppCompat.ActionButton.CloseMode"/>
+
+        <Button
+            android:id="@+id/add_bill_dialog_ok_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="确认"
+            android:layout_marginLeft="10dp"
+            style="@style/Base.Widget.AppCompat.ActionButton.CloseMode"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

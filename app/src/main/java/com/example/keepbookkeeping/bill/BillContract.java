@@ -32,6 +32,8 @@ public interface BillContract {
         void changeContentType(int type);
 
         void initRxBusEvent();
+
+        void initAddBillDialog();
     }
 
 }
