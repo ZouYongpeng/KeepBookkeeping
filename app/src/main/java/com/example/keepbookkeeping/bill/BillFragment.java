@@ -27,6 +27,7 @@ import com.example.keepbookkeeping.bean.BillApartBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
 import com.example.keepbookkeeping.events.NotifyBillListEvent;
 import com.example.keepbookkeeping.events.ShowAddNewBillDialogEvent;
+import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.BillTableUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
@@ -69,7 +70,7 @@ public class BillFragment extends Fragment implements BillContract.View{
 
     AlertDialog mAddBillDialog;
 
-    static CompositeDisposable compositeDisposable=new CompositeDisposable();
+    CompositeDisposable compositeDisposable=new CompositeDisposable();
 
     @Nullable
     @Override
@@ -78,6 +79,7 @@ public class BillFragment extends Fragment implements BillContract.View{
         ButterKnife.bind(this,view);
         LogUtil.d("BillFragment","onCreateView"+this);
         mType=TYPE_ASSETS;
+        initBanner();
         initBillRecyclerView();
         initAddBillDialog();
         initRxBusEvent();
@@ -102,25 +104,50 @@ public class BillFragment extends Fragment implements BillContract.View{
     }
 
     @Override
+    public void initBanner() {
+        float assetsSpendMoney=AllDataTableUtil.getSumMoneyByBillType(BillTableUtil.TYPE_ASSETS);
+        float assetsInitialMoney=BillTableUtil.getSumInitialMoney(BillTableUtil.TYPE_ASSETS);
+        float debtSpendMoney=AllDataTableUtil.getSumMoneyByBillType(BillTableUtil.TYPE_DEBT);
+//        float debtInitialMoney=BillTableUtil.getSumInitialMoney(BillTableUtil.TYPE_DEBT);
+        switch (mType){
+            case TYPE_ASSETS:
+                ToastUtil.success("资产");
+
+                mBillNumText.setText(String.valueOf(assetsInitialMoney+assetsSpendMoney));
+                mBillNetNumText.setText("净资产："+String.valueOf(assetsInitialMoney+assetsSpendMoney+debtSpendMoney));
+                break;
+            case TYPE_DEBT:
+                ToastUtil.success("负债");
+                mBillNumText.setText(String.valueOf(-debtSpendMoney));
+                mBillNetNumText.setText("净资产："+String.valueOf(assetsInitialMoney+assetsSpendMoney+debtSpendMoney));
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
     public void initBillRecyclerView() {
         LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
         mBillRecyclerView.setLayoutManager(layoutManager);
         if (mPresenter!=null){
             mBillApartBeanList= BillTableUtil.getAllBillAssetsList(mType);
-            mAdapter=new BillApartAdapter(mBillApartBeanList);
+            mAdapter=new BillApartAdapter(getActivity(),mBillApartBeanList);
             mBillRecyclerView.setAdapter(mAdapter);
         }
     }
 
     @Override
     public void initRxBusEvent() {
+//        compositeDisposable.clear();
+
         compositeDisposable.add(RxBus.getInstance().toObservable(ChangeFragmentTypeEvent.class).subscribe(new Consumer<ChangeFragmentTypeEvent>() {
             @Override
             public void accept(ChangeFragmentTypeEvent s){
                 RxBus.eventCount++;
                 if (RxBus.eventCount==1){
-                    changeContentType(s.getMsg());
                     LogUtil.d("rxbus","接收 ChangeFragmentTypeEvent:"+s.getMsg());
+                    changeContentType(s.getMsg());
                 }
             }
         }));
@@ -172,6 +199,7 @@ public class BillFragment extends Fragment implements BillContract.View{
         final EditText descriptionEdit=view.findViewById(R.id.add_bill_dialog_description_edit);
         Button cancelBtn=view.findViewById(R.id.add_bill_dialog_cancel_btn);
         final Button confirmBtn=view.findViewById(R.id.add_bill_dialog_ok_btn);
+        confirmBtn.setEnabled(false);
         billNameEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -213,7 +241,8 @@ public class BillFragment extends Fragment implements BillContract.View{
                 int imageId=BillTableUtil.getImageIdByBillName(billName);
                 String newName=billNameEdit.getText().toString().trim();
                 String description=descriptionEdit.getText().toString().trim();
-                float initialCount=Float.valueOf(moneyEdit.getText().toString().trim());
+                String count=moneyEdit.getText().toString().trim();
+                float initialCount=TextUtils.isEmpty(count) ? 0:Float.valueOf(count);
                 BillApartBean bean=new BillApartBean(0,type,imageId,newName,description,initialCount,1);
                 BillTableUtil.insertBillData(bean);
                 RxBus.getInstance().post(new NotifyBillListEvent(type));
@@ -229,18 +258,9 @@ public class BillFragment extends Fragment implements BillContract.View{
         if (mAdapter!=null){
             mBillApartBeanList= BillTableUtil.getAllBillAssetsList(mType);
             mAdapter.notifyData(mBillApartBeanList);
+//            mBillNumText.setText(String.valueOf(mAdapter.getTotalMoney()));
+//            mAdapter.getMoneyHashMap();
         }
-        switch (mType){
-            case TYPE_ASSETS:
-                ToastUtil.success("资产");
-                mBillNumText.setText("资产：12000.00元");
-                break;
-            case TYPE_DEBT:
-                ToastUtil.success("负债");
-                mBillNumText.setText("负债：5000.00元");
-                break;
-            default:
-                break;
-        }
+        initBanner();
     }
 }

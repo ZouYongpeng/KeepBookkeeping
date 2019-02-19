@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.BillDetailsActivity">
+
+    <RelativeLayout
+        android:id="@+id/bill_detail_back_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_color">
+
+        <ImageView
+            android:id="@+id/bill_detail_back_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_back_arrow"
+            android:layout_margin="5dp"/>
+
+        <TextView
+            android:id="@+id/bill_detail_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="支付宝"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/bill_detail_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/bill_detail_banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bill_detail_back_toolbar"
+        android:background="@color/main_color"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/bill_detail_total_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12000.00"
+                android:textSize="26sp"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true"/>
+
+            <TextView
+                android:id="@+id/bill_detail_total_money_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="余额"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:layout_above="@+id/bill_detail_total_money"
+                android:layout_centerHorizontal="true"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/bill_detail_income_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="收入"
+                android:textSize="10sp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/white"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:id="@+id/bill_detail_income_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12000.00"
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:layout_below="@+id/bill_detail_income_text"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:id="@+id/bill_detail_outcome_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="支出"
+                android:textSize="10sp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/white"
+                android:layout_below="@+id/bill_detail_income_money"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:id="@+id/bill_detail_outcome_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12000.00"
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:layout_below="@+id/bill_detail_outcome_text"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:id="@+id/bill_detail_debt_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="26sp"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/bill_detail_debt_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="余额"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:layout_above="@+id/bill_detail_debt_money"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/bill_detail_add_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="记一笔"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:layout_centerInParent="true"
+        android:textColor="@color/white"
+        android:background="@color/main_color"
+        android:layout_alignParentBottom="true"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/bill_detail_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/bill_detail_banner"
+        android:layout_above="@+id/bill_detail_add_data"
+        android:paddingTop="10dp"
+        android:overScrollMode="never"/>
+
+</RelativeLayout>

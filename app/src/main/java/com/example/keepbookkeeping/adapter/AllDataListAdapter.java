@@ -62,6 +62,12 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int[] positionToIndex;
     private int[] positionToType;
 
+    private String mValue;
+    private int mDataType;
+    public static final int TYPE_ALL_DATA=0;
+    public static final int TYPE_QUERY_BILL_NAME=1;
+
+
     public static class DateViewHolder extends RecyclerView.ViewHolder{
 
         private TextView mDateText;
@@ -176,6 +182,14 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public AllDataListAdapter(Context context) {
         mContext=context;
         initAdapter();
+        mDataType=TYPE_ALL_DATA;
+    }
+
+    public AllDataListAdapter(Context context,int dataType,String value) {
+        mContext=context;
+        mDataType=dataType;
+        mValue=value;
+        initAdapter();
     }
 
     private void initAdapter(){
@@ -185,9 +199,15 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         dateIndex=0;
         monthIndex=0;
         bindIndex=0;
-        mSingleDataList= AllDataTableUtil.queryAllDataOrderByDate();
-        mYearMonthList= AllDataTableUtil.getDifferentMonthList();
-        mDateList= AllDataTableUtil.getDifferentDateList();
+        if (mDataType==TYPE_ALL_DATA){
+            mSingleDataList= AllDataTableUtil.queryAllDataOrderByDate();
+            mYearMonthList= AllDataTableUtil.getAllDifferentMonthList();
+            mDateList= AllDataTableUtil.getAllDifferentDateList();
+        }else{
+            mSingleDataList= AllDataTableUtil.queryDataOrderByDateByBillName(mValue);
+            mYearMonthList= AllDataTableUtil.getDifferentMonthListInBillName(mValue);
+            mDateList= AllDataTableUtil.getDifferentDateListInBillName(mValue);
+        }
         count=mSingleDataList.size()+mYearMonthList.size()+mDateList.size()+1;
         positionToIndex=new int[count];
         positionToType=new int[count];
@@ -352,13 +372,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     isClickList[position]=false;
                     ToastUtil.success("编辑"+bean.getId());
                     Bundle bundle=new Bundle();
-                    bundle.putInt("id",bean.getId());
-                    bundle.putInt("type",bean.getType());
-                    bundle.putString("typeName",bean.getTypeName());
-                    bundle.putString("money",String.valueOf(bean.getMoney()));
-                    bundle.putString("date",DateUtil.dateToString(bean.getDate()));
-                    bundle.putString("billName",bean.getBillName());
-                    bundle.putString("description",bean.getDescription());
+                    bundle.putSerializable("bean",bean);
                     AddDataActivity.startAddDataActivity(mContext,bundle);
                 }
             });
@@ -370,8 +384,6 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             });
             ((EmptyViewHolder) holder).mLoginText.setOnClickListener(mEmptyListener);
-        }else {
-            LogUtil.d("AllDataList","EndViewHolder");
         }
     }
 

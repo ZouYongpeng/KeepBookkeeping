@@ -2,6 +2,7 @@ package com.example.keepbookkeeping.bean;
 
 import com.example.keepbookkeeping.utils.DateUtil;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * @date 2019/1/29
  * @description :单笔花费类型
  */
-public class SingleDataBean {
+public class SingleDataBean implements Serializable{
 
     public static final int TYPE_OUTCOME_DATA=0;
     public static final int TYPE_INCOME_DATA=1;

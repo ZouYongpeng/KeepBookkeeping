@@ -90,11 +90,11 @@ public class AddDataActivity extends AppCompatActivity {
     android.support.v7.app.AlertDialog mDescriptionDialog;
     android.support.v7.app.AlertDialog mCancelDialog;
 
-    private Bundle mBundle;
     private int type;
     private static final int TYPE_ADD_DATA=0;
     private static final int TYPE_UPDATE_DATA=1;
 
+    SingleDataBean mBean;
     private int mUpdateId=-1;
 
     @Override
@@ -110,23 +110,24 @@ public class AddDataActivity extends AppCompatActivity {
         initRxBusEvent();
         initDialog();
 
-        if (mBundle!=null){
+        if (mBean!=null){
             refreshRadioAndPager();
-            mAddDataChooseText.setText(mBundle.getString("typeName"));
-            mAddDataChooseImage.setImageResource(DataTypeTableUtil.getImageId(mBundle.getString("typeName")));
+            mAddDataChooseText.setText(mBean.getTypeName());
+            mAddDataChooseImage.setImageResource(DataTypeTableUtil.getImageId(mBean.getTypeName()));
         }
     }
 
     private void initData(){
-        mBundle=getIntent().getExtras();
-        if (mBundle!=null){
+        Bundle bundle=getIntent().getExtras();
+        if (bundle!=null){
             type=TYPE_UPDATE_DATA;
-            mUpdateId=mBundle.getInt("id",-1);
-            mAddDataType=mBundle.getInt("type");
-            mInputMoneyEditText.setText(mBundle.getString("money"));
-            mAddDataSelectDate.setText(mBundle.getString("date"));
-            mAddDataBillTypeStr=mBundle.getString("billName");
-            mAddDataDescriptionStr=mBundle.getString("description");
+            mBean=(SingleDataBean) bundle.getSerializable("bean");
+            mUpdateId=mBean.getId();
+            mAddDataType=mBean.getType();
+            mInputMoneyEditText.setText(String.valueOf(mBean.getMoney()));
+            mAddDataSelectDate.setText(DateUtil.dateToString(mBean.getDate()));
+            mAddDataBillTypeStr=mBean.getBillName();
+            mAddDataDescriptionStr=mBean.getDescription();
         }else {
             type=TYPE_ADD_DATA;
             mAddDataType= TYPE_OUTCOME;
@@ -177,7 +178,6 @@ public class AddDataActivity extends AppCompatActivity {
     }
 
     private void initDialog(){
-
         mDatePickerDialog=new SimpleDatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT,new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -321,7 +321,11 @@ public class AddDataActivity extends AppCompatActivity {
                     showDatePickerDialog();
                     break;
                 case R.id.add_data_select_bill:
-                    showBillTypeAlertDialog(BillTableUtil.getAllBillName());
+                    if (mAddDataType==TYPE_OUTCOME){
+                        showBillTypeAlertDialog(BillTableUtil.getBillName(BillTableUtil.TYPE_ALL));
+                    }else {
+                        showBillTypeAlertDialog(BillTableUtil.getBillName(BillTableUtil.TYPE_ASSETS));
+                    }
                     break;
                 case R.id.add_data_input_description:
                     showInputDescriptionAlertDialog();

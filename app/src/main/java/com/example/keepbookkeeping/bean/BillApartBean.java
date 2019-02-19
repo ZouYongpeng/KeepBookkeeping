@@ -4,12 +4,14 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.Serializable;
+
 /**
  * @author 邹永鹏
  * @date 2019/1/23
  * @description :账号的资产/负债分类bean
  */
-public class BillApartBean {
+public class BillApartBean implements Serializable{
 
     public final static int TYPE_BILL_ASSETS=0;
     public final static int TYPE_BILL_DEBT=1;
@@ -95,5 +97,18 @@ public class BillApartBean {
 
     public void setCanChange(int canChange) {
         this.canChange = canChange;
+    }
+
+    @Override
+    public String toString() {
+        return "BillApartBean{" +
+                "id=" + id +
+                ", type=" + type +
+                ", imageId=" + imageId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", initialCount=" + initialCount +
+                ", canChange=" + canChange +
+                '}';
     }
 }

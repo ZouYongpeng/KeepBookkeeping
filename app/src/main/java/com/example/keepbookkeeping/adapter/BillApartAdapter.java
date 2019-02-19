@@ -1,5 +1,8 @@
 package com.example.keepbookkeeping.adapter;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
+import com.example.keepbookkeeping.activities.BillDetailsActivity;
 import com.example.keepbookkeeping.bean.BillApartBean;
 import com.example.keepbookkeeping.events.ShowAddNewBillDialogEvent;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
@@ -18,7 +22,11 @@ import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 邹永鹏
@@ -27,13 +35,13 @@ import java.util.List;
  */
 public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private Context mContext;
     private List<BillApartBean> mBillApartBeanList;
     private int billType=0;
 
     private static final int TYPE_CONTENT=0;
     private static final int TYPE_EXTRAS=1;
     private static final int TYPE_ADD_DATA=2;
-
 
     static class BillViewHolder extends RecyclerView.ViewHolder{
         RelativeLayout mLayout;
@@ -65,7 +73,8 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     }
 
-    public BillApartAdapter(List<BillApartBean> billApartBeanList){
+    public BillApartAdapter(Context context,List<BillApartBean> billApartBeanList){
+        mContext=context;
         mBillApartBeanList=billApartBeanList;
     }
 
@@ -96,15 +105,22 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof BillViewHolder){
-            BillApartBean bean;
+            final BillApartBean bean;
             if (position<mBillApartBeanList.size()){
                 bean=mBillApartBeanList.get(position);
                 billType=bean.getType();
-                float spendMoney=AllDataTableUtil.getTotalMoneyByBillName(bean.getName());
+                float spendMoney=AllDataTableUtil.getMoneyByBillName(bean.getName(),AllDataTableUtil.TYPE_TOTAL);
                 float currentMoney= BillTableUtil.getInitialCountByBillName(bean.getName())+spendMoney;
                 ((BillViewHolder)holder).mCurrentMoneyText.setText(String.valueOf(currentMoney));
                 ((BillViewHolder)holder).mSpendMoneyText.setText("收支："+String.valueOf(spendMoney));
-//                ((BillViewHolder) holder).mLayout.setOnClickListener();
+                ((BillViewHolder) holder).mLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bundle bundle=new Bundle();
+                        bundle.putSerializable("bean",bean);
+                        BillDetailsActivity.startBillDetailsActivity(mContext,bundle);
+                    }
+                });
             }else {
                 if (billType==BillApartBean.TYPE_BILL_ASSETS){
                     bean=new BillApartBean(-1,billType,R.drawable.ic_bill_shouzhai,"应收账","别人欠我的钱",0,0);
@@ -148,4 +164,5 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         }
     };
+
 }

@@ -24,7 +24,11 @@ public class AllDataTableUtil {
 
     public static final String QUERY_ALL_DATA_ORDER_BY_DATE="SELECT * FROM AllData ORDER BY DATE DESC";
 
+    public static final String QUERY_DATA_ORDER_BY_DATE_IN_BILL_NAME="SELECT * FROM AllData WHERE bill_name = ? ORDER BY DATE DESC";
+
     public static final String QUERY_DATE_LIST="SELECT DISTINCT DATE FROM AllData ORDER BY DATE DESC";
+
+    public static final String QUERY_DATE_LIST_IN_BILL_NAME="SELECT DISTINCT DATE FROM AllData WHERE bill_name = ? ORDER BY DATE DESC";
 
     public static final String QUERY_DATE_COUNT="SELECT COUNT(DISTINCT DATE) AS count FROM AllData";
 
@@ -35,6 +39,8 @@ public class AllDataTableUtil {
     public static final String FIRST_YEAR_DATE="SELECT * FROM AllData ORDER BY DATE DESC LIMIT 0,1";
 
     public static final String DELETE_DATA_BY_ID="DELETE FROM AllData WHERE id = ?";
+
+    public static final String SELECT_SUM_BY_BILL_TYPE="select type , money , bill_name from AllData where bill_name in (select name from AllBill where AllBill.type = ? )";
 
     public static final String UPDATE_DATA_BY_ID="UPDATE AllData " +
             "SET type = ? " +
@@ -48,13 +54,17 @@ public class AllDataTableUtil {
     public static final String QUERY_MONEY_IN_BILL_NAME="SELECT * FROM AllData WHERE bill_name = ?";
 
     public static List<SingleDataBean> queryAllDataOrderByDate(){
-        return queryData(QUERY_ALL_DATA_ORDER_BY_DATE);
+        return queryData(QUERY_ALL_DATA_ORDER_BY_DATE,null);
     }
 
-    public static List<SingleDataBean> queryData(String sql){
+    public static List<SingleDataBean> queryDataOrderByDateByBillName(String billName){
+        return queryData(QUERY_DATA_ORDER_BY_DATE_IN_BILL_NAME,new String[]{billName});
+    }
+
+    public static List<SingleDataBean> queryData(String sql,String[] selectionArgs){
         LogUtil.d(TAG,"---------queryData---------");
         List<SingleDataBean> singleDataList=new ArrayList<>();
-        Cursor cursor= KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(sql,null);
+        Cursor cursor= KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(sql,selectionArgs);
         if (cursor.moveToFirst()){
             do {
                 int type=cursor.getInt(cursor.getColumnIndex("type"));
@@ -92,9 +102,17 @@ public class AllDataTableUtil {
         return KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(QUERY_ALL_DATA_ORDER_BY_DATE,null).getCount();
     }
 
-    public static List<String> getDifferentDateList(){
+    public static List<String> getAllDifferentDateList(){
+        return getDifferentDateList(QUERY_DATE_LIST,null);
+    }
+
+    public static List<String> getDifferentDateListInBillName(String billName){
+        return getDifferentDateList(QUERY_DATE_LIST_IN_BILL_NAME,new String[]{billName});
+    }
+
+    public static List<String> getDifferentDateList(String sql,String[] selectionArgs){
         List<String> list=new ArrayList<>();
-        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(QUERY_DATE_LIST,null);
+        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(sql,selectionArgs);
         if (cursor.moveToFirst()){
             do {
                 list.add(cursor.getString(cursor.getColumnIndex("date")));
@@ -118,14 +136,22 @@ public class AllDataTableUtil {
         return count;
     }
 
-    public static List<String> getDifferentMonthList(){
+    public static List<String> getAllDifferentMonthList(){
+        return getDifferentMonthList(QUERY_ALL_DATA_ORDER_BY_DATE,null);
+    }
+
+    public static List<String> getDifferentMonthListInBillName(String billName){
+        return getDifferentMonthList(QUERY_DATA_ORDER_BY_DATE_IN_BILL_NAME,new String[]{billName});
+    }
+
+    public static List<String> getDifferentMonthList(String sql,String[] selectionArgs){
         String previousMonth=null;
         String month;
         String[] monthSplit;
         String currentYear=String.valueOf(DateUtil.getCurrentYear());
         int currentMonth=DateUtil.getCurrentMonth();
         List<String> months=new ArrayList<>();
-        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(QUERY_ALL_DATA_ORDER_BY_DATE,null);
+        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(sql,selectionArgs);
         if (cursor.moveToFirst()) {
             do {
                 monthSplit=cursor.getString(cursor.getColumnIndex("date")).split("-");
@@ -185,26 +211,37 @@ public class AllDataTableUtil {
         return count;
     }
 
+    public static final int TYPE_TOTAL=0;
+    public static final int TYPE_OUTCOME=1;
+    public static final int TYPE_INCOME=2;
+
     /**
      * 获取数据库中某账户金额
-     * @param billNmae
+     * @param billName
      * @return
      */
-    public static float getTotalMoneyByBillName(String billNmae){
+    public static float getMoneyByBillName(String billName,int type){
         SQLiteDatabase db=KBKAllDataBaseHelper.getInstance().getWritableDatabase();
-        Cursor cursor=db.rawQuery(QUERY_MONEY_IN_BILL_NAME,new String[]{billNmae});
-        float count=0;
+        Cursor cursor=db.rawQuery(QUERY_MONEY_IN_BILL_NAME,new String[]{billName});
+        float outcomeCount=0;
+        float incomeCount=0;
         if (cursor.moveToFirst()){
             do {
                 if (cursor.getInt(cursor.getColumnIndex("type"))==0){
-                    count-=cursor.getFloat(cursor.getColumnIndex("money"));
+                    outcomeCount+=cursor.getFloat(cursor.getColumnIndex("money"));
                 }else {
-                    count+=cursor.getFloat(cursor.getColumnIndex("money"));
+                    incomeCount+=cursor.getFloat(cursor.getColumnIndex("money"));
                 }
             }while (cursor.moveToNext());
         }
         cursor.close();
-        return count;
+        if (type==TYPE_OUTCOME){
+            return outcomeCount;
+        }else if (type==TYPE_INCOME){
+            return incomeCount;
+        }else {
+            return incomeCount-outcomeCount;
+        }
     }
 
     /**
@@ -238,5 +275,35 @@ public class AllDataTableUtil {
         }
         KBKAllDataBaseHelper.getInstance().getWritableDatabase().update("AllData",values,"id = ?",new String[]{String.valueOf(id)});
         values.clear();
+    }
+
+    public static float getSumMoneyByBillType(int type){
+        float outcomeCount=0;
+        float incomeCount=0;
+        Cursor cursor;
+        if (type==BillTableUtil.TYPE_ASSETS){
+            cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(SELECT_SUM_BY_BILL_TYPE,new String[]{"0"});
+
+        }else {
+            cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(SELECT_SUM_BY_BILL_TYPE,new String[]{"1"});
+        }
+        if (cursor.moveToFirst()){
+            do {
+                if (cursor.getInt(cursor.getColumnIndex("type"))==0){
+                    outcomeCount+=cursor.getFloat(cursor.getColumnIndex("money"));
+                }else {
+                    incomeCount+=cursor.getFloat(cursor.getColumnIndex("money"));
+                }
+//                LogUtil.d("db",cursor.getInt(cursor.getColumnIndex("type"))+" - "+
+//                        cursor.getFloat(cursor.getColumnIndex("money"))+" - "+
+//                        cursor.getString(cursor.getColumnIndex("bill_name")));
+            }while (cursor.moveToNext());
+        }
+        return incomeCount-outcomeCount;
+    }
+
+    public static final String UPDATE_BILL_NAME="update AllData set bill_name = ? where bill_name = ? ";
+    public static void updateBillName(String newBillName,String oldBillName){
+        KBKAllDataBaseHelper.getInstance().getWritableDatabase().execSQL(UPDATE_BILL_NAME,new String[]{newBillName,oldBillName});
     }
 }

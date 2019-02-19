@@ -21,6 +21,8 @@ public interface BillContract {
      * 进行listFragment界面UI的操作*/
     interface View extends BaseView<Presenter>{
 
+        void initBanner();
+
         /**
          * 初始化recyclerView
          * */
