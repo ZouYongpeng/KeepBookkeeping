@@ -20,6 +20,7 @@ import java.util.List;
 public class FormApartRecyclerViewAdapter extends RecyclerView.Adapter<FormApartRecyclerViewAdapter.ViewHolder> {
 
     private List<FormApartBean> mFormApartBeans;
+    private float mTotalMoney;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         private TextView mTypeText;
@@ -34,8 +35,9 @@ public class FormApartRecyclerViewAdapter extends RecyclerView.Adapter<FormApart
         }
     }
 
-    public FormApartRecyclerViewAdapter(List<FormApartBean> formApartBeans) {
+    public FormApartRecyclerViewAdapter(List<FormApartBean> formApartBeans,float totalMoney) {
         mFormApartBeans = formApartBeans;
+        mTotalMoney=totalMoney;
     }
 
     @NonNull
@@ -51,6 +53,7 @@ public class FormApartRecyclerViewAdapter extends RecyclerView.Adapter<FormApart
         FormApartBean bean=mFormApartBeans.get(position);
         holder.mTypeText.setText(bean.getTypeName());
         holder.mMoneytext.setText(String.valueOf(bean.getMoney()));
+        bean.setPercent((bean.getMoney()*100)/mTotalMoney);
         holder.mPercentText.setText(String.valueOf(bean.getPercent()));
     }
 
@@ -59,11 +62,12 @@ public class FormApartRecyclerViewAdapter extends RecyclerView.Adapter<FormApart
         return mFormApartBeans.size();
     }
 
-    public void notifyFormApartBeans(List<FormApartBean> formApartBeans){
+    public void notifyFormApartBeans(List<FormApartBean> formApartBeans,float totalMoney){
         if (mFormApartBeans!=null){
             mFormApartBeans.clear();
         }
         mFormApartBeans.addAll(formApartBeans);
+        mTotalMoney=totalMoney;
         this.notifyDataSetChanged();
     }
 }

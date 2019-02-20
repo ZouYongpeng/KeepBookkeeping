@@ -20,6 +20,8 @@ import com.example.keepbookkeeping.adapter.FormApartRecyclerViewAdapter;
 import com.example.keepbookkeeping.adapter.FormTrendRecyclerViewAdapter;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
+import com.example.keepbookkeeping.events.NotifyFormListEvent;
+import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 
@@ -105,10 +107,11 @@ public class FormFragment extends Fragment implements FormContract.View{
         mFormApartRecyclerView.setLayoutManager(manager);
         if (mPresenter!=null){
             mApartRecyclerViewAdapter=new FormApartRecyclerViewAdapter(
-                    mPresenter.getFormApartIncomeList(DateUtil.getCurrentYear(),DateUtil.getCurrentMonth()));
+                    AllDataTableUtil.getFormApartListByDateAndType("%2019-02%",1),
+                    AllDataTableUtil.getSumMoneyByDate("%2019-02%",1));
             mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
             mTrendRecyclerViewAdapter=new FormTrendRecyclerViewAdapter(
-                    mPresenter.getFormTrendList(DateUtil.getCurrentYear()));
+                    AllDataTableUtil.getFormTrendListByYear("2019"));
         }
         mIncomeListHead.setVisibility(View.VISIBLE);
         mOutcomeListHead.setVisibility(View.INVISIBLE);
@@ -169,7 +172,9 @@ public class FormFragment extends Fragment implements FormContract.View{
         switch (mFormType){
             case TYPE_APART_INCOME:
                 if (mPresenter!=null){
-                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartIncomeList(year,month));
+                    mApartRecyclerViewAdapter.notifyFormApartBeans(
+                            AllDataTableUtil.getFormApartListByDateAndType("%2019-02%",1),
+                            AllDataTableUtil.getSumMoneyByDate("%2019-02%",1));
                     if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
                         mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
                     }
@@ -178,7 +183,9 @@ public class FormFragment extends Fragment implements FormContract.View{
                 break;
             case TYPE_APART_OUTCOME:
                 if (mPresenter!=null){
-                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartOutcomeList(year,month));
+                    mApartRecyclerViewAdapter.notifyFormApartBeans(
+                            AllDataTableUtil.getFormApartListByDateAndType("%2019-02%",0),
+                            AllDataTableUtil.getSumMoneyByDate("%2019-02%",0));
                     if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
                         mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
                     }
@@ -187,7 +194,7 @@ public class FormFragment extends Fragment implements FormContract.View{
                 break;
             case TYPE_TREND:
                 if (mPresenter!=null){
-                    mTrendRecyclerViewAdapter.notifyFormTrendBeans(mPresenter.getFormTrendList(year));
+                    mTrendRecyclerViewAdapter.notifyFormTrendBeans(AllDataTableUtil.getFormTrendListByYear("2019"));
                     if (mFormApartRecyclerView.getAdapter() instanceof FormApartRecyclerViewAdapter){
                         mFormApartRecyclerView.setAdapter(mTrendRecyclerViewAdapter);
                     }
@@ -203,8 +210,13 @@ public class FormFragment extends Fragment implements FormContract.View{
     public void initRxBusEvent() {
         RxBus.getInstance().toObservable(ChangeFragmentTypeEvent.class).subscribe(new Consumer<ChangeFragmentTypeEvent>() {
             @Override
-            public void accept(ChangeFragmentTypeEvent changeFragmentTypeEvent) throws Exception {
+            public void accept(ChangeFragmentTypeEvent changeFragmentTypeEvent) {
                 notifyFormRecyclerView(changeFragmentTypeEvent.getMsg());
+            }});
+        RxBus.getInstance().toObservable(NotifyFormListEvent.class).subscribe(new Consumer<NotifyFormListEvent>() {
+            @Override
+            public void accept(NotifyFormListEvent notifyFormListEvent) {
+                notifyData(DateUtil.getCurrentYear(),DateUtil.getCurrentMonth());
             }});
     }
 

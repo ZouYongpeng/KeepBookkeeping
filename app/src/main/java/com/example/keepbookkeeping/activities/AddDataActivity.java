@@ -25,6 +25,7 @@ import com.example.keepbookkeeping.bean.DataTypeBean;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.events.ChangeDataTypeEvent;
 import com.example.keepbookkeeping.events.NotifyBillListEvent;
+import com.example.keepbookkeeping.events.NotifyFormListEvent;
 import com.example.keepbookkeeping.ui.SearchEditText;
 import com.example.keepbookkeeping.ui.SimpleDatePickerDialog;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
@@ -354,6 +355,7 @@ public class AddDataActivity extends AppCompatActivity {
                 AllDataTableUtil.updateDataById(bean,mUpdateId);
             }
             RxBus.getInstance().post(new NotifyBillListEvent(BillTableUtil.getTypeByBillName(mAddDataBillTypeStr)));
+            RxBus.getInstance().post(new NotifyFormListEvent(0));
             finish();
         }else {
             ToastUtil.error("金额或账户不允许为空");

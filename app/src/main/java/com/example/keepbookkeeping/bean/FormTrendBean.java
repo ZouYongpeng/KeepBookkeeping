@@ -42,4 +42,13 @@ public class FormTrendBean {
     public void setOutcome(float outcome) {
         this.outcome = outcome;
     }
+
+    @Override
+    public String toString() {
+        return "FormTrendBean{" +
+                "month='" + month + '\'' +
+                ", income=" + income +
+                ", outcome=" + outcome +
+                '}';
+    }
 }

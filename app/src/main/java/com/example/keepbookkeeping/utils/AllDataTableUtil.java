@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.widget.TextView;
 
+import com.example.keepbookkeeping.bean.FormApartBean;
+import com.example.keepbookkeeping.bean.FormTrendBean;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
 
@@ -22,6 +24,10 @@ public class AllDataTableUtil {
 
     public static final String TAG="db";
 
+    public static final int TYPE_TOTAL=0;
+    public static final int TYPE_OUTCOME=1;
+    public static final int TYPE_INCOME=2;
+
     public static final String QUERY_ALL_DATA_ORDER_BY_DATE="SELECT * FROM AllData ORDER BY DATE DESC";
 
     public static final String QUERY_DATA_ORDER_BY_DATE_IN_BILL_NAME="SELECT * FROM AllData WHERE bill_name = ? ORDER BY DATE DESC";
@@ -32,9 +38,9 @@ public class AllDataTableUtil {
 
     public static final String QUERY_DATE_COUNT="SELECT COUNT(DISTINCT DATE) AS count FROM AllData";
 
-    public static final String SUM_OUTCOME_MONEY="SELECT SUM(money) AS money_count FROM AllData WHERE date like ? and type = 0";
+    public static final String SUM_OUTCOME_MONEY_BY_DATE="SELECT SUM(money) AS money_count FROM AllData WHERE date like ? and type = 0";
 
-    public static final String SUM_INCOME_MONEY="SELECT SUM(money) AS money_count FROM AllData WHERE date like ? and type = 1";
+    public static final String SUM_INCOME_MONEY_BY_DATE="SELECT SUM(money) AS money_count FROM AllData WHERE date like ? and type = 1";
 
     public static final String FIRST_YEAR_DATE="SELECT * FROM AllData ORDER BY DATE DESC LIMIT 0,1";
 
@@ -42,13 +48,15 @@ public class AllDataTableUtil {
 
     public static final String SELECT_SUM_BY_BILL_TYPE="select type , money , bill_name from AllData where bill_name in (select name from AllBill where AllBill.type = ? )";
 
+    public static final String UPDATE_BILL_NAME="update AllData set bill_name = ? where bill_name = ? ";
+
     public static final String UPDATE_DATA_BY_ID="UPDATE AllData " +
             "SET type = ? " +
-            "and money = ? " +
-            "and date = ? " +
-            "and type_name = ? " +
-            "and bill_name = ? " +
-            "and description = ? " +
+            ", money = ? " +
+            ", date = ? " +
+            ", type_name = ? " +
+            ", bill_name = ? " +
+            ", description = ? " +
             "where id = ?";
 
     public static final String QUERY_MONEY_IN_BILL_NAME="SELECT * FROM AllData WHERE bill_name = ?";
@@ -148,8 +156,6 @@ public class AllDataTableUtil {
         String previousMonth=null;
         String month;
         String[] monthSplit;
-        String currentYear=String.valueOf(DateUtil.getCurrentYear());
-        int currentMonth=DateUtil.getCurrentMonth();
         List<String> months=new ArrayList<>();
         Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(sql,selectionArgs);
         if (cursor.moveToFirst()) {
@@ -170,25 +176,14 @@ public class AllDataTableUtil {
         return months;
     }
 
+
     /**
      * 获取数据库中包含某date（如“2019-2-14”或“2019-2”)的总收入金额
      * @param date
      * @return
      */
     public static float getTotalIncomeMoney(String date){
-        float count=0;
-        if (!TextUtils.isEmpty(date) && !TextUtils.equals(date,"%%")){
-            Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(SUM_INCOME_MONEY,new String[]{date});
-            if (cursor.moveToFirst()){
-                do {
-                    count=cursor.getFloat(cursor.getColumnIndex("money_count"));
-                }while(cursor.moveToNext());
-            }
-            cursor.close();
-            LogUtil.d(TAG,"TotalIncomeMoney in "+date+" = "+count);
-        }
-
-        return count;
+        return getSumMoneyByDate(date,TYPE_INCOME);
     }
 
     /**
@@ -197,23 +192,29 @@ public class AllDataTableUtil {
      * @return
      */
     public static float getTotalOutcomeMoney(String date){
+        return getSumMoneyByDate(date,TYPE_OUTCOME);
+    }
+
+    public static float getSumMoneyByDate(String date,int type){
         float count=0;
+        String sql;
+        if (type==TYPE_INCOME){
+            sql=SUM_INCOME_MONEY_BY_DATE;
+        }else {
+            sql=SUM_OUTCOME_MONEY_BY_DATE;
+        }
         if (!TextUtils.isEmpty(date) && !TextUtils.equals(date,"%%")){
-            Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(SUM_OUTCOME_MONEY,new String[]{date});
+            Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(sql,new String[]{date});
             if (cursor.moveToFirst()){
                 do {
                     count=cursor.getFloat(cursor.getColumnIndex("money_count"));
                 }while(cursor.moveToNext());
             }
             cursor.close();
-            LogUtil.d(TAG,"TotalOutcomeMoney in "+date+" = "+count);
+            LogUtil.d(TAG,"SumMoneyByDate in "+date+" = "+count+" , type = "+type);
         }
         return count;
     }
-
-    public static final int TYPE_TOTAL=0;
-    public static final int TYPE_OUTCOME=1;
-    public static final int TYPE_INCOME=2;
 
     /**
      * 获取数据库中某账户金额
@@ -294,16 +295,62 @@ public class AllDataTableUtil {
                 }else {
                     incomeCount+=cursor.getFloat(cursor.getColumnIndex("money"));
                 }
-//                LogUtil.d("db",cursor.getInt(cursor.getColumnIndex("type"))+" - "+
-//                        cursor.getFloat(cursor.getColumnIndex("money"))+" - "+
-//                        cursor.getString(cursor.getColumnIndex("bill_name")));
             }while (cursor.moveToNext());
         }
         return incomeCount-outcomeCount;
     }
 
-    public static final String UPDATE_BILL_NAME="update AllData set bill_name = ? where bill_name = ? ";
     public static void updateBillName(String newBillName,String oldBillName){
         KBKAllDataBaseHelper.getInstance().getWritableDatabase().execSQL(UPDATE_BILL_NAME,new String[]{newBillName,oldBillName});
     }
+
+    public static final String SELECT_SUM_MONEY_AND_TYPE_NAME_BY_DATE="select type_name , sum(money) as sum_money from AllData where date like ? and type = ? group by type_name";
+
+    public static List<FormApartBean> getFormApartListByDateAndType(String date,int type){
+        List<FormApartBean> list=new ArrayList<>();
+        SQLiteDatabase db=KBKAllDataBaseHelper.getInstance().getWritableDatabase();
+        Cursor cursor=db.rawQuery(SELECT_SUM_MONEY_AND_TYPE_NAME_BY_DATE,new String[]{date,String.valueOf(type)});
+        if (cursor.moveToFirst()){
+            do {
+                list.add(new FormApartBean(
+                        cursor.getString(cursor.getColumnIndex("type_name")),
+                        cursor.getFloat(cursor.getColumnIndex("sum_money"))
+                ));
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        LogUtil.d(TAG,"---getFormApartListByDateAndType---");
+        for (int i=0;i<list.size();i++){
+            LogUtil.d(TAG,list.get(i).toString());
+        }
+        return list;
+    }
+
+    /**
+     *
+     * @param year (2019)
+     * @return
+     */
+    public static List<FormTrendBean> getFormTrendListByYear(String year){
+        String yearAndMonth;
+        List<FormTrendBean> list=new ArrayList<>();
+        for (int i=1;i<=12;i++){
+            if (i<10){
+                yearAndMonth="%"+year+"-0"+i+"%";
+            }else {
+                yearAndMonth="%"+year+"-"+i+"%";
+            }
+            list.add(new FormTrendBean(
+                    i+"月",
+                    getSumMoneyByDate(yearAndMonth,TYPE_INCOME),
+                    getSumMoneyByDate(yearAndMonth,TYPE_OUTCOME)
+                    ));
+        }
+        LogUtil.d(TAG,"---getFormTrendListByYear---");
+        for (int i=0;i<list.size();i++){
+            LogUtil.d(TAG,list.get(i).toString());
+        }
+        return list;
+    }
+
 }

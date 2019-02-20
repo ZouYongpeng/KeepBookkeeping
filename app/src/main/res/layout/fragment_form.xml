@@ -10,7 +10,7 @@
         android:layout_height="30dp"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
-        android:text="2019年1月"
+        android:text="2019-01"
         android:textSize="20sp"/>
 
     <ImageView
