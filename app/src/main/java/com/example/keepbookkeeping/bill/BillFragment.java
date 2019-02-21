@@ -24,14 +24,21 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.BillApartAdapter;
 import com.example.keepbookkeeping.bean.BillApartBean;
+import com.example.keepbookkeeping.bean.FormApartBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
 import com.example.keepbookkeeping.events.NotifyBillListEvent;
 import com.example.keepbookkeeping.events.ShowAddNewBillDialogEvent;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.BillTableUtil;
+import com.example.keepbookkeeping.utils.ColorUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +64,9 @@ public class BillFragment extends Fragment implements BillContract.View{
     @BindView(R.id.bill_net_num)
     TextView mBillNetNumText;
 
+    @BindView(R.id.bill_pie_chart)
+    PieChart mPieChart;
+
     private final String TAG="BillFragment_log";
 
     private BillContract.Presenter mPresenter;
@@ -79,8 +89,8 @@ public class BillFragment extends Fragment implements BillContract.View{
         ButterKnife.bind(this,view);
         LogUtil.d("BillFragment","onCreateView"+this);
         mType=TYPE_ASSETS;
-        initBanner();
         initBillRecyclerView();
+        initBanner();
         initAddBillDialog();
         initRxBusEvent();
         return view;
@@ -112,7 +122,6 @@ public class BillFragment extends Fragment implements BillContract.View{
         switch (mType){
             case TYPE_ASSETS:
                 ToastUtil.success("资产");
-
                 mBillNumText.setText(String.valueOf(assetsInitialMoney+assetsSpendMoney));
                 mBillNetNumText.setText("净资产："+String.valueOf(assetsInitialMoney+assetsSpendMoney+debtSpendMoney));
                 break;
@@ -124,6 +133,7 @@ public class BillFragment extends Fragment implements BillContract.View{
             default:
                 break;
         }
+        setPieChartData();
     }
 
     @Override
@@ -131,7 +141,7 @@ public class BillFragment extends Fragment implements BillContract.View{
         LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
         mBillRecyclerView.setLayoutManager(layoutManager);
         if (mPresenter!=null){
-            mBillApartBeanList= BillTableUtil.getAllBillAssetsList(mType);
+            mBillApartBeanList = BillTableUtil.getAllBillAssetsList(mType);
             mAdapter=new BillApartAdapter(getActivity(),mBillApartBeanList);
             mBillRecyclerView.setAdapter(mAdapter);
         }
@@ -139,8 +149,6 @@ public class BillFragment extends Fragment implements BillContract.View{
 
     @Override
     public void initRxBusEvent() {
-//        compositeDisposable.clear();
-
         compositeDisposable.add(RxBus.getInstance().toObservable(ChangeFragmentTypeEvent.class).subscribe(new Consumer<ChangeFragmentTypeEvent>() {
             @Override
             public void accept(ChangeFragmentTypeEvent s){
@@ -258,9 +266,38 @@ public class BillFragment extends Fragment implements BillContract.View{
         if (mAdapter!=null){
             mBillApartBeanList= BillTableUtil.getAllBillAssetsList(mType);
             mAdapter.notifyData(mBillApartBeanList);
-//            mBillNumText.setText(String.valueOf(mAdapter.getTotalMoney()));
-//            mAdapter.getMoneyHashMap();
         }
         initBanner();
+    }
+
+    public void setPieChartData(){
+        List<PieEntry> entryList = new ArrayList<>();
+        for (BillApartBean bean:mBillApartBeanList){
+            float money= BillTableUtil.getInitialCountByBillName(bean.getName())+
+                    AllDataTableUtil.getMoneyByBillName(bean.getName(),AllDataTableUtil.TYPE_TOTAL);
+            entryList.add(new PieEntry(
+                    money,
+                    bean.getName()));
+        }
+        PieDataSet dataSet=new PieDataSet(entryList,"");
+
+        dataSet.setColors(ColorUtil.getPieChartColorList());
+
+        PieData pieData=new PieData(dataSet);
+        pieData.setDrawValues(true);
+
+        mPieChart.setData(pieData);
+        mPieChart.setTouchEnabled(false);
+
+        Description description=new Description();
+        description.setText("");
+        mPieChart.setDescription(description);
+        //百分比显示
+        mPieChart.setUsePercentValues(true);
+        //孔半径
+        mPieChart.setHoleRadius(50);
+        //不显示中间的透明小圆
+        mPieChart.setTransparentCircleRadius(0);
+        mPieChart.invalidate();
     }
 }

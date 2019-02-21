@@ -23,6 +23,7 @@ import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.adapter.FormApartPagerAdapter;
 import com.example.keepbookkeeping.adapter.FormApartRecyclerViewAdapter;
 import com.example.keepbookkeeping.adapter.FormTrendRecyclerViewAdapter;
+import com.example.keepbookkeeping.bean.FormApartBean;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
 import com.example.keepbookkeeping.events.NotifyFormListEvent;
@@ -81,6 +82,7 @@ public class FormFragment extends Fragment implements FormContract.View{
     public final static int TYPE_TREND=4;
 
     private int mFormType;
+    private FormApartPagerAdapter mFormApartPagerAdapter;
     private FormApartRecyclerViewAdapter mApartRecyclerViewAdapter;
     private FormTrendRecyclerViewAdapter mTrendRecyclerViewAdapter;
 
@@ -113,8 +115,9 @@ public class FormFragment extends Fragment implements FormContract.View{
 
     @Override
     public void initFormViewPager() {
-        List<SingleDataBean> list=new ArrayList<>();
-        mFormViewPager.setAdapter(new FormApartPagerAdapter(getActivity(),list));
+//        List<FormApartBean> list=new ArrayList<>();
+        mFormApartPagerAdapter=new FormApartPagerAdapter(getActivity(),mFormViewPager,mQueryDate);
+        mFormViewPager.setAdapter(mFormApartPagerAdapter);
         mFormViewPager.setOnPageChangeListener(mFormPageChangeListener);
     }
 
@@ -130,7 +133,6 @@ public class FormFragment extends Fragment implements FormContract.View{
             mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
             mTrendRecyclerViewAdapter=new FormTrendRecyclerViewAdapter(
                     AllDataTableUtil.getFormTrendListByYear(AllDataTableUtil.getFirstYear()));
-//            mTrendRecyclerViewAdapter=new FormTrendRecyclerViewAdapter(null);
         }
         mIncomeListHead.setVisibility(View.VISIBLE);
         mOutcomeListHead.setVisibility(View.INVISIBLE);
@@ -146,13 +148,6 @@ public class FormFragment extends Fragment implements FormContract.View{
                 mFormViewPager.setVisibility(View.VISIBLE);
                 mLineChartImageView.setVisibility(View.INVISIBLE);
                 mQueryDate=AllDataTableUtil.getFirstYearMonth();
-//                if (mPresenter!=null){
-//                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartIncomeList());
-//                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
-//                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
-//                    }
-//                }
-//                mSelectDateText.setText(DateUtil.getCurrentYear()+"年"+DateUtil.getCurrentMonth()+"月");
                 break;
             case TYPE_APART_OUTCOME:
                 mIncomeListHead.setVisibility(View.VISIBLE);
@@ -160,14 +155,6 @@ public class FormFragment extends Fragment implements FormContract.View{
                 mFormViewPager.setVisibility(View.VISIBLE);
                 mLineChartImageView.setVisibility(View.INVISIBLE);
                 mQueryDate=AllDataTableUtil.getFirstYearMonth();
-                mSelectDateText.setText(AllDataTableUtil.getFirstYearMonth());
-//                if (mPresenter!=null){
-//                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartOutcomeList());
-//                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
-//                        mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
-//                    }
-//                }
-//                mSelectDateText.setText(DateUtil.getCurrentYear()+"年"+DateUtil.getCurrentMonth()+"月");
                 break;
             case TYPE_TREND:
                 mIncomeListHead.setVisibility(View.INVISIBLE);
@@ -175,11 +162,6 @@ public class FormFragment extends Fragment implements FormContract.View{
                 mFormViewPager.setVisibility(View.INVISIBLE);
                 mLineChartImageView.setVisibility(View.VISIBLE);
                 mQueryDate=AllDataTableUtil.getFirstYear();
-//                if (mFormApartRecyclerView.getAdapter() instanceof FormApartRecyclerViewAdapter){
-//                    mFormApartRecyclerView.setAdapter(mTrendRecyclerViewAdapter);
-//                }
-//                mSelectDateText.setText(DateUtil.getCurrentYear()+"年");
-//                mQueryDate=
                 break;
             default:
                 break;
@@ -198,10 +180,11 @@ public class FormFragment extends Fragment implements FormContract.View{
             case TYPE_APART_INCOME:
                 mQueryDate=queryDate;
                 mSelectDateText.setText(queryDate);
+                mFormApartPagerAdapter.notifyData(queryDate,FormApartPagerAdapter.TYPE_INCOME);
                 if (mPresenter!=null){
                     mApartRecyclerViewAdapter.notifyFormApartBeans(
-                            AllDataTableUtil.getFormApartListByDateAndType("%"+queryDate+"%",1),
-                            AllDataTableUtil.getSumMoneyByDate("%"+queryDate+"%",AllDataTableUtil.TYPE_INCOME));
+                            mFormApartPagerAdapter.getIncomeList(),
+                            mFormApartPagerAdapter.getIncomeMoney());
                     if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
                         mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
                     }
@@ -210,10 +193,11 @@ public class FormFragment extends Fragment implements FormContract.View{
             case TYPE_APART_OUTCOME:
                 mQueryDate=queryDate;
                 mSelectDateText.setText(queryDate);
+                mFormApartPagerAdapter.notifyData(queryDate,FormApartPagerAdapter.TYPE_OUTCOME);
                 if (mPresenter!=null){
                     mApartRecyclerViewAdapter.notifyFormApartBeans(
-                            AllDataTableUtil.getFormApartListByDateAndType("%"+queryDate+"%",0),
-                            AllDataTableUtil.getSumMoneyByDate("%"+queryDate+"%",AllDataTableUtil.TYPE_OUTCOME));
+                            mFormApartPagerAdapter.getOutcomeList(),
+                            mFormApartPagerAdapter.getOutcomeMoney());
                     if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
                         mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
                     }
@@ -303,7 +287,7 @@ public class FormFragment extends Fragment implements FormContract.View{
                     }
                     break;
                 case R.id.form_date_left_arrow:
-                    
+
                     break;
                 case R.id.form_date_right_arrow:
 

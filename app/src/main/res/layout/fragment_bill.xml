@@ -29,13 +29,12 @@
                 app:layout_collapseMode="parallax"
                 android:orientation="horizontal">
 
-                <!--此处可以加入自定义的饼状图-->
-                <ImageView
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/bill_pie_chart"
                     android:layout_width="0dp"
-                    android:layout_height="150dp"
+                    android:layout_height="200dp"
                     android:layout_weight="1"
-                    android:layout_margin="25dp"
-                    android:src="@mipmap/ic_piepic"/>
+                    android:layout_margin="25dp"/>
 
                 <ImageView
                     android:layout_width="0dp"

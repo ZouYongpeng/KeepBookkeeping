@@ -11,6 +11,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,14 +31,17 @@ import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.FragmentAdapter;
+import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.bill.BillFragment;
 import com.example.keepbookkeeping.bill.BillPresenterImpl;
 import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
+import com.example.keepbookkeeping.events.SearchAllDataEvent;
 import com.example.keepbookkeeping.form.FormFragment;
 import com.example.keepbookkeeping.form.FormPresenterImpl;
 import com.example.keepbookkeeping.list.ListPresenterImpl;
 import com.example.keepbookkeeping.ui.SearchEditText;
+import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DensityUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
@@ -141,6 +147,23 @@ import butterknife.ButterKnife;
          //设置图标
          getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_nav_menu);
          //设置软键盘监听回车键
+         mSearchEditText.addTextChangedListener(new TextWatcher() {
+             @Override
+             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+             }
+
+             @Override
+             public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+             }
+
+             @Override
+             public void afterTextChanged(Editable s) {
+                 String word=mSearchEditText.getText().toString().trim();
+                 RxBus.getInstance().post(new SearchAllDataEvent(word));
+             }
+         });
          mSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
              @Override
              public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {

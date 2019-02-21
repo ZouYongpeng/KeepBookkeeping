@@ -18,6 +18,8 @@ public interface ListContract {
      * 进行listFragment界面UI的操作*/
     interface View extends BaseView<Presenter>{
 
+        void initRxbusEvent();
+
         void initRecyclerView();
 
         void changeBanner(String date);

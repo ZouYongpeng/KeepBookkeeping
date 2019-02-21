@@ -14,6 +14,7 @@ import com.example.keepbookkeeping.db.KBKAllDataBaseHelper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * @author 邹永鹏
@@ -59,6 +60,21 @@ public class AllDataTableUtil {
             ", description = ? " +
             "where id = ?";
 
+    public static final String QUERY_ALL_DATA_IN_SEARCH_WORD="select * from AllData " +
+            "where money like ? " +
+            "or type_name like ? " +
+            "or bill_name like ? " +
+            "or description like ? " +
+            "ORDER BY DATE DESC";
+
+    public static final String QUERY_DATE_LIST_IN_SEARCH_WORD="SELECT DISTINCT DATE FROM AllData " +
+            "where money like ? " +
+            "or type_name like ? " +
+            "or bill_name like ? " +
+            "or description like ? " +
+            "ORDER BY DATE DESC";
+
+
     public static final String QUERY_MONEY_IN_BILL_NAME="SELECT * FROM AllData WHERE bill_name = ?";
 
     public static List<SingleDataBean> queryAllDataOrderByDate(){
@@ -67,6 +83,15 @@ public class AllDataTableUtil {
 
     public static List<SingleDataBean> queryDataOrderByDateByBillName(String billName){
         return queryData(QUERY_DATA_ORDER_BY_DATE_IN_BILL_NAME,new String[]{billName});
+    }
+
+    /**
+     * 全局搜索
+     */
+    public static List<SingleDataBean> queryDataByWord(String word){
+        LogUtil.d("db","全局搜索");
+        word="%"+word+"%";
+        return queryData(QUERY_ALL_DATA_IN_SEARCH_WORD,new String[]{word,word,word,word});
     }
 
     public static List<SingleDataBean> queryData(String sql,String[] selectionArgs){
@@ -118,6 +143,11 @@ public class AllDataTableUtil {
         return getDifferentDateList(QUERY_DATE_LIST_IN_BILL_NAME,new String[]{billName});
     }
 
+    public static List<String> getDifferentDateListInSearchWorld(String word){
+        word="%"+word+"%";
+        return getDifferentDateList(QUERY_DATE_LIST_IN_SEARCH_WORD,new String[]{word,word,word,word});
+    }
+
     public static List<String> getDifferentDateList(String sql,String[] selectionArgs){
         List<String> list=new ArrayList<>();
         Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(sql,selectionArgs);
@@ -150,6 +180,11 @@ public class AllDataTableUtil {
 
     public static List<String> getDifferentMonthListInBillName(String billName){
         return getDifferentMonthList(QUERY_DATA_ORDER_BY_DATE_IN_BILL_NAME,new String[]{billName});
+    }
+
+    public static List<String> getDifferentMonthListInSearchWord(String word){
+        word="%"+word+"%";
+        return getDifferentMonthList(QUERY_ALL_DATA_IN_SEARCH_WORD,new String[]{word,word,word,word});
     }
 
     public static List<String> getDifferentMonthList(String sql,String[] selectionArgs){
@@ -340,7 +375,7 @@ public class AllDataTableUtil {
         KBKAllDataBaseHelper.getInstance().getWritableDatabase().execSQL(UPDATE_BILL_NAME,new String[]{newBillName,oldBillName});
     }
 
-    public static final String SELECT_SUM_MONEY_AND_TYPE_NAME_BY_DATE="select type_name , sum(money) as sum_money from AllData where date like ? and type = ? group by type_name";
+    public static final String SELECT_SUM_MONEY_AND_TYPE_NAME_BY_DATE="select type_name , sum(money) as sum_money from AllData where date like ? and type = ? group by type_name order by sum_money desc";
 
     public static List<FormApartBean> getFormApartListByDateAndType(String date,int type){
         List<FormApartBean> list=new ArrayList<>();

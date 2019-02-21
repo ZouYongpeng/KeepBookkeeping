@@ -67,6 +67,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private int mDataType;
     public static final int TYPE_ALL_DATA=0;
     public static final int TYPE_QUERY_BILL_NAME=1;
+    public static final int TYPE_SEARCH_DATA_BY_WORD=2;
 
 
     public static class DateViewHolder extends RecyclerView.ViewHolder{
@@ -204,10 +205,14 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mSingleDataList= AllDataTableUtil.queryAllDataOrderByDate();
             mYearMonthList= AllDataTableUtil.getAllDifferentMonthList();
             mDateList= AllDataTableUtil.getAllDifferentDateList();
-        }else{
+        }else if (mDataType==TYPE_QUERY_BILL_NAME){
             mSingleDataList= AllDataTableUtil.queryDataOrderByDateByBillName(mValue);
             mYearMonthList= AllDataTableUtil.getDifferentMonthListInBillName(mValue);
             mDateList= AllDataTableUtil.getDifferentDateListInBillName(mValue);
+        }else {
+            mSingleDataList= AllDataTableUtil.queryDataByWord(mValue);
+            mYearMonthList= AllDataTableUtil.getDifferentMonthListInSearchWord(mValue);
+            mDateList= AllDataTableUtil.getDifferentDateListInSearchWorld(mValue);
         }
         count=mSingleDataList.size()+mYearMonthList.size()+mDateList.size()+1;
         positionToIndex=new int[count];
@@ -409,5 +414,18 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
     };
+
+    public void notifyDataInSearchAllData(String word){
+        if (!TextUtils.isEmpty(word)){
+            mDataType=TYPE_SEARCH_DATA_BY_WORD;
+            mValue=word;
+            initAdapter();
+            notifyDataSetChanged();
+        }else {
+            mDataType=TYPE_ALL_DATA;
+            initAdapter();
+            notifyDataSetChanged();
+        }
+    }
 
 }

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,17 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.adapter.AllDataListAdapter;
+import com.example.keepbookkeeping.events.SearchAllDataEvent;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
+import com.example.keepbookkeeping.utils.RxBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * @author 邹永鹏
@@ -52,6 +57,10 @@ public class ListFragment extends Fragment implements ListContract.View{
     private ListContract.Presenter mListPresenter;
     private static final String TAG="ListFragment_tag";
 
+    AllDataListAdapter mDataListAdapter;
+
+    CompositeDisposable mCompositeDisposable=new CompositeDisposable();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,6 +74,7 @@ public class ListFragment extends Fragment implements ListContract.View{
     public void onResume() {
         changeBanner(AllDataTableUtil.getFirstYearMonth());
         initRecyclerView();
+        initRxbusEvent();
         super.onResume();
     }
 
@@ -87,7 +97,8 @@ public class ListFragment extends Fragment implements ListContract.View{
     public void initRecyclerView() {
         final LinearLayoutManager manager=new LinearLayoutManager(getActivity());
         mListContentRecyclerView.setLayoutManager(manager);
-        mListContentRecyclerView.setAdapter(new AllDataListAdapter(getContext()));
+        mDataListAdapter=new AllDataListAdapter(getContext());
+        mListContentRecyclerView.setAdapter(mDataListAdapter);
         mListContentRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
             @Override
             public void onViewRecycled(RecyclerView.ViewHolder holder) {
@@ -110,6 +121,19 @@ public class ListFragment extends Fragment implements ListContract.View{
                 }
             }
         });
+    }
+
+    @Override
+    public void initRxbusEvent() {
+        mCompositeDisposable.add(RxBus.getInstance().toObservable(SearchAllDataEvent.class).subscribe(new Consumer<SearchAllDataEvent>() {
+            @Override
+            public void accept(SearchAllDataEvent searchAllDataEvent) throws Exception {
+                if (mDataListAdapter!=null){
+                    LogUtil.d("db","接收到事件--------------------------------------------");
+                    mDataListAdapter.notifyDataInSearchAllData(searchAllDataEvent.getWord());
+                }
+            }
+        }));
     }
 
     /**

@@ -249,9 +249,12 @@ public class BillDetailsActivity extends AppCompatActivity {
                     int id = mBillApartBean.getId();
                     String description = descriptionEdit.getText().toString().trim();
                     String count = moneyEdit.getText().toString().trim();
-                    BillTableUtil.updateCannotChangeDataById(id, count, description);
+                    float initialCount = TextUtils.isEmpty(count) ? 0 : Float.valueOf(count);
+                    initialCount-=AllDataTableUtil.getMoneyByBillName(mBillApartBean.getName(),AllDataTableUtil.TYPE_TOTAL);
+                    BillTableUtil.updateCannotChangeDataById(id, String.valueOf(initialCount), description);
                     RxBus.getInstance().post(new NotifyBillListEvent(mBillApartBean.getType()));
                     mAddBillDialog.dismiss();
+                    initBanner();
                 } else {
                     int id = mBillApartBean.getId();
                     String billName = (String) spinner.getSelectedItem();
@@ -261,6 +264,7 @@ public class BillDetailsActivity extends AppCompatActivity {
                     String description = descriptionEdit.getText().toString().trim();
                     String count = moneyEdit.getText().toString().trim();
                     float initialCount = TextUtils.isEmpty(count) ? 0 : Float.valueOf(count);
+                    initialCount-=AllDataTableUtil.getMoneyByBillName(mBillApartBean.getName(),AllDataTableUtil.TYPE_TOTAL);
                     BillApartBean bean = new BillApartBean(id, type, imageId, newName, description, initialCount, 1);
                     BillTableUtil.updateCanChangeDataById(bean, mBillApartBean.getName());
                     RxBus.getInstance().post(new NotifyBillListEvent(1 - bean.getType()));
@@ -268,6 +272,7 @@ public class BillDetailsActivity extends AppCompatActivity {
                     mBillApartBean = bean;
                     mAddBillDialog.dismiss();
                     initView();
+                    initBanner();
                 }
             }
         });
@@ -284,6 +289,7 @@ public class BillDetailsActivity extends AppCompatActivity {
                 mAddBillDialog.show();
                 break;
             case R.id.bill_detail_add_data:
+                AddDataActivity.startAddDataActivity(this);
                 break;
         }
     }
