@@ -89,4 +89,13 @@ public class DateUtil {
         return date.substring(0,7);
     }
 
+    /**
+     * 获取年月
+     * @param date "2019-02-21"
+     * @return String 2019-02
+     */
+    public static String getYearOfDate(String date) {
+        return date.substring(0,4);
+    }
+
 }

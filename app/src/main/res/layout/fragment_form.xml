@@ -129,7 +129,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/form_apart_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@+id/form_income_list_head">
 
     </android.support.v7.widget.RecyclerView>

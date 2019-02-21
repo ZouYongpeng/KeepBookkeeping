@@ -176,6 +176,28 @@ public class AllDataTableUtil {
         return months;
     }
 
+    public static List<String> getAllDifferentYearList(){
+        String previousYear=null;
+        String year;
+        List<String> months=new ArrayList<>();
+        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(QUERY_ALL_DATA_ORDER_BY_DATE,null);
+        if (cursor.moveToFirst()) {
+            do {
+                year=cursor.getString(cursor.getColumnIndex("date")).split("-")[0];
+                if (!TextUtils.equals(previousYear,year)) {
+                    months.add(year);
+                    previousYear=year;
+                }
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        LogUtil.d(TAG,"---getDifferentMonthList---");
+        for (int i=0;i<months.size();i++){
+            LogUtil.d(TAG,months.get(i));
+        }
+        return months;
+    }
+
 
     /**
      * 获取数据库中包含某date（如“2019-2-14”或“2019-2”)的总收入金额
@@ -246,12 +268,26 @@ public class AllDataTableUtil {
     }
 
     /**
+     * 获取db第一条数据的年，如“2019”
+     * @return
+     */
+    public static String getFirstYear(){
+        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(FIRST_YEAR_DATE,null);
+        String date=String.valueOf(DateUtil.getCurrentYear());
+        if (cursor.moveToFirst()){
+            date=DateUtil.getYearOfDate(cursor.getString(cursor.getColumnIndex("date")));
+        }
+        cursor.close();
+        return date;
+    }
+
+    /**
      * 获取db第一条数据的年月，如“2019-02”
      * @return
      */
     public static String getFirstYearMonth(){
         Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(FIRST_YEAR_DATE,null);
-        String date=null;
+        String date=DateUtil.getCurrentYear()+"-"+DateUtil.getCurrentMonth();
         if (cursor.moveToFirst()){
             date=DateUtil.getYearMonthOfDate(cursor.getString(cursor.getColumnIndex("date")));
         }

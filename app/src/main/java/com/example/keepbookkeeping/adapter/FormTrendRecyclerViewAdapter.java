@@ -60,14 +60,20 @@ public class FormTrendRecyclerViewAdapter extends RecyclerView.Adapter<FormTrend
 
     @Override
     public int getItemCount() {
-        return mFormTrendBeans.size();
+        if (mFormTrendBeans!=null && mFormTrendBeans.size()>0){
+            return mFormTrendBeans.size();
+        }else {
+            return 0;
+        }
     }
 
     public void notifyFormTrendBeans(List<FormTrendBean> formTrendBeans){
-        if (mFormTrendBeans!=null){
+        if (mFormTrendBeans!=null) {
             mFormTrendBeans.clear();
         }
-        mFormTrendBeans.addAll(formTrendBeans);
-        this.notifyDataSetChanged();
+        if (formTrendBeans!=null){
+            mFormTrendBeans.addAll(formTrendBeans);
+            this.notifyDataSetChanged();
+        }
     }
 }

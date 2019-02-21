@@ -1,5 +1,7 @@
 package com.example.keepbookkeeping.form;
 
+import android.support.v7.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,22 +9,28 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
+import com.example.keepbookkeeping.activities.AddDataActivity;
 import com.example.keepbookkeeping.adapter.FormApartPagerAdapter;
 import com.example.keepbookkeeping.adapter.FormApartRecyclerViewAdapter;
 import com.example.keepbookkeeping.adapter.FormTrendRecyclerViewAdapter;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
 import com.example.keepbookkeeping.events.NotifyFormListEvent;
+import com.example.keepbookkeeping.ui.SimpleDatePickerDialog;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
+import com.example.keepbookkeeping.utils.KeyBoardUtil;
+import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 
 import java.util.ArrayList;
@@ -30,6 +38,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -38,6 +47,8 @@ import io.reactivex.functions.Consumer;
  * @description :查询报表的fragment
  */
 public class FormFragment extends Fragment implements FormContract.View{
+
+    CompositeDisposable mCompositeDisposable=new CompositeDisposable();
 
     @BindView(R.id.form_viewpager)
     ViewPager mFormViewPager;
@@ -72,15 +83,21 @@ public class FormFragment extends Fragment implements FormContract.View{
     private int mFormType;
     private FormApartRecyclerViewAdapter mApartRecyclerViewAdapter;
     private FormTrendRecyclerViewAdapter mTrendRecyclerViewAdapter;
+
+    private String mQueryDate;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_form,container,false);
         ButterKnife.bind(this,view);
+        mQueryDate=AllDataTableUtil.getFirstYearMonth();
         mFormType=TYPE_APART_INCOME;
         initFormViewPager();
         initRxBusEvent();
         initFormRecyclerView();
+        initListener();
+        notifyData(mQueryDate);
         return view;
     }
 
@@ -107,11 +124,13 @@ public class FormFragment extends Fragment implements FormContract.View{
         mFormApartRecyclerView.setLayoutManager(manager);
         if (mPresenter!=null){
             mApartRecyclerViewAdapter=new FormApartRecyclerViewAdapter(
-                    AllDataTableUtil.getFormApartListByDateAndType("%2019-02%",1),
-                    AllDataTableUtil.getSumMoneyByDate("%2019-02%",1));
+                    getActivity(),
+                    AllDataTableUtil.getFormApartListByDateAndType("%"+mQueryDate+"%",1),
+                    AllDataTableUtil.getSumMoneyByDate("%"+mQueryDate+"%",AllDataTableUtil.TYPE_INCOME));
             mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
             mTrendRecyclerViewAdapter=new FormTrendRecyclerViewAdapter(
-                    AllDataTableUtil.getFormTrendListByYear("2019"));
+                    AllDataTableUtil.getFormTrendListByYear(AllDataTableUtil.getFirstYear()));
+//            mTrendRecyclerViewAdapter=new FormTrendRecyclerViewAdapter(null);
         }
         mIncomeListHead.setVisibility(View.VISIBLE);
         mOutcomeListHead.setVisibility(View.INVISIBLE);
@@ -126,6 +145,7 @@ public class FormFragment extends Fragment implements FormContract.View{
                 mOutcomeListHead.setVisibility(View.INVISIBLE);
                 mFormViewPager.setVisibility(View.VISIBLE);
                 mLineChartImageView.setVisibility(View.INVISIBLE);
+                mQueryDate=AllDataTableUtil.getFirstYearMonth();
 //                if (mPresenter!=null){
 //                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartIncomeList());
 //                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
@@ -139,6 +159,8 @@ public class FormFragment extends Fragment implements FormContract.View{
                 mOutcomeListHead.setVisibility(View.INVISIBLE);
                 mFormViewPager.setVisibility(View.VISIBLE);
                 mLineChartImageView.setVisibility(View.INVISIBLE);
+                mQueryDate=AllDataTableUtil.getFirstYearMonth();
+                mSelectDateText.setText(AllDataTableUtil.getFirstYearMonth());
 //                if (mPresenter!=null){
 //                    mApartRecyclerViewAdapter.notifyFormApartBeans(mPresenter.getFormApartOutcomeList());
 //                    if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
@@ -152,54 +174,59 @@ public class FormFragment extends Fragment implements FormContract.View{
                 mOutcomeListHead.setVisibility(View.VISIBLE);
                 mFormViewPager.setVisibility(View.INVISIBLE);
                 mLineChartImageView.setVisibility(View.VISIBLE);
+                mQueryDate=AllDataTableUtil.getFirstYear();
 //                if (mFormApartRecyclerView.getAdapter() instanceof FormApartRecyclerViewAdapter){
 //                    mFormApartRecyclerView.setAdapter(mTrendRecyclerViewAdapter);
 //                }
 //                mSelectDateText.setText(DateUtil.getCurrentYear()+"年");
+//                mQueryDate=
                 break;
             default:
                 break;
         }
-        notifyData(DateUtil.getCurrentYear(),DateUtil.getCurrentMonth());
+        notifyData(mQueryDate);
     }
 
     /**
      * 根据年、月去获取数据并更新界面
-     * @param year
-     * @param month
      */
-    private void notifyData(int year,int month){
+    private void notifyData(String queryDate){
+        if (TextUtils.isEmpty(queryDate)){
+            return;
+        }
         switch (mFormType){
             case TYPE_APART_INCOME:
+                mQueryDate=queryDate;
+                mSelectDateText.setText(queryDate);
                 if (mPresenter!=null){
                     mApartRecyclerViewAdapter.notifyFormApartBeans(
-                            AllDataTableUtil.getFormApartListByDateAndType("%2019-02%",1),
-                            AllDataTableUtil.getSumMoneyByDate("%2019-02%",1));
+                            AllDataTableUtil.getFormApartListByDateAndType("%"+queryDate+"%",1),
+                            AllDataTableUtil.getSumMoneyByDate("%"+queryDate+"%",AllDataTableUtil.TYPE_INCOME));
                     if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
                         mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
                     }
                 }
-                mSelectDateText.setText(year+"年"+month+"月");
                 break;
             case TYPE_APART_OUTCOME:
+                mQueryDate=queryDate;
+                mSelectDateText.setText(queryDate);
                 if (mPresenter!=null){
                     mApartRecyclerViewAdapter.notifyFormApartBeans(
-                            AllDataTableUtil.getFormApartListByDateAndType("%2019-02%",0),
-                            AllDataTableUtil.getSumMoneyByDate("%2019-02%",0));
+                            AllDataTableUtil.getFormApartListByDateAndType("%"+queryDate+"%",0),
+                            AllDataTableUtil.getSumMoneyByDate("%"+queryDate+"%",AllDataTableUtil.TYPE_OUTCOME));
                     if (mFormApartRecyclerView.getAdapter() instanceof FormTrendRecyclerViewAdapter){
                         mFormApartRecyclerView.setAdapter(mApartRecyclerViewAdapter);
                     }
                 }
-                mSelectDateText.setText(year+"年"+month+"月");
                 break;
             case TYPE_TREND:
+                mSelectDateText.setText(queryDate);
                 if (mPresenter!=null){
-                    mTrendRecyclerViewAdapter.notifyFormTrendBeans(AllDataTableUtil.getFormTrendListByYear("2019"));
+                    mTrendRecyclerViewAdapter.notifyFormTrendBeans(AllDataTableUtil.getFormTrendListByYear(queryDate));
                     if (mFormApartRecyclerView.getAdapter() instanceof FormApartRecyclerViewAdapter){
                         mFormApartRecyclerView.setAdapter(mTrendRecyclerViewAdapter);
                     }
                 }
-                mSelectDateText.setText(year+"年");
                 break;
             default:
                 break;
@@ -208,16 +235,21 @@ public class FormFragment extends Fragment implements FormContract.View{
 
     @Override
     public void initRxBusEvent() {
-        RxBus.getInstance().toObservable(ChangeFragmentTypeEvent.class).subscribe(new Consumer<ChangeFragmentTypeEvent>() {
+        mCompositeDisposable.add(RxBus.getInstance().toObservable(ChangeFragmentTypeEvent.class).subscribe(new Consumer<ChangeFragmentTypeEvent>() {
             @Override
             public void accept(ChangeFragmentTypeEvent changeFragmentTypeEvent) {
                 notifyFormRecyclerView(changeFragmentTypeEvent.getMsg());
-            }});
-        RxBus.getInstance().toObservable(NotifyFormListEvent.class).subscribe(new Consumer<NotifyFormListEvent>() {
+            }}));
+        mCompositeDisposable.add(RxBus.getInstance().toObservable(NotifyFormListEvent.class).subscribe(new Consumer<NotifyFormListEvent>() {
             @Override
             public void accept(NotifyFormListEvent notifyFormListEvent) {
-                notifyData(DateUtil.getCurrentYear(),DateUtil.getCurrentMonth());
-            }});
+                notifyData(mQueryDate);
+            }}));
+    }
+
+    @Override
+    public void initListener(){
+        mSelectDateText.setOnClickListener(mClickListener);
     }
 
     private ViewPager.OnPageChangeListener mFormPageChangeListener=new ViewPager.OnPageChangeListener() {
@@ -242,15 +274,36 @@ public class FormFragment extends Fragment implements FormContract.View{
         }
     };
 
+    private void showDatePickerDialog(List<String> list){
+        if (list!=null && list.size()>0){
+            final String[] months=new String[list.size()];
+            list.toArray(months);
+            int position=Math.max(list.indexOf(mQueryDate),0);
+            final AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+            builder.setSingleChoiceItems(months, position, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    notifyData(months[which]);
+                    dialog.dismiss();
+                }
+            }).create().show();
+        }
+    }
+
     private View.OnClickListener mClickListener=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.form_date:
-
+                    //选择时间
+                    if (mFormType==TYPE_APART_INCOME || mFormType==TYPE_APART_OUTCOME){
+                        showDatePickerDialog(AllDataTableUtil.getAllDifferentMonthList());
+                    }else {
+                        showDatePickerDialog(AllDataTableUtil.getAllDifferentYearList());
+                    }
                     break;
                 case R.id.form_date_left_arrow:
-
+                    
                     break;
                 case R.id.form_date_right_arrow:
 
@@ -260,4 +313,10 @@ public class FormFragment extends Fragment implements FormContract.View{
             }
         }
     };
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mCompositeDisposable.clear();
+    }
 }

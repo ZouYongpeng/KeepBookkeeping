@@ -42,6 +42,12 @@ public class SimpleDatePickerDialog extends DatePickerDialog {
         mListener=listener;
     }
 
+    public SimpleDatePickerDialog(@NonNull Context context, int themeResId, @Nullable OnDateSetListener listener, int year, int monthOfYear, int dayOfMonth) {
+        super(context, themeResId, listener, year, monthOfYear, dayOfMonth);
+        mContext=context;
+        mListener=listener;
+    }
+
     public SimpleDatePickerDialog(@NonNull Context context, int themeResId, @Nullable OnDateSetListener listener, int year, int monthOfYear, int dayOfMonth,View view) {
         super(context, themeResId, listener, year, monthOfYear, dayOfMonth);
         mContext=context;

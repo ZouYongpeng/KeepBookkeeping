@@ -52,6 +52,8 @@ public interface FormContract {
         void initRxBusEvent();
 
         void notifyFormRecyclerView(int type);
+
+        void initListener();
     }
 
 }
