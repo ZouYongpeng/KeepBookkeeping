@@ -1,5 +1,6 @@
 package com.example.keepbookkeeping.form;
 
+import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.example.keepbookkeeping.adapter.FormApartPagerAdapter;
 import com.example.keepbookkeeping.adapter.FormApartRecyclerViewAdapter;
 import com.example.keepbookkeeping.adapter.FormTrendRecyclerViewAdapter;
 import com.example.keepbookkeeping.bean.FormApartBean;
+import com.example.keepbookkeeping.bean.FormTrendBean;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
 import com.example.keepbookkeeping.events.NotifyFormListEvent;
@@ -33,6 +35,13 @@ import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +73,7 @@ public class FormFragment extends Fragment implements FormContract.View{
     RecyclerView mFormApartRecyclerView;
 
     @BindView(R.id.form_trend_line_chart)
-    ImageView mLineChartImageView;
+    LineChart mLineChart;
 
     @BindView(R.id.form_date)
     TextView mSelectDateText;
@@ -146,27 +155,59 @@ public class FormFragment extends Fragment implements FormContract.View{
                 mIncomeListHead.setVisibility(View.VISIBLE);
                 mOutcomeListHead.setVisibility(View.INVISIBLE);
                 mFormViewPager.setVisibility(View.VISIBLE);
-                mLineChartImageView.setVisibility(View.INVISIBLE);
+                mLineChart.setVisibility(View.INVISIBLE);
                 mQueryDate=AllDataTableUtil.getFirstYearMonth();
                 break;
             case TYPE_APART_OUTCOME:
                 mIncomeListHead.setVisibility(View.VISIBLE);
                 mOutcomeListHead.setVisibility(View.INVISIBLE);
                 mFormViewPager.setVisibility(View.VISIBLE);
-                mLineChartImageView.setVisibility(View.INVISIBLE);
+                mLineChart.setVisibility(View.INVISIBLE);
                 mQueryDate=AllDataTableUtil.getFirstYearMonth();
                 break;
             case TYPE_TREND:
                 mIncomeListHead.setVisibility(View.INVISIBLE);
                 mOutcomeListHead.setVisibility(View.VISIBLE);
                 mFormViewPager.setVisibility(View.INVISIBLE);
-                mLineChartImageView.setVisibility(View.VISIBLE);
+                mLineChart.setVisibility(View.VISIBLE);
                 mQueryDate=AllDataTableUtil.getFirstYear();
                 break;
             default:
                 break;
         }
         notifyData(mQueryDate);
+    }
+
+    private void showLineChartData(List<FormTrendBean> formTrendBeans){
+        List<Entry> incomeEntryList=new ArrayList<>();
+        List<Entry> outcomeEntryList=new ArrayList<>();
+        List<Entry> netEntryList=new ArrayList<>();
+        List<String> monthList=new ArrayList<>();
+        for (FormTrendBean bean:formTrendBeans){
+            incomeEntryList.add(new Entry(bean.getMonth(),bean.getIncome()));
+            outcomeEntryList.add(new Entry(bean.getMonth(),bean.getOutcome()));
+            netEntryList.add(new Entry(bean.getMonth(),bean.getIncome()-bean.getOutcome()));
+            monthList.add((bean.getMonth()-1)+"月");
+        }
+
+        LineDataSet incomeLineDataSet=new LineDataSet(incomeEntryList,"收入");
+        incomeLineDataSet.setColor(getActivity().getResources().getColor(R.color.main_color));
+        LineDataSet outcomeLineDataSet=new LineDataSet(outcomeEntryList,"支出");
+        outcomeLineDataSet.setColor(Color.RED);
+        LineDataSet netLineDataSet=new LineDataSet(netEntryList,"结余");
+        netLineDataSet.setColor(Color.GREEN);
+
+        LineData lineData=new LineData();
+        lineData.addDataSet(incomeLineDataSet);
+        lineData.addDataSet(outcomeLineDataSet);
+        lineData.addDataSet(netLineDataSet);
+        mLineChart.setData(lineData);
+
+        Description description=new Description();
+        description.setText("");
+        mLineChart.setDescription(description);
+        mLineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(monthList));
+        mLineChart.invalidate();
     }
 
     /**
@@ -207,6 +248,7 @@ public class FormFragment extends Fragment implements FormContract.View{
                 mSelectDateText.setText(queryDate);
                 if (mPresenter!=null){
                     mTrendRecyclerViewAdapter.notifyFormTrendBeans(AllDataTableUtil.getFormTrendListByYear(queryDate));
+                    showLineChartData(mTrendRecyclerViewAdapter.getFormTrendBeans());
                     if (mFormApartRecyclerView.getAdapter() instanceof FormApartRecyclerViewAdapter){
                         mFormApartRecyclerView.setAdapter(mTrendRecyclerViewAdapter);
                     }

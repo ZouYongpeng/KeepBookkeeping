@@ -129,7 +129,6 @@ public class ListFragment extends Fragment implements ListContract.View{
             @Override
             public void accept(SearchAllDataEvent searchAllDataEvent) throws Exception {
                 if (mDataListAdapter!=null){
-                    LogUtil.d("db","接收到事件--------------------------------------------");
                     mDataListAdapter.notifyDataInSearchAllData(searchAllDataEvent.getWord());
                 }
             }
@@ -154,5 +153,9 @@ public class ListFragment extends Fragment implements ListContract.View{
         mOutcomeMoneyText.setText(String.valueOf(AllDataTableUtil.getTotalOutcomeMoney(date)));
     }
 
-
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mCompositeDisposable.clear();
+    }
 }

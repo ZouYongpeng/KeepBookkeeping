@@ -48,7 +48,7 @@ public class FormPresenterImpl implements FormContract.Presenter {
     public List<FormTrendBean> getFormTrendList(int year) {
         List<FormTrendBean> formTrendList=new ArrayList<>();
         for (int i=1;i<=12;i++){
-            formTrendList.add(new FormTrendBean(i+"月",12000,i*1000));
+            formTrendList.add(new FormTrendBean(i,12000,i*1000));
         }
         return formTrendList;
     }

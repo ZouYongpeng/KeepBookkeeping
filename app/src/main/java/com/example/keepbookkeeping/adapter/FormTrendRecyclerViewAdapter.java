@@ -52,7 +52,7 @@ public class FormTrendRecyclerViewAdapter extends RecyclerView.Adapter<FormTrend
     @Override
     public void onBindViewHolder(@NonNull FormTrendRecyclerViewAdapter.ViewHolder holder, int position) {
         FormTrendBean bean=mFormTrendBeans.get(position);
-        holder.mMonthText.setText(bean.getMonth());
+        holder.mMonthText.setText(bean.getMonth()+"月");
         holder.mIncomeText.setText(String.valueOf(bean.getIncome()));
         holder.mOutcomeText.setText(String.valueOf(bean.getOutcome()));
         holder.mBalanceText.setText(String.valueOf(bean.getIncome()-bean.getOutcome()));
@@ -75,5 +75,9 @@ public class FormTrendRecyclerViewAdapter extends RecyclerView.Adapter<FormTrend
             mFormTrendBeans.addAll(formTrendBeans);
             this.notifyDataSetChanged();
         }
+    }
+
+    public List<FormTrendBean> getFormTrendBeans() {
+        return mFormTrendBeans;
     }
 }

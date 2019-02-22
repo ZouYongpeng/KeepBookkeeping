@@ -412,7 +412,7 @@ public class AllDataTableUtil {
                 yearAndMonth="%"+year+"-"+i+"%";
             }
             list.add(new FormTrendBean(
-                    i+"月",
+                    i,
                     getSumMoneyByDate(yearAndMonth,TYPE_INCOME),
                     getSumMoneyByDate(yearAndMonth,TYPE_OUTCOME)
                     ));

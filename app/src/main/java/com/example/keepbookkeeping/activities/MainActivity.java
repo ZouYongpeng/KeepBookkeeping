@@ -3,6 +3,9 @@ package com.example.keepbookkeeping.activities;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Process;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.ListFragment;
@@ -84,6 +87,9 @@ import butterknife.ButterKnife;
      @BindView(R.id.main_form_btn_group)
      RadioGroup mFormBtnGroup;
 
+     @BindView(R.id.nav_view)
+    NavigationView mNavView;
+
      private LayoutInflater mLayoutInflater;
      private Class[] fragmentList = {
              BillFragment.class,
@@ -118,24 +124,16 @@ import butterknife.ButterKnife;
          super.onCreate(savedInstanceState);
          setContentView(R.layout.activity_main);
          ButterKnife.bind(this);
-
+         initNavView();
          initToolBar();
          initViewPagerAndTab();
          initFragment();
-         initDataBase();
          mBillBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
          mFormBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
      }
 
-     public void initDataBase(){
-//         mDataBaseHelper= KBKAllDataBaseHelper.getInstance();
-//         SQLiteDatabase db=mDataBaseHelper.getWritableDatabase();
-//         AllDataTableUtil.queryAllDataOrderByDate(db);
-//         AllDataTableUtil.getAllDataCount(db);
-//         AllDataTableUtil.getDifferentDateList(db);
-//         AllDataTableUtil.getDifferentMonthList(db);
-
-//         new AllDataListAdapter(db);
+     public void initNavView(){
+         mNavView.setNavigationItemSelectedListener(mNavListener);
      }
 
      private void initToolBar() {
@@ -420,6 +418,33 @@ import butterknife.ButterKnife;
                     break;
             }
         }
+     };
+
+     private NavigationView.OnNavigationItemSelectedListener mNavListener=new NavigationView.OnNavigationItemSelectedListener() {
+         @Override
+         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+             switch (item.getItemId()){
+                 case R.id.personal_data:
+                     ToastUtil.success("个人资料");
+                     break;
+                 case R.id.setting:
+                     ToastUtil.success("设置");
+                     break;
+                 case R.id.about:
+                     ToastUtil.success("关于");
+                     break;
+                 case R.id.help:
+                     ToastUtil.success("帮助");
+                     break;
+                 case R.id.exit:
+                     ToastUtil.success("退出");
+                     Process.killProcess(Process.myPid());
+                     break;
+                 default:
+                     break;
+             }
+             return true;
+         }
      };
 
 }

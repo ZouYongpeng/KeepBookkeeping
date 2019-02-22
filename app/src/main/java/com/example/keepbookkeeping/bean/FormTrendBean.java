@@ -7,23 +7,23 @@ package com.example.keepbookkeeping.bean;
  */
 public class FormTrendBean {
 
-    private String month;
+    private int month;
 
     private float income;
 
     private float outcome;
 
-    public FormTrendBean(String month, float income, float outcome) {
+    public FormTrendBean(int month, float income, float outcome) {
         this.month = month;
         this.income = income;
         this.outcome = outcome;
     }
 
-    public String getMonth() {
+    public int getMonth() {
         return month;
     }
 
-    public void setMonth(String month) {
+    public void setMonth(int month) {
         this.month = month;
     }
 

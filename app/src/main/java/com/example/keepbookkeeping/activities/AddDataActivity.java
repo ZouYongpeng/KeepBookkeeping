@@ -43,6 +43,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
 public class AddDataActivity extends AppCompatActivity {
@@ -97,6 +98,8 @@ public class AddDataActivity extends AppCompatActivity {
 
     SingleDataBean mBean;
     private int mUpdateId=-1;
+
+    CompositeDisposable mCompositeDisposable=new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,12 +173,12 @@ public class AddDataActivity extends AppCompatActivity {
     }
 
     private void initRxBusEvent(){
-        RxBus.getInstance().toObservable(ChangeDataTypeEvent.class).subscribe(new Consumer<ChangeDataTypeEvent>() {
+        mCompositeDisposable.add(RxBus.getInstance().toObservable(ChangeDataTypeEvent.class).subscribe(new Consumer<ChangeDataTypeEvent>() {
             @Override
             public void accept(ChangeDataTypeEvent changeDataTypeEvent) throws Exception {
                 refreshChooseImageAndText(changeDataTypeEvent.getDataTypeBean());
             }
-        });
+        }));
     }
 
     private void initDialog(){
@@ -410,5 +413,11 @@ public class AddDataActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         cancel();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mCompositeDisposable.clear();
     }
 }

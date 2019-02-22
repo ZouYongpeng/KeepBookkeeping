@@ -121,6 +121,10 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private TextView mContentIncomeMoney;
         private TextView mContentOutcomeText;
         private TextView mContentOutcomeMoney;
+        private TextView mIncomeBillText;
+        private TextView mIncomeDesrciiption;
+        private TextView mOutcomeBillText;
+        private TextView mOutcomeDesrciiption;
 
         private RelativeLayout mLayout;
         private ImageView mDeleteImage;
@@ -138,6 +142,10 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             mLayout=itemView.findViewById(R.id.list_content_item);
             mDeleteImage=itemView.findViewById(R.id.list_item_delete);
             mEditImage=itemView.findViewById(R.id.list_item_edit);
+            mIncomeBillText=itemView.findViewById(R.id.list_item_bill_right);
+            mIncomeDesrciiption=itemView.findViewById(R.id.list_item_description_right);
+            mOutcomeBillText=itemView.findViewById(R.id.list_item_bill_left);
+            mOutcomeDesrciiption=itemView.findViewById(R.id.list_item_description_left);
 
             mAnimationSet=new AnimationSet(true);
 
@@ -332,11 +340,37 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((ContentViewHolder) holder).mContentIncomeMoney.setText(bean.getMoney()+"");
                 ((ContentViewHolder) holder).mContentOutcomeText.setText("");
                 ((ContentViewHolder) holder).mContentOutcomeMoney.setText("");
+                if (mDataType==TYPE_SEARCH_DATA_BY_WORD){
+                    ((ContentViewHolder) holder).mIncomeBillText.setVisibility(View.VISIBLE);
+                    ((ContentViewHolder) holder).mIncomeDesrciiption.setVisibility(View.VISIBLE);
+                    ((ContentViewHolder) holder).mOutcomeBillText.setVisibility(View.INVISIBLE);
+                    ((ContentViewHolder) holder).mOutcomeDesrciiption.setVisibility(View.INVISIBLE);
+                    ((ContentViewHolder) holder).mOutcomeBillText.setText(bean.getBillName());
+                    ((ContentViewHolder) holder).mOutcomeDesrciiption.setText(bean.getDescription());
+                }else {
+                    ((ContentViewHolder) holder).mIncomeBillText.setVisibility(View.GONE);
+                    ((ContentViewHolder) holder).mIncomeDesrciiption.setVisibility(View.GONE);
+                    ((ContentViewHolder) holder).mOutcomeBillText.setVisibility(View.GONE);
+                    ((ContentViewHolder) holder).mOutcomeDesrciiption.setVisibility(View.GONE);
+                }
             }else {
                 ((ContentViewHolder) holder).mContentIncomeText.setText("");
                 ((ContentViewHolder) holder).mContentIncomeMoney.setText("");
                 ((ContentViewHolder) holder).mContentOutcomeText.setText("支出");
                 ((ContentViewHolder) holder).mContentOutcomeMoney.setText(bean.getMoney()+"");
+                if (mDataType==TYPE_SEARCH_DATA_BY_WORD){
+                    ((ContentViewHolder) holder).mIncomeBillText.setVisibility(View.INVISIBLE);
+                    ((ContentViewHolder) holder).mIncomeDesrciiption.setVisibility(View.INVISIBLE);
+                    ((ContentViewHolder) holder).mOutcomeBillText.setVisibility(View.VISIBLE);
+                    ((ContentViewHolder) holder).mOutcomeDesrciiption.setVisibility(View.VISIBLE);
+                    ((ContentViewHolder) holder).mIncomeBillText.setText(bean.getBillName());
+                    ((ContentViewHolder) holder).mIncomeDesrciiption.setText(bean.getDescription());
+                }else {
+                    ((ContentViewHolder) holder).mIncomeBillText.setVisibility(View.GONE);
+                    ((ContentViewHolder) holder).mIncomeDesrciiption.setVisibility(View.GONE);
+                    ((ContentViewHolder) holder).mOutcomeBillText.setVisibility(View.GONE);
+                    ((ContentViewHolder) holder).mOutcomeDesrciiption.setVisibility(View.GONE);
+                }
             }
             if (isClickList[position]){
                 ((ContentViewHolder) holder).mDeleteImage.startAnimation(((ContentViewHolder) holder).mAnimationSet);
