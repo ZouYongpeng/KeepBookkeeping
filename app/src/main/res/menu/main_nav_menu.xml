@@ -3,9 +3,9 @@
     <group android:checkableBehavior="single">
         <!--组内的所有菜单项只能单选-->
         <item
-            android:id="@+id/personal_data"
+            android:id="@+id/change_user"
             android:icon="@mipmap/ic_set_per_data"
-            android:title="个人资料"/>
+            android:title="切换账号"/>
         <item
             android:id="@+id/setting"
             android:icon="@mipmap/ic_nav_setting"

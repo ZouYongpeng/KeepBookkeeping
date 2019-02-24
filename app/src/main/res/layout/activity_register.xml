@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.RegisterActivity">
+
+    <RelativeLayout
+        android:id="@+id/register_user_head_layout"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/main_color">
+
+        <ImageView
+            android:id="@+id/register_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/ic_back_arrow"/>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/register_user_head"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/user_default_image"
+            android:background="@color/main_color"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/register_user_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/register_user_head_layout"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp">
+
+        <com.example.keepbookkeeping.ui.SearchEditText
+            android:id="@+id/register_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@color/white"
+            android:hint="@string/register_name"
+            android:padding="10dp" />
+
+        <!--分割线-->
+        <include layout="@layout/separation_line"/>
+
+        <com.example.keepbookkeeping.ui.SearchEditText
+            android:id="@+id/register_user_password"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@color/white"
+            android:hint="@string/register_password"
+            android:inputType="textPassword"
+            android:padding="10dp"/>
+
+        <include layout="@layout/separation_line"/>
+
+        <com.example.keepbookkeeping.ui.SearchEditText
+            android:id="@+id/register_user_password_again"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@color/white"
+            android:hint="@string/register_passwordAgain"
+            android:inputType="textPassword"
+            android:padding="10dp"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/register_user_edit"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="20dp"
+        android:text="注册"
+        android:textColor="@color/white"
+        android:background="@drawable/button_bg"/>
+
+    <TextView
+        android:id="@+id/goto_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/register_button"
+        android:layout_marginTop="10dp"
+        android:text="登陆"
+        android:textColor="@color/main_color"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

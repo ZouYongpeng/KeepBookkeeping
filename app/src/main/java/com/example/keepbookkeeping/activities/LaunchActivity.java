@@ -13,12 +13,15 @@ import android.text.TextUtils;
 import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
+import com.example.keepbookkeeping.bean.BmobBean.User;
 import com.example.keepbookkeeping.ui.KBKMathPasswordView;
 import com.example.keepbookkeeping.utils.SharedPreferencesUtil;
 import com.example.keepbookkeeping.utils.StringUtil;
+import com.example.keepbookkeeping.utils.UserUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.bmob.v3.Bmob;
 
 public class LaunchActivity extends AppCompatActivity {
 
@@ -32,29 +35,16 @@ public class LaunchActivity extends AppCompatActivity {
     public static final String SP_LAUNCH_PASSWORD_KEY="sp_launch_password";
     public static final String SP_NEED_INPUT_PASSWORD_KEY="sp_need_input_password";
     public static final String SP_NEED_FINGER_PASSWORD_KEY="sp_need_finger_password";
+
     private int mType;
     private static final int TYPE_SET_PASSWORD_FIRST=0;
     private static final int TYPE_SET_PASSWORD_SECOND=1;
     private static final int TYPE_INPUT_PASSWORD=2;
     private static final int TYPE_FINGER_PASSWORD=3;
-    /**
-     * 输入错误计数器
-     */
-    private int errorPasswordCount=0;
-    /**
-     * 安全密码锁页面请求码
-     */
-    public static final int GOTO_LOCK_REQUEST_CODE = 2001;
-    /**
-     * 输入密码的值
-     */
+
     private String mPassword = "";
     private static final int PASSWORD_LENGTH = 4;
     private static final int PASSWORD_TIME = 5;
-    /**
-     * 是否开启安全密码
-     */
-    private boolean hasSetPassword;
 
     private FingerprintManagerCompat mFingerprintManager;
 
@@ -62,6 +52,7 @@ public class LaunchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch);
+        Bmob.initialize(this,"2424d64e264f226066a4c80e924b2433");
         ButterKnife.bind(this);
         if (SharedPreferencesUtil.getBoolean(SP_NEED_INPUT_PASSWORD_KEY,true)){
             checkType();
@@ -99,7 +90,6 @@ public class LaunchActivity extends AppCompatActivity {
 
     private void checkType(){
         if (!TextUtils.isEmpty(SharedPreferencesUtil.getString(SP_LAUNCH_PASSWORD_KEY))){
-            hasSetPassword=true;
             mType=TYPE_INPUT_PASSWORD;
         }else {
             mPasswordTipText.setText("请先设置密码");
@@ -131,9 +121,16 @@ public class LaunchActivity extends AppCompatActivity {
     }
 
     private void startMainActivity(){
-        Intent intent=new Intent(this,MainActivity.class);
-        this.startActivity(intent);
-        this.finish();
+        User user= UserUtil.getInstance().getCurrentUser();
+        if (user!=null){
+            Bundle bundle=new Bundle();
+            bundle.putSerializable("user",user);
+            MainActivity.startMainActivity(this,bundle);
+            finish();
+        }else {
+            MainActivity.startMainActivity(this);
+            finish();
+        }
     }
 
     private FingerprintManagerCompat.AuthenticationCallback mFingerCallback=new FingerprintManagerCompat.AuthenticationCallback() {

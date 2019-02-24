@@ -1,5 +1,8 @@
 package com.example.keepbookkeeping.activities;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -34,6 +37,7 @@ import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.FragmentAdapter;
+import com.example.keepbookkeeping.bean.BmobBean.User;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.bill.BillFragment;
 import com.example.keepbookkeeping.bill.BillPresenterImpl;
@@ -56,6 +60,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * @author 邹永鹏
@@ -88,7 +94,15 @@ import butterknife.ButterKnife;
      RadioGroup mFormBtnGroup;
 
      @BindView(R.id.nav_view)
-    NavigationView mNavView;
+     NavigationView mNavView;
+
+    /**
+     * NavigationView滑动菜单内控件
+     */
+     View mNavHeaderLayout;
+     CircleImageView mUserHeadImage;
+     TextView mUserName;
+     TextView mUserSex;
 
      private LayoutInflater mLayoutInflater;
      private Class[] fragmentList = {
@@ -118,22 +132,50 @@ import butterknife.ButterKnife;
      private com.example.keepbookkeeping.list.ListFragment mListFragment;
      private FormFragment mFormFragment;
 
+     private User mUser;
 
      @Override
      protected void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
          setContentView(R.layout.activity_main);
          ButterKnife.bind(this);
-         initNavView();
-         initToolBar();
-         initViewPagerAndTab();
-         initFragment();
-         mBillBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
-         mFormBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
+         LogUtil.d(TAG,"onCreate");
+     }
+
+    @Override
+    protected void onResume() {
+        LogUtil.d(TAG,"onResume");
+        super.onResume();
+        initUser();
+        initNavView();
+        initToolBar();
+        initViewPagerAndTab();
+        initFragment();
+        mBillBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
+        mFormBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
+    }
+
+    private void initUser(){
+         Intent intent=getIntent();
+         Bundle bundle=intent.getExtras();
+         if (bundle!=null){
+             mUser=(User)bundle.getSerializable("user");
+             LogUtil.d(TAG,mUser.toString());
+         }
      }
 
      public void initNavView(){
          mNavView.setNavigationItemSelectedListener(mNavListener);
+         if (mNavHeaderLayout==null){
+             mNavHeaderLayout = mNavView.inflateHeaderView(R.layout.main_mav_header);
+             mUserHeadImage=(CircleImageView) mNavHeaderLayout.findViewById(R.id.nav_header_image);
+             mUserName=(TextView) mNavHeaderLayout.findViewById(R.id.nav_header_name);
+//             mUserSex=(TextView) mNavHeaderLayout.findViewById(R.id.nav_header_sex);
+             mUserHeadImage.setOnClickListener(mUserHeadImageListener);
+         }
+         if (mUser!=null){
+             mUserName.setText(mUser.getUsername());
+         }
      }
 
      private void initToolBar() {
@@ -424,8 +466,10 @@ import butterknife.ButterKnife;
          @Override
          public boolean onNavigationItemSelected(@NonNull MenuItem item) {
              switch (item.getItemId()){
-                 case R.id.personal_data:
-                     ToastUtil.success("个人资料");
+                 case R.id.change_user:
+                     ToastUtil.success("切换账号");
+                     LoginActivity.startLoginActivity(MainActivity.this);
+                     finish();
                      break;
                  case R.id.setting:
                      ToastUtil.success("设置");
@@ -446,5 +490,30 @@ import butterknife.ButterKnife;
              return true;
          }
      };
+
+    private View.OnClickListener mUserHeadImageListener=new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             if (mUser!=null){
+                 //当前存在用户时，更改图片
+
+             }else {
+                 //不存在用户
+                 LoginActivity.startLoginActivity(MainActivity.this);
+                 finish();
+             }
+         }
+     };
+
+    public static void startMainActivity(Context context){
+        Intent intent=new Intent(context,MainActivity.class);
+        context.startActivity(intent);
+    }
+
+    public static void startMainActivity(Context context,Bundle bundle){
+        Intent intent=new Intent(context,MainActivity.class);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+    }
 
 }
