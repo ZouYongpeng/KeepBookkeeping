@@ -15,6 +15,7 @@ import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.bean.BmobBean.User;
 import com.example.keepbookkeeping.bean.BmobBean.UserInfo;
 import com.example.keepbookkeeping.ui.SearchEditText;
+import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
 import com.example.keepbookkeeping.utils.UserUtil;
@@ -55,6 +56,8 @@ public class RegisterActivity extends AppCompatActivity {
     @BindView(R.id.goto_login)
     protected TextView mGotoLogin;
 
+    @BindView(R.id.goto_local)
+    TextView mGotoLocal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,6 +165,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Bundle bundle=new Bundle();
                     bundle.putSerializable("user",(User)o);
                     MainActivity.startMainActivity(RegisterActivity.this,bundle);
+                    AllDataTableUtil.changeAllLocalDataUserId();
                     finish();
                 }else {
                     LogUtil.d(TAG,e.getMessage() + "(" + e.getErrorCode() + ")");
@@ -189,20 +193,24 @@ public class RegisterActivity extends AppCompatActivity {
         mRegisterButton.setText("注册");
     }
 
-    @OnClick({R.id.register_back, R.id.register_user_head, R.id.register_button, R.id.goto_login})
+    @OnClick({R.id.register_back, R.id.register_user_head, R.id.register_button, R.id.goto_login,R.id.goto_local})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.register_back:
                 finish();
                 break;
             case R.id.register_user_head:
-                ToastUtil.success("添加照片");
                 break;
             case R.id.register_button:
                 userRegister();
                 break;
             case R.id.goto_login:
-                LoginActivity.startLoginActivity(this);
+                finish();
+                break;
+            case R.id.goto_local:
+                BmobUser.logOut();
+                MainActivity.startMainActivity(this);
+                finish();
                 break;
             default:
                 break;

@@ -1,17 +1,29 @@
 package com.example.keepbookkeeping.activities;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Process;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -20,6 +32,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,7 +41,10 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -52,15 +69,19 @@ import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DensityUtil;
 import com.example.keepbookkeeping.utils.KeyBoardUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
+import com.example.keepbookkeeping.utils.PhotoUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bmob.v3.BmobUser;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -134,25 +155,29 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
      private User mUser;
 
+     Dialog mSelectPicDialog;
+     private Uri imageUri;
+
      @Override
      protected void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
          setContentView(R.layout.activity_main);
          ButterKnife.bind(this);
          LogUtil.d(TAG,"onCreate");
+         initUser();
+         initNavView();
+         initToolBar();
+         initViewPagerAndTab();
+         initFragment();
+         mBillBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
+         mFormBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
      }
 
     @Override
     protected void onResume() {
         LogUtil.d(TAG,"onResume");
         super.onResume();
-        initUser();
-        initNavView();
-        initToolBar();
-        initViewPagerAndTab();
-        initFragment();
-        mBillBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
-        mFormBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
+
     }
 
     private void initUser(){
@@ -382,6 +407,248 @@ import de.hdodenhof.circleimageview.CircleImageView;
          }
      }
 
+     private void initSelectPicDialog(){
+         mSelectPicDialog=new Dialog(this,R.style.Theme_AppCompat_Dialog);
+         View view=View.inflate(this,R.layout.dialog_bottom,null);
+         mSelectPicDialog.setContentView(view);
+         mSelectPicDialog.setCanceledOnTouchOutside(true);
+         Window dialogWindow = mSelectPicDialog.getWindow();
+         WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+         lp.width = WindowManager.LayoutParams.MATCH_PARENT;;// (int) (ScreenSizeUtils.getInstance(this).getScreenWidth())* 0.9f
+         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;//
+         lp.gravity = Gravity.BOTTOM;
+         dialogWindow.setAttributes(lp);
+
+         Button camera=view.findViewById(R.id.camera);
+         camera.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 ToastUtil.success("打开相机");
+//                 openCamera();
+                 PhotoUtil.photograph(MainActivity.this);
+             }
+         });
+
+         Button album=view.findViewById(R.id.album);
+         album.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 ToastUtil.success("打开相册");
+                 //因为要获取SD卡的照片，所以需要获取WRITE_EXTERNAL_STORAGE权限
+                 if (ContextCompat.checkSelfPermission(
+                         MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                         != PackageManager.PERMISSION_GRANTED){
+                     //没有就申请获取
+                     ActivityCompat.requestPermissions(
+                             MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+                 }else {
+                     PhotoUtil.selectPictureFromAlbum(MainActivity.this);
+                 }
+             }
+         });
+
+         Button cancel=view.findViewById(R.id.cancel);
+         cancel.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 mSelectPicDialog.dismiss();
+             }
+         });
+     }
+
+    private String path;
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        switch (requestCode){
+//            case PhotoUtil.NONE:
+//                break;
+//            case PhotoUtil.PHOTOGRAPH:
+//                if (resultCode==RESULT_OK){
+//                    // 设置文件保存路径这里放在根目录下
+//                    File picture = null;
+//                    if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+//                        picture = new File(Environment.getExternalStorageDirectory() + PhotoUtil.imageName);
+//                        if (!picture.exists()) {
+//                            picture = new File(Environment.getExternalStorageDirectory() + PhotoUtil.imageName);
+//                        }
+//                    } else {
+//                        picture = new File(this.getFilesDir() + PhotoUtil.imageName);
+//                        if (!picture.exists()) {
+//                            picture = new File(MainActivity.this.getFilesDir() + PhotoUtil.imageName);
+//                        }
+//                    }
+//                    Uri pictureUri= FileProvider.getUriForFile(this,"org.kbk.fileprovider", picture);
+//                    // 生成一个地址用于存放剪辑后的图片
+//                    path = PhotoUtil.getPath(this);
+//                    if (TextUtils.isEmpty(path)) {
+//                        Log.e("photo", "随机生成的用于存放剪辑后的图片的地址失败");
+//                        return;
+//                    }
+//                    LogUtil.d("photo","剪切图 path = "+path);
+//                    Uri imageUri=Uri.parse(path);
+//                    PhotoUtil.startPhotoZoom(MainActivity.this, pictureUri, PhotoUtil.PICTURE_HEIGHT, PhotoUtil.PICTURE_WIDTH, imageUri);
+//                    requestCode=PhotoUtil.PHOTORESOULT;
+//                }
+//                break;
+//            case PhotoUtil.PHOTOZOOM:
+//                //读取相册缩放图片
+//                if (resultCode==RESULT_OK){
+//                    // 生成一个地址用于存放剪辑后的图片
+//                    path = PhotoUtil.getPath(this);
+//                    if (TextUtils.isEmpty(path)) {
+//                        LogUtil.e("photo", "随机生成的用于存放剪辑后的图片的地址失败");
+//                        return;
+//                    }
+//                    LogUtil.d("photo","相册缩放图片 path = "+path);
+//                    Uri imageUri=Uri.parse(path);
+//                    PhotoUtil.startPhotoZoom(MainActivity.this, data.getData(), PhotoUtil.PICTURE_HEIGHT, PhotoUtil.PICTURE_WIDTH, imageUri);
+//                    requestCode=PhotoUtil.PHOTORESOULT;
+//                }
+//                break;
+//            case PhotoUtil.PHOTORESOULT:
+//                /**
+//                 * 处理结果
+//                 * 在这里处理剪辑结果，可以获取缩略图，获取剪辑图片的地址。
+//                 * 得到这些信息可以选则用于上传图片等等操作
+//                 * 如，根据path获取剪辑后的图片
+//                 * */
+//                if (resultCode==RESULT_OK){
+//                    Bitmap bitmap = PhotoUtil.convertToBitmap(path,PhotoUtil.PICTURE_HEIGHT, PhotoUtil.PICTURE_WIDTH);
+//                    if(bitmap != null){
+//                        mUserHeadImage.setImageBitmap(bitmap);
+//                    }
+//                    return;
+//                }
+//                break;
+//            default:
+//                break;
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PhotoUtil.NONE){
+            return;
+        }
+        // 拍照
+        if (requestCode == PhotoUtil.PHOTOGRAPH) {
+            if (resultCode==RESULT_OK){
+                // 设置文件保存路径这里放在根目录下
+                File picture = null;
+                if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+                    picture = new File(Environment.getExternalStorageDirectory() + PhotoUtil.imageName);
+                    if (!picture.exists()) {
+                        picture = new File(Environment.getExternalStorageDirectory() + PhotoUtil.imageName);
+                    }
+                } else {
+                    picture = new File(this.getFilesDir() + PhotoUtil.imageName);
+                    if (!picture.exists()) {
+                        picture = new File(MainActivity.this.getFilesDir() + PhotoUtil.imageName);
+                    }
+                }
+                Uri pictureUri= FileProvider.getUriForFile(this,"org.kbk.fileprovider", picture);
+                // 生成一个地址用于存放剪辑后的图片
+                path = PhotoUtil.getPath(this);
+                if (TextUtils.isEmpty(path)) {
+                    Log.e("photo", "随机生成的用于存放剪辑后的图片的地址失败");
+                    return;
+                }
+                LogUtil.d("photo","剪切图 path = "+path);
+//              Uri imageUri = UriPathUtils.getUri(this, path);
+                Uri imageUri=Uri.parse(path);
+//                mUserHeadImage.setImageURI(imageUri);
+//                mUserHeadImage.setImageBitmap()
+                PhotoUtil.startPhotoZoom(MainActivity.this, pictureUri, PhotoUtil.PICTURE_HEIGHT, PhotoUtil.PICTURE_WIDTH, imageUri);
+//                requestCode=PhotoUtil.PHOTORESOULT;
+                return;
+            }
+        }
+
+//        if (data == null){
+//            return;
+//        }
+
+        // 读取相册缩放图片
+        if (requestCode == PhotoUtil.PHOTOZOOM) {
+
+            path = PhotoUtil.getPath(this);// 生成一个地址用于存放剪辑后的图片
+            if (TextUtils.isEmpty(path)) {
+                LogUtil.e("photo", "随机生成的用于存放剪辑后的图片的地址失败");
+                return;
+            }
+            LogUtil.d("photo","相册缩放图片 path = "+path);
+
+//            Uri imageUri = UriPathUtils.getUri(this, path);
+            Uri imageUri=Uri.parse(path);
+            PhotoUtil.startPhotoZoom(MainActivity.this, data.getData(), PhotoUtil.PICTURE_HEIGHT, PhotoUtil.PICTURE_WIDTH, imageUri);
+//            requestCode=PhotoUtil.PHOTORESOULT;
+            return;
+        }
+        // 处理结果
+        if (requestCode == PhotoUtil.PHOTORESOULT) {
+            /**
+             * 在这里处理剪辑结果，可以获取缩略图，获取剪辑图片的地址。得到这些信息可以选则用于上传图片等等操作
+             * */
+            /**
+             * 如，根据path获取剪辑后的图片
+             */
+            Bitmap bitmap = PhotoUtil.convertToBitmap(path,PhotoUtil.PICTURE_HEIGHT, PhotoUtil.PICTURE_WIDTH);
+            if(bitmap != null){
+//                tv2.setText(bitmap.getHeight()+"x"+bitmap.getWidth()+"图");
+                mUserHeadImage.setImageBitmap(bitmap);
+            }
+
+//            Bitmap bitmap2 = PhotoUtil.convertToBitmap(path,120, 120);
+//            if(bitmap2 != null){
+//                tv1.setText(bitmap2.getHeight()+"x"+bitmap2.getWidth()+"图");
+//                smallImg.setImageBitmap(bitmap2);
+//            }
+
+//			Bundle extras = data.getExtras();
+//			if (extras != null) {
+//				Bitmap photo = extras.getParcelable("data");
+//				ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//				photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);// (0-100)压缩文件
+//				InputStream isBm = new ByteArrayInputStream(stream.toByteArray());
+//			}
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void openCamera(){
+        String imageName=mUser.getUsername()+"_head.jpg";
+        //通过Context.getExternalCacheDir()方法可以获取到当前应用缓存数据
+        //SDCard/Android/data/你的应用包名/cache/目录，一般存放临时缓存数据.
+        File ouputImage=new File(getExternalCacheDir(),imageName);
+        try{
+            if (ouputImage.exists()){
+                ouputImage.delete();
+            }
+            ouputImage.createNewFile();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        //将file对象转换为URI对象
+        if (Build.VERSION.SDK_INT>=24){//判断Android SDK版本号
+            //7.0之后的系统，不允许直接使用本地真实路径的uri，会抛出错误
+            //FileProvider是特殊的内容提取器（需要注册）
+            // 可以将uri封装，共享给外部，第二个参数可以是任意唯一的字符串
+            imageUri= FileProvider.getUriForFile(
+                    MainActivity.this,"com.example.keepbookkeeping.fileprovider",ouputImage);
+        }else {//如果低于7.0,
+            imageUri= Uri.fromFile(ouputImage);
+        }
+        PhotoUtil.photograph(MainActivity.this);
+//        //启动相机程序
+//        Intent intent=new Intent("android.media.action.IMAGE_CAPTURE");
+//        //将拍摄的照片存储在SDcard的时候
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+//        startActivityForResult(intent,TAKE_PHOTO);
+    }
+
      private ViewPager.OnPageChangeListener mPageChangeListener = new ViewPager.OnPageChangeListener() {
          @Override
          public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -494,9 +761,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
     private View.OnClickListener mUserHeadImageListener=new View.OnClickListener() {
          @Override
          public void onClick(View v) {
-             if (mUser!=null){
-                 //当前存在用户时，更改图片
-
+             if (false){
+                 //当前存在用户时，更改图片mUser!=null
+                 showSelectPicDialog();
              }else {
                  //不存在用户
                  LoginActivity.startLoginActivity(MainActivity.this);
@@ -504,6 +771,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
              }
          }
      };
+
+    private void showSelectPicDialog(){
+        if (mSelectPicDialog==null){
+            initSelectPicDialog();
+        }
+        mSelectPicDialog.show();
+    }
+
+    public User getUser(){
+        return mUser;
+    }
 
     public static void startMainActivity(Context context){
         Intent intent=new Intent(context,MainActivity.class);

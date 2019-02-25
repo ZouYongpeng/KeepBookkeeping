@@ -38,12 +38,15 @@ public class KBKAllDataBaseHelper extends SQLiteOpenHelper {
      */
     public static final String CREATE_ALL_DATA="create table AllData ("
             +" id integer primary key autoincrement not null,"
+            +" user_id text not null,"
             +" type integer not null,"
             +" money real not null,"
             +" date text not null,"
             +" type_name text not null,"
             +" bill_name text not null ,"
-            +" description text )";
+            +" description text ,"
+            +" can_upload real not null ,"
+            +" cloud_object_id text )";
 
     public static final String CREATE_ALL_DATA_TYPE="create table AllDataType ("
             +" id integer primary key autoincrement not null,"

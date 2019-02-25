@@ -80,4 +80,14 @@
         android:textColor="@color/main_color"
         android:layout_centerInParent="true"/>
 
+    <TextView
+        android:id="@+id/goto_local"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/goto_register"
+        android:layout_marginTop="15dp"
+        android:text="以本地用户身份使用"
+        android:textColor="@color/main_color"
+        android:layout_centerInParent="true"/>
+
 </RelativeLayout>

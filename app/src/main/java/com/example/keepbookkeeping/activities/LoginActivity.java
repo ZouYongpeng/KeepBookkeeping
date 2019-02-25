@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.bean.BmobBean.User;
 import com.example.keepbookkeeping.ui.SearchEditText;
+import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
 import com.example.keepbookkeeping.utils.UserUtil;
@@ -23,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.LogInListener;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -47,13 +49,15 @@ public class LoginActivity extends AppCompatActivity {
 
     @BindView(R.id.goto_register)
     TextView mToRegister;
+
+    @BindView(R.id.goto_local)
+    TextView mToLocal;
     ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-//        Bmob.initialize(this, "2424d64e264f226066a4c80e924b2433");
         dialog = new ProgressDialog(this);
         dialog.setMessage("登录中......");
         initEditListener();
@@ -102,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                     Bundle bundle=new Bundle();
                     bundle.putSerializable("user",(User)o);
                     MainActivity.startMainActivity(LoginActivity.this,bundle);
+                    AllDataTableUtil.changeAllLocalDataUserId();
                     finish();
                 }else {
                     LogUtil.d(TAG,e.getMessage() + "(" + e.getErrorCode() + ")");
@@ -115,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick({R.id.login_back, R.id.login_user_head, R.id.login_button, R.id.goto_register})
+    @OnClick({R.id.login_back, R.id.login_user_head, R.id.login_button, R.id.goto_register,R.id.goto_local})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.login_back:
@@ -140,6 +145,11 @@ public class LoginActivity extends AppCompatActivity {
             case R.id.goto_register:
                 ToastUtil.success("注册");
                 RegisterActivity.startRegisterActivity(this);
+                break;
+            case R.id.goto_local:
+                BmobUser.logOut();
+                MainActivity.startMainActivity(this);
+                finish();
                 break;
             default:
                 break;

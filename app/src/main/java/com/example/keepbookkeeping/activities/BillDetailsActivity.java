@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.AllDataListAdapter;
 import com.example.keepbookkeeping.bean.BillApartBean;
+import com.example.keepbookkeeping.bean.BmobBean.User;
 import com.example.keepbookkeeping.events.NotifyBillListEvent;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.BillTableUtil;
@@ -29,6 +30,7 @@ import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.StringUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
+import com.example.keepbookkeeping.utils.UserUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,6 +73,8 @@ public class BillDetailsActivity extends AppCompatActivity {
     AlertDialog mAddBillDialog;
 
     CompositeDisposable mDisposables = new CompositeDisposable();
+
+    String mCurrentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

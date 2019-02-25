@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.activities.AddDataActivity;
+import com.example.keepbookkeeping.activities.LoginActivity;
+import com.example.keepbookkeeping.bean.BmobBean.User;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.bill.BillFragment;
 import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
@@ -30,6 +32,7 @@ import com.example.keepbookkeeping.utils.DataTypeTableUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.ToastUtil;
+import com.example.keepbookkeeping.utils.UserUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -68,6 +71,8 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static final int TYPE_ALL_DATA=0;
     public static final int TYPE_QUERY_BILL_NAME=1;
     public static final int TYPE_SEARCH_DATA_BY_WORD=2;
+
+    private String currentUserId;
 
 
     public static class DateViewHolder extends RecyclerView.ViewHolder{
@@ -209,6 +214,12 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         dateIndex=0;
         monthIndex=0;
         bindIndex=0;
+        User user=UserUtil.getInstance().getCurrentUser();
+        if (user!=null){
+            currentUserId=user.getObjectId();
+        }else {
+            currentUserId="local";
+        }
         if (mDataType==TYPE_ALL_DATA){
             mSingleDataList= AllDataTableUtil.queryAllDataOrderByDate();
             mYearMonthList= AllDataTableUtil.getAllDifferentMonthList();
@@ -424,7 +435,24 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     AddDataActivity.startAddDataActivity(mContext);
                 }
             });
-            ((EmptyViewHolder) holder).mLoginText.setOnClickListener(mEmptyListener);
+            User currentUser=UserUtil.getInstance().getCurrentUser();
+            if (currentUser!=null){
+                ((EmptyViewHolder) holder).mLoginText.setText("同步数据");
+                ((EmptyViewHolder) holder).mLoginText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        UserUtil.getInstance().uploadSingleDataList(mSingleDataList,UserUtil.getInstance().getCurrentUserId());
+                        notifyDataInSearchAllData("");
+                        RxBus.getInstance().post(new NotifyBillListEvent(1));
+                        RxBus.getInstance().post(new NotifyBillListEvent(0));
+                        RxBus.getInstance().post(new NotifyFormListEvent(1));
+                        RxBus.getInstance().post(new NotifyFormListEvent(0));
+                    }
+                });
+            }else {
+                ((EmptyViewHolder) holder).mLoginText.setText("登陆以同步数据");
+                ((EmptyViewHolder) holder).mLoginText.setOnClickListener(mEmptyListener);
+            }
         }
     }
 
@@ -442,6 +470,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     break;
                 case R.id.list_empty_login:
                     ToastUtil.success("登陆");
+                    LoginActivity.startLoginActivity(mContext);
                     break;
                 default:
                     break;
@@ -460,6 +489,10 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             initAdapter();
             notifyDataSetChanged();
         }
+    }
+
+    public List<SingleDataBean> getSingleDataList(){
+        return mSingleDataList;
     }
 
 }

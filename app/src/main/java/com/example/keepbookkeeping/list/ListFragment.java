@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -16,12 +17,16 @@ import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.activities.AddDataActivity;
+import com.example.keepbookkeeping.activities.LoginActivity;
 import com.example.keepbookkeeping.adapter.AllDataListAdapter;
+import com.example.keepbookkeeping.events.NotifyBillListEvent;
+import com.example.keepbookkeeping.events.NotifyFormListEvent;
 import com.example.keepbookkeeping.events.SearchAllDataEvent;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DateUtil;
 import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
+import com.example.keepbookkeeping.utils.UserUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,10 +39,13 @@ import io.reactivex.functions.Consumer;
  * @date 2019/1/21
  * @description :用户列表的fragment
  */
-public class ListFragment extends Fragment implements ListContract.View{
+public class ListFragment extends Fragment implements ListContract.View {
 
     @BindView(R.id.floating_btn)
     FloatingActionButton mFloatingActionButton;
+
+    @BindView(R.id.list_fragment_swipe_refresh)
+    SwipeRefreshLayout mSwipeRefresh;
 
     @BindView(R.id.list_fragment_recycler)
     RecyclerView mListContentRecyclerView;
@@ -55,17 +63,17 @@ public class ListFragment extends Fragment implements ListContract.View{
     TextView mOutcomeMoneyText;
 
     private ListContract.Presenter mListPresenter;
-    private static final String TAG="ListFragment_tag";
+    private static final String TAG = "ListFragment_tag";
 
     AllDataListAdapter mDataListAdapter;
 
-    CompositeDisposable mCompositeDisposable=new CompositeDisposable();
+    CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.fragment_list,container,false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
+        ButterKnife.bind(this, view);
 
         return view;
     }
@@ -80,7 +88,7 @@ public class ListFragment extends Fragment implements ListContract.View{
 
     @Override
     public void setPresenter(ListContract.Presenter presenter) {
-        mListPresenter=presenter;
+        mListPresenter = presenter;
     }
 
     @Override
@@ -89,35 +97,38 @@ public class ListFragment extends Fragment implements ListContract.View{
     }
 
     @OnClick(R.id.floating_btn)
-    public void start(){
+    public void start() {
         AddDataActivity.startAddDataActivity(getActivity());
     }
 
     @Override
     public void initRecyclerView() {
-        final LinearLayoutManager manager=new LinearLayoutManager(getActivity());
+        mSwipeRefresh.setColorSchemeResources(R.color.main_color);
+        mSwipeRefresh.setOnRefreshListener(mRefreshListener);
+
+        final LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         mListContentRecyclerView.setLayoutManager(manager);
-        mDataListAdapter=new AllDataListAdapter(getContext());
+        mDataListAdapter = new AllDataListAdapter(getContext());
         mListContentRecyclerView.setAdapter(mDataListAdapter);
         mListContentRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
             @Override
             public void onViewRecycled(RecyclerView.ViewHolder holder) {
-                View view=manager.getChildAt(0);
-                if (view==null){
+                View view = manager.getChildAt(0);
+                if (view == null) {
                     return;
                 }
-                RecyclerView.ViewHolder newHolder=mListContentRecyclerView.getChildViewHolder(view);
-                if (newHolder instanceof AllDataListAdapter.DateViewHolder){
-                    LogUtil.d(TAG,"this is DateViewHolder"+((AllDataListAdapter.DateViewHolder) newHolder).getDate());
+                RecyclerView.ViewHolder newHolder = mListContentRecyclerView.getChildViewHolder(view);
+                if (newHolder instanceof AllDataListAdapter.DateViewHolder) {
+                    LogUtil.d(TAG, "this is DateViewHolder" + ((AllDataListAdapter.DateViewHolder) newHolder).getDate());
                     changeBanner(DateUtil.getYearMonthOfDate(((AllDataListAdapter.DateViewHolder) newHolder).getDate()));
-                }else if (newHolder instanceof AllDataListAdapter.MonthViewHolder){
-                    LogUtil.d(TAG,"this is MonthViewHolder"+((AllDataListAdapter.MonthViewHolder) newHolder).getDate());
+                } else if (newHolder instanceof AllDataListAdapter.MonthViewHolder) {
+                    LogUtil.d(TAG, "this is MonthViewHolder" + ((AllDataListAdapter.MonthViewHolder) newHolder).getDate());
                     changeBanner(DateUtil.getYearMonthOfDate(((AllDataListAdapter.MonthViewHolder) newHolder).getDate()));
-                }else if (newHolder instanceof AllDataListAdapter.ContentViewHolder){
-                    LogUtil.d(TAG,"this is ContentViewHolder"+((AllDataListAdapter.ContentViewHolder) newHolder).getDate());
+                } else if (newHolder instanceof AllDataListAdapter.ContentViewHolder) {
+                    LogUtil.d(TAG, "this is ContentViewHolder" + ((AllDataListAdapter.ContentViewHolder) newHolder).getDate());
                     changeBanner(DateUtil.getYearMonthOfDate(((AllDataListAdapter.ContentViewHolder) newHolder).getDate()));
-                }else {
-                    LogUtil.d(TAG,"this is EndViewHolder");
+                } else {
+                    LogUtil.d(TAG, "this is EndViewHolder");
                 }
             }
         });
@@ -128,7 +139,7 @@ public class ListFragment extends Fragment implements ListContract.View{
         mCompositeDisposable.add(RxBus.getInstance().toObservable(SearchAllDataEvent.class).subscribe(new Consumer<SearchAllDataEvent>() {
             @Override
             public void accept(SearchAllDataEvent searchAllDataEvent) throws Exception {
-                if (mDataListAdapter!=null){
+                if (mDataListAdapter != null) {
                     mDataListAdapter.notifyDataInSearchAllData(searchAllDataEvent.getWord());
                 }
             }
@@ -137,18 +148,19 @@ public class ListFragment extends Fragment implements ListContract.View{
 
     /**
      * 根据月份动态改变banner
+     *
      * @param date "2019-02"
      */
     @Override
     public void changeBanner(String date) {
-        if (TextUtils.isEmpty(date)){
+        if (TextUtils.isEmpty(date)) {
             mIncomeMonthText.setText("月收入");
             mOutcomeMonthText.setText("月支出");
             return;
         }
-        mIncomeMonthText.setText(date+"月收入");
-        mOutcomeMonthText.setText(date+"月支出");
-        date="%"+date+"%";
+        mIncomeMonthText.setText(date + "月收入");
+        mOutcomeMonthText.setText(date + "月支出");
+        date = "%" + date + "%";
         mIncomeMoneyText.setText(String.valueOf(AllDataTableUtil.getTotalIncomeMoney(date)));
         mOutcomeMoneyText.setText(String.valueOf(AllDataTableUtil.getTotalOutcomeMoney(date)));
     }
@@ -158,4 +170,24 @@ public class ListFragment extends Fragment implements ListContract.View{
         super.onDestroyView();
         mCompositeDisposable.clear();
     }
+
+    private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            if (UserUtil.getInstance().getCurrentUserId().equals("local")) {
+                //本地用户
+                LoginActivity.startLoginActivity(getActivity());
+                mSwipeRefresh.setRefreshing(false);
+            } else {
+                UserUtil.getInstance().uploadSingleDataList(mDataListAdapter.getSingleDataList(),UserUtil.getInstance().getCurrentUserId());
+                mDataListAdapter.notifyDataInSearchAllData("");
+                RxBus.getInstance().post(new NotifyBillListEvent(1));
+                RxBus.getInstance().post(new NotifyBillListEvent(0));
+                RxBus.getInstance().post(new NotifyFormListEvent(1));
+                RxBus.getInstance().post(new NotifyFormListEvent(0));
+                mSwipeRefresh.setRefreshing(false);
+            }
+        }
+
+    };
 }

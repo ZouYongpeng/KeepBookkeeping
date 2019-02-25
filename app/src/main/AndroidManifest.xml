@@ -43,6 +43,15 @@
         <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"
             android:authorities="com.example.keepbookkeeping.BmobContentProvider" />
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="org.kbk.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 

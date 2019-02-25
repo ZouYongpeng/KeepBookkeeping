@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.keepbookkeeping.R;
 import com.example.keepbookkeeping.adapter.AddDataViewPagerAdapter;
+import com.example.keepbookkeeping.bean.BmobBean.User;
 import com.example.keepbookkeeping.bean.DataTypeBean;
 import com.example.keepbookkeeping.bean.SingleDataBean;
 import com.example.keepbookkeeping.events.ChangeDataTypeEvent;
@@ -37,6 +38,7 @@ import com.example.keepbookkeeping.utils.LogUtil;
 import com.example.keepbookkeeping.utils.RxBus;
 import com.example.keepbookkeeping.utils.SharedPreferencesUtil;
 import com.example.keepbookkeeping.utils.ToastUtil;
+import com.example.keepbookkeeping.utils.UserUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -352,8 +354,14 @@ public class AddDataActivity extends AppCompatActivity {
                     mAddDataChooseText.getText().toString(),
                     mAddDataBillTypeStr,
                     mAddDataDescriptionStr);
+            String userId=UserUtil.getInstance().getCurrentUserId();
+            if (!TextUtils.isEmpty(userId)){
+                bean.setUserId(userId);
+            }else {
+                bean.setUserId("local");
+            }
             if (type==TYPE_ADD_DATA){
-                AllDataTableUtil.insertSingleDataToAllData(bean);
+                AllDataTableUtil.insertSingleDataToAllData(bean,SingleDataBean.TYPE_NEW_DATA);
             }else if (mUpdateId!=-1){
                 AllDataTableUtil.updateDataById(bean,mUpdateId);
             }
@@ -420,4 +428,5 @@ public class AddDataActivity extends AppCompatActivity {
         super.onDestroy();
         mCompositeDisposable.clear();
     }
+
 }

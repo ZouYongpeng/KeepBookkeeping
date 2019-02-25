@@ -6,15 +6,22 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import cn.bmob.v3.BmobObject;
+
 /**
  * @author 邹永鹏
  * @date 2019/1/29
  * @description :单笔花费类型
  */
-public class SingleDataBean implements Serializable{
+public class SingleDataBean extends BmobObject implements Serializable{
+
+    private String userId;
 
     public static final int TYPE_OUTCOME_DATA=0;
     public static final int TYPE_INCOME_DATA=1;
+    public static final int TYPE_NEW_DATA=0;
+    public static final int TYPE_HAS_UPLOAD=1;
+    public static final int TYPE_HAS_CHANGE=2;
 
     private int id;
 
@@ -48,6 +55,13 @@ public class SingleDataBean implements Serializable{
      */
     private String description;
 
+    /**
+     * 是否上传标志
+     */
+    private int canUpload;
+
+    public SingleDataBean(){}
+
     public SingleDataBean(int type, float money, Date date, String typeName, String billName) {
         this(type, money, date, typeName, billName, "");
     }
@@ -65,34 +79,12 @@ public class SingleDataBean implements Serializable{
         this.description = description;
     }
 
-    /**
-     * 获取每个月的总收入数额
-     * @param monthDataBeanList
-     * @return
-     */
-    public static float getMonthlyIncomeMoney(List<SingleDataBean> monthDataBeanList){
-        float monthlyIncomeCount=0;
-        for (SingleDataBean bean: monthDataBeanList) {
-            if (bean.getType()==TYPE_INCOME_DATA){
-                monthlyIncomeCount+=bean.getMoney();
-            }
-        }
-        return monthlyIncomeCount;
+    public String getUserId() {
+        return userId;
     }
 
-    /**
-     * 获取每个月的总支出数额
-     * @param monthDataBeanList
-     * @return
-     */
-    public static float getMonthlyOutcomeMoney(List<SingleDataBean> monthDataBeanList){
-        float monthlyOutcomeCount=0;
-        for (SingleDataBean bean: monthDataBeanList) {
-            if (bean.getType()==TYPE_OUTCOME_DATA){
-                monthlyOutcomeCount+=bean.getMoney();
-            }
-        }
-        return monthlyOutcomeCount;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public int getType() {
@@ -151,15 +143,26 @@ public class SingleDataBean implements Serializable{
         this.id = id;
     }
 
+    public int getCanUpload() {
+        return canUpload;
+    }
+
+    public void setCanUpload(int canUpload) {
+        this.canUpload = canUpload;
+    }
+
     @Override
     public String toString() {
         return "SingleDataBean{" +
-                "type=" + type +
+                "userId='" + userId + '\'' +
+                ", id=" + id +
+                ", type=" + type +
                 ", money=" + money +
-                ", date=" + DateUtil.dateToString(date) +
+                ", date=" + date +
                 ", typeName='" + typeName + '\'' +
                 ", billName='" + billName + '\'' +
                 ", description='" + description + '\'' +
+                ", canUpload=" + canUpload +
                 '}';
     }
 }
