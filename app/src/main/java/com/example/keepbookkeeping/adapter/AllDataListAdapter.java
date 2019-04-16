@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -343,7 +344,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
             LogUtil.d("AllDataList","positionToIndex[ "+position+" ] = "+positionToIndex[position]);
             final SingleDataBean bean=mSingleDataList.get(positionToIndex[position]);
-            LogUtil.d("AllDataList","显示数据"+bean.toString());
+            LogUtil.d("AllDataList","显示数据"+bean.getObjectId()+" , "+bean.toString());
             ((ContentViewHolder) holder).setDate(DateUtil.dateToString(bean.getDate()));
             ((ContentViewHolder) holder).mContentImage.setImageResource(DataTypeTableUtil.getImageId(bean.getTypeName()));
             if (bean.getType()==SingleDataBean.TYPE_INCOME_DATA){
@@ -416,13 +417,16 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         RxBus.getInstance().post(new NotifyBillListEvent(type));
                     }
                     RxBus.getInstance().post(new NotifyFormListEvent(0));
+                    if (!TextUtils.equals(UserUtil.getInstance().getCurrentUserId(),"local")){
+                        Log.d("SingleDataBean", "delete: "+bean.getObjectId());
+                    }
                 }
             });
             ((ContentViewHolder) holder).mEditImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     isClickList[position]=false;
-                    ToastUtil.success("编辑"+bean.getId());
+                    //ToastUtil.success("编辑"+bean.getId());
                     Bundle bundle=new Bundle();
                     bundle.putSerializable("bean",bean);
                     AddDataActivity.startAddDataActivity(mContext,bundle);
@@ -469,7 +473,6 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     AddDataActivity.startAddDataActivity(mContext);
                     break;
                 case R.id.list_empty_login:
-                    ToastUtil.success("登陆");
                     LoginActivity.startLoginActivity(mContext);
                     break;
                 default:

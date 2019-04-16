@@ -1,6 +1,7 @@
 package com.example.keepbookkeeping.utils;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.keepbookkeeping.bean.BmobBean.User;
 import com.example.keepbookkeeping.bean.SingleDataBean;
@@ -76,10 +77,6 @@ public class UserUtil {
                 TextUtils.equals(userId,"local")){
             return;
         }
-        LogUtil.d("cloud","总数据量为"+list.size());
-        for (final SingleDataBean bean : list) {
-            LogUtil.d("cloud",bean.toString());
-        }
         for (final SingleDataBean bean : list) {
             if (!TextUtils.isEmpty(bean.getUserId()) && bean.getCanUpload()==SingleDataBean.TYPE_NEW_DATA){
                 bean.setUserId(userId);
@@ -126,8 +123,10 @@ public class UserUtil {
                     AllDataTableUtil.deleteAllHasUploadData();
                     //把数据插入本地数据库
                     for (SingleDataBean bean:list){
+                        Log.d("cloud", "查询: "+bean.getObjectId()+bean.toString());
                         AllDataTableUtil.insertSingleDataToAllData(bean,SingleDataBean.TYPE_HAS_UPLOAD);
                     }
+
                 }else {
                     LogUtil.d("cloud","查询失败："+e.getMessage()+","+e.getErrorCode());
                 }

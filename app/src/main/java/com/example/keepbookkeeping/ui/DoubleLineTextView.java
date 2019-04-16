@@ -36,7 +36,7 @@ public class DoubleLineTextView extends View{
     }
 
     public void drawMoreLineText(String[] strings,Canvas canvas,Point point){
-        ToastUtil.success("开始绘制");
+        //ToastUtil.success("开始绘制");
         mPaint.setTextAlign(Paint.Align.CENTER);
         Paint.FontMetrics fontMetrics=mPaint.getFontMetrics();
         float top=fontMetrics.top;

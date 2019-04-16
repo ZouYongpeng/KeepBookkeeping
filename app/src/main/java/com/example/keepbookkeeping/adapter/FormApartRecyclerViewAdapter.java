@@ -141,10 +141,10 @@ public class FormApartRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                     AddDataActivity.startAddDataActivity(mContext);
                     break;
                 case R.id.list_empty_login:
-                    ToastUtil.success("登陆");
+                    //ToastUtil.success("登陆");
                     break;
                 case R.id.list_empty_select_other_date:
-                    ToastUtil.success("选择其他时间");
+                    //ToastUtil.success("选择其他时间");
                     break;
                 default:
                     break;

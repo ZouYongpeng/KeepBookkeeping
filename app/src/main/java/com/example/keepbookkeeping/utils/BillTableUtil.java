@@ -23,7 +23,9 @@ public class BillTableUtil {
     public static final int TYPE_ALL=2;
 
 
-    public static final String INSERT_DATA_INTO_BILL="insert into AllBill(type,imageId,name,description,initial_count,canChange) values( ? , ? , ? , ? , ?  , ? )";
+    public static final String INSERT_DATA_INTO_BILL
+            = "insert into AllBill(type,imageId,name,description,initial_count,canChange)" +
+            " values( ? , ? , ? , ? , ?  , ? )";
 
     public static final String QUERY_ALL_BILL="select * from AllBill";
 

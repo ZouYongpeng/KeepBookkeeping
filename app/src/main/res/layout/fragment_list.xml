@@ -8,22 +8,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <!--banner 显示滑动当前月份的收入、支出总额-->
         <include
             android:id="@+id/list_fragment_banner"
             layout="@layout/fragment_list_banner"/>
-
+        <!--滑动刷新布局-->
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/list_fragment_swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
+            <!--显示账单明细的recyclerView-->
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/list_fragment_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
         </android.support.v4.widget.SwipeRefreshLayout>
-
-
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

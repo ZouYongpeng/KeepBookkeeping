@@ -11,7 +11,6 @@ import com.example.keepbookkeeping.base.BaseView;
 public interface ListContract {
 
     interface Presenter extends BasePresenter{
-
     }
 
     /**

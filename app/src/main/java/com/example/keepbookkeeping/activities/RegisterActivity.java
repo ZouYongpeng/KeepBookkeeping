@@ -121,11 +121,10 @@ public class RegisterActivity extends AppCompatActivity {
                 public void done(User user, BmobException e) {
                     if (e==null){
                         LogUtil.d(TAG,"done: UserTool register success");
-//                        toast(getString(R.string.register_success));
                         registerSuccess(user.getObjectId(),name,pass,avatar);
-                    }else {//}else if (e.getErrorCode()!=9015){
+                    }else {
                         LogUtil.d(TAG,"done: UserTool register failure"+e.toString());
-                        ToastUtil.success("该用户已存在或服务器连接失败");
+                        ToastUtil.error("该用户已存在或服务器连接失败");
                         openInput();
                     }
                 }
@@ -161,7 +160,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void done(Object o, BmobException e) {
                 if (e==null){
                     //登录成功
-                    ToastUtil.success("登陆成功");
+                    //ToastUtil.success("登陆成功");
                     Bundle bundle=new Bundle();
                     bundle.putSerializable("user",(User)o);
                     MainActivity.startMainActivity(RegisterActivity.this,bundle);

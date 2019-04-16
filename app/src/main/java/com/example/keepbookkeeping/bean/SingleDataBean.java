@@ -60,6 +60,8 @@ public class SingleDataBean extends BmobObject implements Serializable{
      */
     private int canUpload;
 
+    private String oId;
+
     public SingleDataBean(){}
 
     public SingleDataBean(int type, float money, Date date, String typeName, String billName) {
@@ -149,6 +151,14 @@ public class SingleDataBean extends BmobObject implements Serializable{
 
     public void setCanUpload(int canUpload) {
         this.canUpload = canUpload;
+    }
+
+    public String getoId() {
+        return oId;
+    }
+
+    public void setoId(String oId) {
+        this.oId = oId;
     }
 
     @Override

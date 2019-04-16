@@ -77,6 +77,10 @@ public class AllDataTableUtil {
             "and user_id = ? " +
             "ORDER BY DATE DESC";
 
+    public static final String QUERY_ALL_DATA_BY_DATE="select * from AllData " +
+            "where date like ? " +
+            "ORDER BY DATE DESC";
+
 
     public static final String QUERY_MONEY_IN_BILL_NAME="SELECT * FROM AllData WHERE user_id = ? AND bill_name = ?";
 
@@ -324,7 +328,11 @@ public class AllDataTableUtil {
      * @return
      */
     public static String getFirstYearMonth(){
-        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(FIRST_YEAR_DATE,new String[]{UserUtil.getInstance().getCurrentUserId()});
+        String userId=UserUtil.getInstance().getCurrentUserId();
+        if (TextUtils.isEmpty(userId)) {
+            userId="";
+        }
+        Cursor cursor=KBKAllDataBaseHelper.getInstance().getWritableDatabase().rawQuery(FIRST_YEAR_DATE,new String[]{userId});
         String date=DateUtil.getCurrentYear()+"-"+DateUtil.getCurrentMonth();
         if (cursor.moveToFirst()){
             date=DateUtil.getYearMonthOfDate(cursor.getString(cursor.getColumnIndex("date")));
@@ -334,7 +342,8 @@ public class AllDataTableUtil {
     }
 
     public static void deleteDataById(int id){
-        KBKAllDataBaseHelper.getInstance().getWritableDatabase().execSQL(DELETE_DATA_BY_ID,new String[]{UserUtil.getInstance().getCurrentUserId(),String.valueOf(id)});
+        SQLiteDatabase db=KBKAllDataBaseHelper.getInstance().getWritableDatabase();
+        db.execSQL(DELETE_DATA_BY_ID,new String[]{UserUtil.getInstance().getCurrentUserId(),String.valueOf(id)});
     }
 
     public static void updateDataById(SingleDataBean bean,int id){

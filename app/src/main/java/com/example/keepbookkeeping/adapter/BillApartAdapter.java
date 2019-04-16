@@ -156,9 +156,9 @@ public class BillApartAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         @Override
         public void onClick(View v) {
             if (v.getId()==R.id.bill_apart_item_layout){
-                ToastUtil.success("设置欠账");
+                //ToastUtil.success("设置欠账");
             }else if (v.getId()==R.id.bill_add_item_layout){
-                ToastUtil.success("添加新账户");
+                //ToastUtil.success("添加新账户");
                 LogUtil.d("rxbus","发送 ShowAddNewBillDialogEvent");
                 RxBus.getInstance().post(new ShowAddNewBillDialogEvent());
             }

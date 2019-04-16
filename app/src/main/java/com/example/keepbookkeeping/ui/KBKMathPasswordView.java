@@ -21,7 +21,7 @@ import com.example.keepbookkeeping.R;
 /**
  * @author 邹永鹏
  * @date 2019/2/24
- * @description :
+ * @description :自定义数字键盘
  */
 public class KBKMathPasswordView extends LinearLayout {
 
@@ -86,7 +86,7 @@ public class KBKMathPasswordView extends LinearLayout {
         }
     }
 
-    public static interface OnPasswordInputCompleteListener{
+    public interface OnPasswordInputCompleteListener{
         void OnComplete(String password);
     }
 

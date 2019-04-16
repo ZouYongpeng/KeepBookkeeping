@@ -57,11 +57,10 @@ public class AddDataRecyclerViewAdapter extends RecyclerView.Adapter<AddDataRecy
                 int position=viewHolder.getAdapterPosition();
                 if (position<mDataTypeBeans.size()){
                     DataTypeBean bean=mDataTypeBeans.get(position);
-                    ToastUtil.success(bean.getName());
                     RxBus.getInstance().post(new ChangeDataTypeEvent(bean));
                 }else {
                     //编辑
-                    ToastUtil.success("添加");
+//                    //ToastUtil.success("添加");
                 }
             }
         });

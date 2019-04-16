@@ -59,7 +59,7 @@ public class SimpleDatePickerDialog extends DatePickerDialog {
     public void dismiss() {
         super.dismiss();
         if (mView!=null){
-            ToastUtil.success("执行");
+            //ToastUtil.success("执行");
             mView.callOnClick();
             mView.callOnClick();
 //            mView.requestFocus();
@@ -71,7 +71,7 @@ public class SimpleDatePickerDialog extends DatePickerDialog {
     public void cancel() {
         super.cancel();
         if (mView!=null){
-            ToastUtil.success("执行");
+            //ToastUtil.success("执行");
             mView.callOnClick();
             mView.requestFocus();
             KeyBoardUtil.showSoftKeyBoard(mView, mContext);
@@ -95,7 +95,7 @@ public class SimpleDatePickerDialog extends DatePickerDialog {
                 break;
         }
         if (mView!=null){
-            ToastUtil.success("执行");
+            //ToastUtil.success("执行");
 //            mView.callOnClick();
             mView.requestFocus();
             KeyBoardUtil.showSoftKeyBoard(mView, mContext);

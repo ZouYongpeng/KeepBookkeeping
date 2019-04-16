@@ -235,7 +235,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
                  if (i == EditorInfo.IME_ACTION_DONE && !mSearchEditText.getText().toString().isEmpty()) {
                      mSearchEditText.setText("");
                      KeyBoardUtil.hideSoftKeyBoard(mSearchEditText.getWindowToken(), MainActivity.this);
-                     ToastUtil.success("开始查询");
+                     //ToastUtil.success("开始查询");
                      return true;
                  }
                  return false;
@@ -320,7 +320,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
      public boolean onOptionsItemSelected(MenuItem item) {
          switch (item.getItemId()) {
              case R.id.select_date:
-                 ToastUtil.success("选择日期");
+                 //ToastUtil.success("选择日期");
                  break;
              case android.R.id.home:
                  mDrawerLayout.openDrawer(GravityCompat.START);
@@ -423,7 +423,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
          camera.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 ToastUtil.success("打开相机");
+                 //ToastUtil.success("打开相机");
 //                 openCamera();
                  PhotoUtil.photograph(MainActivity.this);
              }
@@ -433,7 +433,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
          album.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 ToastUtil.success("打开相册");
+                 //ToastUtil.success("打开相册");
                  //因为要获取SD卡的照片，所以需要获取WRITE_EXTERNAL_STORAGE权限
                  if (ContextCompat.checkSelfPermission(
                          MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -734,7 +734,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
          public boolean onNavigationItemSelected(@NonNull MenuItem item) {
              switch (item.getItemId()){
                  case R.id.change_user:
-                     ToastUtil.success("切换账号");
+                     //ToastUtil.success("切换账号");
                      LoginActivity.startLoginActivity(MainActivity.this);
                      finish();
                      break;
@@ -748,7 +748,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
                      ToastUtil.success("帮助");
                      break;
                  case R.id.exit:
-                     ToastUtil.success("退出");
+//                     ToastUtil.success("退出");
                      Process.killProcess(Process.myPid());
                      break;
                  default:

@@ -121,12 +121,12 @@ public class BillFragment extends Fragment implements BillContract.View{
 //        float debtInitialMoney=BillTableUtil.getSumInitialMoney(BillTableUtil.TYPE_DEBT);
         switch (mType){
             case TYPE_ASSETS:
-                ToastUtil.success("资产");
+                //ToastUtil.success("资产");
                 mBillNumText.setText(String.valueOf(assetsInitialMoney+assetsSpendMoney));
                 mBillNetNumText.setText("净资产："+String.valueOf(assetsInitialMoney+assetsSpendMoney+debtSpendMoney));
                 break;
             case TYPE_DEBT:
-                ToastUtil.success("负债");
+                //ToastUtil.success("负债");
                 mBillNumText.setText(String.valueOf(-debtSpendMoney));
                 mBillNetNumText.setText("净资产："+String.valueOf(assetsInitialMoney+assetsSpendMoney+debtSpendMoney));
                 break;
@@ -243,7 +243,7 @@ public class BillFragment extends Fragment implements BillContract.View{
         confirmBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                ToastUtil.success("确定");
+                //ToastUtil.success("确定");
                 String billName=(String) spinner.getSelectedItem();
                 int type=BillTableUtil.getTypeByBillName(billName);
                 int imageId=BillTableUtil.getImageIdByBillName(billName);

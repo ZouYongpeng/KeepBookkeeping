@@ -222,7 +222,6 @@ public class AddDataActivity extends AppCompatActivity {
         mDescriptionDialog.setButton(AlertDialog.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ToastUtil.success("确定");
                 mAddDataDescriptionStr=inputEdit.getText().toString();
             }
         });
@@ -320,7 +319,7 @@ public class AddDataActivity extends AppCompatActivity {
                     cancel();
                     break;
                 case R.id.add_data_confirm:
-                    ToastUtil.success("confirm");
+                    //ToastUtil.success("confirm");
                     confirmData();
                     break;
                 case R.id.add_data_select_date:

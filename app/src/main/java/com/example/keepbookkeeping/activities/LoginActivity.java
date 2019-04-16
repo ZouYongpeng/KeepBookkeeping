@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
             public void done(Object o, BmobException e) {
                 if (e==null){
                     //登录成功
-                    ToastUtil.success("登陆成功");
+                    //ToastUtil.success("登陆成功");
                     Bundle bundle=new Bundle();
                     bundle.putSerializable("user",(User)o);
                     MainActivity.startMainActivity(LoginActivity.this,bundle);
@@ -124,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.login_back:
-                ToastUtil.success("返回");
+                //ToastUtil.success("返回");
                 User user= UserUtil.getInstance().getCurrentUser();
                 if (user!=null){
                     Bundle bundle=new Bundle();
@@ -137,13 +137,13 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.login_user_head:
-                ToastUtil.success("添加照片");
+                //ToastUtil.success("添加照片");
                 break;
             case R.id.login_button:
                 userLogin();
                 break;
             case R.id.goto_register:
-                ToastUtil.success("注册");
+                //ToastUtil.success("注册");
                 RegisterActivity.startRegisterActivity(this);
                 break;
             case R.id.goto_local:

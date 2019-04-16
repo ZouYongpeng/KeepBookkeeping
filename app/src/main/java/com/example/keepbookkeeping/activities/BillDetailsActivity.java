@@ -247,7 +247,7 @@ public class BillDetailsActivity extends AppCompatActivity {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtil.success("确定");
+                //ToastUtil.success("确定");
                 if (mBillApartBean.getCanChange() == 0) {
                     //不可修改的
                     int id = mBillApartBean.getId();

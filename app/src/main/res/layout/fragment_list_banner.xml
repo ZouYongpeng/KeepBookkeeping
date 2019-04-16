@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="86.39%"
+            android:text="0.00%"
             android:textSize="12sp"/>
     </FrameLayout>
 
