@@ -21,7 +21,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
-import android.support.v4.app.ListFragment;
+//import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
@@ -63,7 +63,9 @@ import com.example.keepbookkeeping.events.ChangeFragmentTypeEvent;
 import com.example.keepbookkeeping.events.SearchAllDataEvent;
 import com.example.keepbookkeeping.form.FormFragment;
 import com.example.keepbookkeeping.form.FormPresenterImpl;
+import com.example.keepbookkeeping.list.ListFragment;
 import com.example.keepbookkeeping.list.ListPresenterImpl;
+import com.example.keepbookkeeping.ui.NewFragmentTabHost;
 import com.example.keepbookkeeping.ui.SearchEditText;
 import com.example.keepbookkeeping.utils.AllDataTableUtil;
 import com.example.keepbookkeeping.utils.DensityUtil;
@@ -106,7 +108,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
      ViewPager mViewPager;
 
      @BindView(R.id.main_tabHost)
-     FragmentTabHost mTabHost;
+     NewFragmentTabHost mTabHost;
+//     FragmentTabHost mTabHost;
 
      @BindView(R.id.main_bill_btn_group)
      RadioGroup mBillBtnGroup;
@@ -126,10 +129,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
      TextView mUserSex;
 
      private LayoutInflater mLayoutInflater;
-     private Class[] fragmentList = {
-             BillFragment.class,
-             ListFragment.class,
-             FormFragment.class};
+//     private Class[] fragmentList = {
+//             BillFragment.class,
+//             ListFragment.class,
+//             FormFragment.class};
+    private Fragment[] fragmentList;
 
      private int[] tabImageViewArray = {
              R.drawable.ic_bill_unclicked,
@@ -167,8 +171,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
          initUser();
          initNavView();
          initToolBar();
-         initViewPagerAndTab();
          initFragment();
+         initViewPagerAndTab();
          mBillBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
          mFormBtnGroup.setOnCheckedChangeListener(mRadioChangeListener);
      }
@@ -262,6 +266,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
              mTabHost.addTab(tabSpec, fragmentList[i], null);
              mTabHost.setTag(i);
          }
+
+         mViewPager.setOffscreenPageLimit(3);
+         mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager(), mFragmentArray));
+         mTabHost.getTabWidget().setDividerDrawable(null);
+         mTabHost.setCurrentTab(1);
+         mViewPager.setCurrentItem(1);
+         currentPagerPosition = 1;
      }
 
      /**
@@ -301,12 +312,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
          mFragmentArray.add(mListFragment);
          mFragmentArray.add(mFormFragment);
 
-         mViewPager.setOffscreenPageLimit(3);
-         mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager(), mFragmentArray));
-         mTabHost.getTabWidget().setDividerDrawable(null);
-         mTabHost.setCurrentTab(1);
-         mViewPager.setCurrentItem(1);
-         currentPagerPosition = 1;
+         fragmentList=new Fragment[]{
+                 mBillFragment,
+                 mListFragment,
+                 mFormFragment
+         };
+
+//         mViewPager.setOffscreenPageLimit(3);
+//         mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager(), mFragmentArray));
+//         mTabHost.getTabWidget().setDividerDrawable(null);
+//         mTabHost.setCurrentTab(1);
+//         mViewPager.setCurrentItem(1);
+//         currentPagerPosition = 1;
      }
 
      @Override

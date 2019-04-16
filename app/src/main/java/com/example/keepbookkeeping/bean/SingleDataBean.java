@@ -60,7 +60,7 @@ public class SingleDataBean extends BmobObject implements Serializable{
      */
     private int canUpload;
 
-    private String oId;
+    private String cloudObjectId;
 
     public SingleDataBean(){}
 
@@ -153,12 +153,12 @@ public class SingleDataBean extends BmobObject implements Serializable{
         this.canUpload = canUpload;
     }
 
-    public String getoId() {
-        return oId;
+    public String getCloudObjectId() {
+        return cloudObjectId;
     }
 
-    public void setoId(String oId) {
-        this.oId = oId;
+    public void setCloudObjectId(String cloudObjectId) {
+        this.cloudObjectId = cloudObjectId;
     }
 
     @Override

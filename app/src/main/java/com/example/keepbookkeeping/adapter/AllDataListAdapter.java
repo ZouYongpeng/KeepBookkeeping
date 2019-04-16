@@ -344,7 +344,7 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
             LogUtil.d("AllDataList","positionToIndex[ "+position+" ] = "+positionToIndex[position]);
             final SingleDataBean bean=mSingleDataList.get(positionToIndex[position]);
-            LogUtil.d("AllDataList","显示数据"+bean.getObjectId()+" , "+bean.toString());
+            LogUtil.d("AllDataList","显示数据 - "+bean.getCloudObjectId()+" , "+bean.toString());
             ((ContentViewHolder) holder).setDate(DateUtil.dateToString(bean.getDate()));
             ((ContentViewHolder) holder).mContentImage.setImageResource(DataTypeTableUtil.getImageId(bean.getTypeName()));
             if (bean.getType()==SingleDataBean.TYPE_INCOME_DATA){
@@ -417,8 +417,10 @@ public class AllDataListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         RxBus.getInstance().post(new NotifyBillListEvent(type));
                     }
                     RxBus.getInstance().post(new NotifyFormListEvent(0));
-                    if (!TextUtils.equals(UserUtil.getInstance().getCurrentUserId(),"local")){
-                        Log.d("SingleDataBean", "delete: "+bean.getObjectId());
+                    if (!TextUtils.equals(UserUtil.getInstance().getCurrentUserId(),"local") &&
+                            !TextUtils.isEmpty(bean.getCloudObjectId())){
+                        Log.d("SingleDataBean", "delete: "+bean.getCloudObjectId());
+                        UserUtil.deleteDataInCloud(bean.getCloudObjectId());
                     }
                 }
             });

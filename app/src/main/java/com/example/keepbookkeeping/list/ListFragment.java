@@ -74,7 +74,7 @@ public class ListFragment extends Fragment implements ListContract.View {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, view);
-
+        Log.d(TAG, "onCreateView: ");
         return view;
     }
 
@@ -119,16 +119,16 @@ public class ListFragment extends Fragment implements ListContract.View {
                 }
                 RecyclerView.ViewHolder newHolder = mListContentRecyclerView.getChildViewHolder(view);
                 if (newHolder instanceof AllDataListAdapter.DateViewHolder) {
-                    LogUtil.d(TAG, "this is DateViewHolder" + ((AllDataListAdapter.DateViewHolder) newHolder).getDate());
+//                    LogUtil.d(TAG, "this is DateViewHolder" + ((AllDataListAdapter.DateViewHolder) newHolder).getDate());
                     changeBanner(DateUtil.getYearMonthOfDate(((AllDataListAdapter.DateViewHolder) newHolder).getDate()));
                 } else if (newHolder instanceof AllDataListAdapter.MonthViewHolder) {
-                    LogUtil.d(TAG, "this is MonthViewHolder" + ((AllDataListAdapter.MonthViewHolder) newHolder).getDate());
+//                    LogUtil.d(TAG, "this is MonthViewHolder" + ((AllDataListAdapter.MonthViewHolder) newHolder).getDate());
                     changeBanner(DateUtil.getYearMonthOfDate(((AllDataListAdapter.MonthViewHolder) newHolder).getDate()));
                 } else if (newHolder instanceof AllDataListAdapter.ContentViewHolder) {
-                    LogUtil.d(TAG, "this is ContentViewHolder" + ((AllDataListAdapter.ContentViewHolder) newHolder).getDate());
+//                    LogUtil.d(TAG, "this is ContentViewHolder" + ((AllDataListAdapter.ContentViewHolder) newHolder).getDate());
                     changeBanner(DateUtil.getYearMonthOfDate(((AllDataListAdapter.ContentViewHolder) newHolder).getDate()));
                 } else {
-                    LogUtil.d(TAG, "this is EndViewHolder");
+//                    LogUtil.d(TAG, "this is EndViewHolder");
                 }
             }
         });

@@ -117,6 +117,7 @@ public class AllDataTableUtil {
                 bean.setId(cursor.getInt(cursor.getColumnIndex("id")));
                 bean.setUserId(cursor.getString(cursor.getColumnIndex("user_id")));
                 bean.setCanUpload(cursor.getInt(cursor.getColumnIndex("can_upload")));
+                bean.setCloudObjectId(cursor.getString(cursor.getColumnIndex("cloud_object_id")));
                 LogUtil.d(TAG,bean.toString());
                 singleDataList.add(bean);
             }while (cursor.moveToNext());
@@ -134,10 +135,14 @@ public class AllDataTableUtil {
         values.put("date",DateUtil.dateToString(bean.getDate()));
         values.put("type_name",bean.getTypeName());
         values.put("bill_name",bean.getBillName());
+        Log.d("cloud", "insertSingleDataToAllData: "+bean.getObjectId());
         if (!TextUtils.isEmpty(bean.getDescription())){
             values.put("description",bean.getDescription());
         }
         values.put("can_upload",type);
+        if (!TextUtils.isEmpty(bean.getObjectId())){
+            values.put("cloud_object_id",bean.getObjectId());
+        }
         KBKAllDataBaseHelper.getInstance().getWritableDatabase().insert("AllData",null,values);
         values.clear();
     }
